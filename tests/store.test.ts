@@ -100,3 +100,24 @@ describe('store invalidation rules (plan 2.1)', () => {
     expect(buildRouteRequest(reducer(s, { type: 'mission/setStart', endpoint: null }), 'q')).toBeNull();
   });
 });
+
+describe('hover sample + 3D status (non-invalidating)', () => {
+  it('accepts hover only on the selected candidate at a valid index, never invalidates', async () => {
+    const { selectSelection } = await import('../src/state/store');
+    const s = routed();
+    expect(reducer(s, { type: 'view/hover', sample: { candidateId: 'c1', pathIndex: 0 } })).toBe(s); // not selected
+    expect(reducer(s, { type: 'view/hover', sample: { candidateId: 'c0', pathIndex: 9999 } })).toBe(s);
+    const h = reducer(s, { type: 'view/hover', sample: { candidateId: 'c0', pathIndex: 3 } });
+    expect(h.isStale).toBe(false);
+    expect(h.routeCandidates).toBe(s.routeCandidates);
+    const sel = selectSelection(h);
+    expect(sel.candidateId).toBe('c0');
+    expect(sel.hover?.pathIndex).toBe(3);
+    expect(sel.hover?.point).toEqual(sel.candidate!.outbound.path[3]);
+    expect(sel.hover?.distance_m).toBe(sel.candidate!.outbound.profile.distance_m[3]);
+    expect(reducer(h, { type: 'route/select', candidateId: 'c1' }).display.hover).toBeNull();
+    const failed3d = reducer(h, { type: 'view/set3dStatus', status: { status: 'unavailable', kind: 'context-lost', message: 'x' } });
+    expect(failed3d.isStale).toBe(false);
+    expect(failed3d.selectedCandidateId).toBe('c0');
+  });
+});

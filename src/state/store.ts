@@ -14,6 +14,7 @@ import type { BundleLoadError } from '../data/loadBundle';
 import type {
   GridBundle,
   LocalPoint,
+  LocalPoint3,
   PolicyWeights,
   RouteCandidate,
   RouteFinalResponse,
@@ -53,11 +54,27 @@ export type RouteRunState =
   | { kind: 'running'; requestId: string; exploredNodes: number }
   | { kind: 'finished'; response: RouteFinalResponse };
 
+/** Hovered position along the SELECTED candidate's outbound leg (profile/map/3D sync). */
+export interface HoverSample {
+  candidateId: string;
+  /** Index into RouteLeg.path / profile samples. */
+  pathIndex: number;
+}
+
+export type Terrain3dStatus =
+  | { status: 'unknown' }
+  | { status: 'ok' }
+  | { status: 'unavailable'; kind: 'webgl-unavailable' | 'context-lost' | 'render-error' | 'load-error' | 'terrain-data' | 'texture'; message: string };
+
 export interface DisplayState {
   layers: Record<LayerKey, { visible: boolean; opacity: number }>;
   panels: Record<string, boolean>;
   /** Opaque camera state owned by the 3D component. */
   camera: unknown;
+  /** Shared hover sample; never invalidates routes. */
+  hover: HoverSample | null;
+  /** 3D capability/health; failure degrades to 2D + briefing. */
+  terrain3d: Terrain3dStatus;
 }
 
 export interface AppState {
@@ -93,7 +110,9 @@ export type Action =
   | { type: 'view/setMode'; mode: ViewMode }
   | { type: 'view/setLayer'; layer: LayerKey; visible?: boolean; opacity?: number }
   | { type: 'view/setPanel'; panel: string; expanded: boolean }
-  | { type: 'view/setCamera'; camera: unknown };
+  | { type: 'view/setCamera'; camera: unknown }
+  | { type: 'view/hover'; sample: HoverSample | null }
+  | { type: 'view/set3dStatus'; status: Terrain3dStatus };
 
 export const INVALIDATING_ACTIONS: ReadonlySet<Action['type']> = new Set([
   'mission/setStart',
@@ -138,6 +157,8 @@ export function createInitialState(modelVersion: string): AppState {
       },
       panels: {},
       camera: null,
+      hover: null,
+      terrain3d: { status: 'unknown' },
     },
   };
 }
@@ -209,11 +230,14 @@ export function reducer(s: AppState, a: Action): AppState {
         routeCandidates: candidates,
         selectedCandidateId: candidates[0]?.candidateId ?? null,
         isStale: false,
+        display: { ...s.display, hover: null },
       };
     }
     case 'route/select':
       if (a.candidateId !== null && !s.routeCandidates.some((c) => c.candidateId === a.candidateId)) return s;
-      return { ...s, selectedCandidateId: a.candidateId };
+      if (a.candidateId === s.selectedCandidateId) return s;
+      // Hover belongs to one candidate's path; drop it when the selection changes.
+      return { ...s, selectedCandidateId: a.candidateId, display: { ...s.display, hover: null } };
 
     case 'view/setMode':
       return { ...s, viewMode: a.mode };
@@ -231,17 +255,62 @@ export function reducer(s: AppState, a: Action): AppState {
       return { ...s, display: { ...s.display, panels: { ...s.display.panels, [a.panel]: a.expanded } } };
     case 'view/setCamera':
       return { ...s, display: { ...s.display, camera: a.camera } };
+    case 'view/hover': {
+      const h = a.sample;
+      if (h) {
+        // Only the selected candidate can be hovered, and only at a valid path index.
+        const c = s.routeCandidates.find((x) => x.candidateId === h.candidateId);
+        if (!c || h.candidateId !== s.selectedCandidateId || h.pathIndex < 0 || h.pathIndex >= c.outbound.path.length) return s;
+        const cur = s.display.hover;
+        if (cur && cur.candidateId === h.candidateId && cur.pathIndex === h.pathIndex) return s;
+      } else if (s.display.hover === null) return s;
+      return { ...s, display: { ...s.display, hover: h } };
+    }
+    case 'view/set3dStatus':
+      return { ...s, display: { ...s.display, terrain3d: a.status } };
   }
 }
 
 function clearRoutes(s: AppState): AppState {
-  return { ...s, activeRequestId: null, routeRun: { kind: 'idle' }, routeCandidates: [], selectedCandidateId: null, isStale: false };
+  return {
+    ...s,
+    activeRequestId: null,
+    routeRun: { kind: 'idle' },
+    routeCandidates: [],
+    selectedCandidateId: null,
+    isStale: false,
+    display: { ...s.display, hover: null },
+  };
 }
 
 // ---- selectors -------------------------------------------------------------
 
 export function selectSelectedCandidate(s: AppState): RouteCandidate | null {
   return s.routeCandidates.find((c) => c.candidateId === s.selectedCandidateId) ?? null;
+}
+
+/**
+ * THE selection view-model. Map, profile, 3D props, briefing and export all derive from this one
+ * selector so they can never disagree about which route (and which sample) is selected.
+ */
+export interface SelectionView {
+  candidateId: string | null;
+  candidate: RouteCandidate | null;
+  /** Hovered sample on the selected candidate, resolved to distance + position. */
+  hover: { pathIndex: number; distance_m: number; point: LocalPoint3 } | null;
+  isStale: boolean;
+}
+
+export function selectSelection(s: AppState): SelectionView {
+  const candidate = selectSelectedCandidate(s);
+  const h = s.display.hover;
+  let hover: SelectionView['hover'] = null;
+  if (candidate && h && h.candidateId === candidate.candidateId) {
+    const point = candidate.outbound.path[h.pathIndex];
+    const distance_m = candidate.outbound.profile.distance_m[h.pathIndex];
+    if (point && distance_m !== undefined) hover = { pathIndex: h.pathIndex, distance_m, point };
+  }
+  return { candidateId: candidate?.candidateId ?? null, candidate, hover, isStale: s.isStale };
 }
 
 export function selectCanRequestRoute(s: AppState): { ok: true } | { ok: false; reason: string } {
