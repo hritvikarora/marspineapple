@@ -1,0 +1,19 @@
+{
+  "bundleVersion": "synthetic-v0.1.0",
+  "destination": {
+    "east_m": 175,
+    "north_m": 65
+  },
+  "modelVersion": "placeholder-astar-0.1.0",
+  "policies": [
+    "shortest-feasible",
+    "uncertainty-aware"
+  ],
+  "requestId": "req-1-abc123",
+  "roundTrip": false,
+  "start": {
+    "east_m": 25,
+    "north_m": 65
+  },
+  "strictQuality": false
+}

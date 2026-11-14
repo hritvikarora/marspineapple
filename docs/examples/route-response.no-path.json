@@ -1,0 +1,42 @@
+{
+  "bundleVersion": "synthetic-v0.1.0",
+  "destination": {
+    "accepted": {
+      "east_m": 175,
+      "north_m": 15
+    },
+    "cell": {
+      "col": 17,
+      "index": 217,
+      "row": 10
+    },
+    "requested": {
+      "east_m": 175,
+      "north_m": 15
+    }
+  },
+  "message": "Destination is not connected to the start under the current terrain limits.",
+  "modelVersion": "placeholder-astar-0.1.0",
+  "policies": [
+    "shortest-feasible",
+    "uncertainty-aware"
+  ],
+  "reason": "disconnected-under-limits",
+  "requestId": "req-2-def456",
+  "start": {
+    "accepted": {
+      "east_m": 25,
+      "north_m": 65
+    },
+    "cell": {
+      "col": 2,
+      "index": 102,
+      "row": 5
+    },
+    "requested": {
+      "east_m": 25,
+      "north_m": 65
+    }
+  },
+  "status": "no-path"
+}

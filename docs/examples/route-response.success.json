@@ -1,0 +1,472 @@
+{
+  "bundleVersion": "synthetic-v0.1.0",
+  "candidates": [
+    {
+      "candidateId": "c0",
+      "explanation": [
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "one-way",
+      "outbound": {
+        "cells": [
+          102,
+          103,
+          104,
+          105,
+          86,
+          67,
+          48,
+          49,
+          50,
+          51,
+          52,
+          73,
+          94,
+          95,
+          96,
+          117
+        ],
+        "metrics": {
+          "ascent_m": 15,
+          "cellCount": 16,
+          "descent_m": 0,
+          "horizontalDistance_m": 174.8528137423857,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 6.054498479394494,
+          "maxTerrainSlope_deg": 8.049467086791992,
+          "surfaceDistance_m": 175.5661836443264,
+          "unknownQualityLength_m": 82.42640687119285,
+          "unknownQualityPct": 47.14045207910316
+        },
+        "path": [
+          {
+            "east_m": 25,
+            "elevation_m": -2600.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 35,
+            "elevation_m": -2599.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 45,
+            "elevation_m": -2598.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 55,
+            "elevation_m": -2597.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 65,
+            "elevation_m": -2596,
+            "north_m": 75
+          },
+          {
+            "east_m": 75,
+            "elevation_m": -2594.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 85,
+            "elevation_m": -2593,
+            "north_m": 95
+          },
+          {
+            "east_m": 95,
+            "elevation_m": -2592,
+            "north_m": 95
+          },
+          {
+            "east_m": 105,
+            "elevation_m": -2591,
+            "north_m": 95
+          },
+          {
+            "east_m": 115,
+            "elevation_m": -2590,
+            "north_m": 95
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2589,
+            "north_m": 95
+          },
+          {
+            "east_m": 135,
+            "elevation_m": -2588.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 145,
+            "elevation_m": -2588,
+            "north_m": 75
+          },
+          {
+            "east_m": 155,
+            "elevation_m": -2587,
+            "north_m": 75
+          },
+          {
+            "east_m": 165,
+            "elevation_m": -2586,
+            "north_m": 75
+          },
+          {
+            "east_m": 175,
+            "elevation_m": -2585.5,
+            "north_m": 65
+          }
+        ],
+        "profile": {
+          "distance_m": [
+            0,
+            10,
+            20,
+            30,
+            44.14213562373095,
+            58.2842712474619,
+            72.42640687119285,
+            82.42640687119285,
+            92.42640687119285,
+            102.42640687119285,
+            112.42640687119285,
+            126.5685424949238,
+            140.71067811865476,
+            150.71067811865476,
+            160.71067811865476,
+            174.8528137423857
+          ],
+          "elevation_m": [
+            -2600.5,
+            -2599.5,
+            -2598.5,
+            -2597.5,
+            -2596,
+            -2594.5,
+            -2593,
+            -2592,
+            -2591,
+            -2590,
+            -2589,
+            -2588.5,
+            -2588,
+            -2587,
+            -2586,
+            -2585.5
+          ],
+          "pathIndex": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        "qualityIntervals": [
+          {
+            "fromDistance_m": 0,
+            "quality": 1,
+            "toDistance_m": 58.2842712474619
+          },
+          {
+            "fromDistance_m": 58.2842712474619,
+            "quality": 3,
+            "toDistance_m": 140.71067811865476
+          },
+          {
+            "fromDistance_m": 140.71067811865476,
+            "quality": 1,
+            "toDistance_m": 174.8528137423857
+          }
+        ],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 174.8528137423857
+        }
+      },
+      "policies": [
+        "shortest-feasible"
+      ],
+      "returnLeg": null
+    },
+    {
+      "candidateId": "c1",
+      "explanation": [
+        "32 m longer than c0 but crosses 82 m less unknown-quality terrain.",
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "one-way",
+      "outbound": {
+        "cells": [
+          102,
+          103,
+          104,
+          125,
+          146,
+          167,
+          188,
+          189,
+          190,
+          191,
+          192,
+          172,
+          152,
+          132,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117
+        ],
+        "metrics": {
+          "ascent_m": 15.5,
+          "cellCount": 20,
+          "descent_m": 0.5,
+          "horizontalDistance_m": 206.5685424949238,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 6.054498479394494,
+          "maxTerrainSlope_deg": 6.379370212554932,
+          "surfaceDistance_m": 207.27297836891395,
+          "unknownQualityLength_m": 0,
+          "unknownQualityPct": 0
+        },
+        "path": [
+          {
+            "east_m": 25,
+            "elevation_m": -2600.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 35,
+            "elevation_m": -2599.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 45,
+            "elevation_m": -2598.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 55,
+            "elevation_m": -2599,
+            "north_m": 55
+          },
+          {
+            "east_m": 65,
+            "elevation_m": -2598.5,
+            "north_m": 45
+          },
+          {
+            "east_m": 75,
+            "elevation_m": -2598,
+            "north_m": 35
+          },
+          {
+            "east_m": 85,
+            "elevation_m": -2596.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 95,
+            "elevation_m": -2595.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 105,
+            "elevation_m": -2594.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 115,
+            "elevation_m": -2593.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2592.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2592,
+            "north_m": 35
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2591.5,
+            "north_m": 45
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2591,
+            "north_m": 55
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2590.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 135,
+            "elevation_m": -2589.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 145,
+            "elevation_m": -2588.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 155,
+            "elevation_m": -2587.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 165,
+            "elevation_m": -2586.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 175,
+            "elevation_m": -2585.5,
+            "north_m": 65
+          }
+        ],
+        "profile": {
+          "distance_m": [
+            0,
+            10,
+            20,
+            34.14213562373095,
+            48.2842712474619,
+            62.42640687119285,
+            76.5685424949238,
+            86.5685424949238,
+            96.5685424949238,
+            106.5685424949238,
+            116.5685424949238,
+            126.5685424949238,
+            136.5685424949238,
+            146.5685424949238,
+            156.5685424949238,
+            166.5685424949238,
+            176.5685424949238,
+            186.5685424949238,
+            196.5685424949238,
+            206.5685424949238
+          ],
+          "elevation_m": [
+            -2600.5,
+            -2599.5,
+            -2598.5,
+            -2599,
+            -2598.5,
+            -2598,
+            -2596.5,
+            -2595.5,
+            -2594.5,
+            -2593.5,
+            -2592.5,
+            -2592,
+            -2591.5,
+            -2591,
+            -2590.5,
+            -2589.5,
+            -2588.5,
+            -2587.5,
+            -2586.5,
+            -2585.5
+          ],
+          "pathIndex": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19
+          ]
+        },
+        "qualityIntervals": [
+          {
+            "fromDistance_m": 0,
+            "quality": 1,
+            "toDistance_m": 206.5685424949238
+          }
+        ],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 316.4526277403096
+        }
+      },
+      "policies": [
+        "uncertainty-aware"
+      ],
+      "returnLeg": null
+    }
+  ],
+  "computeMs": 0,
+  "destination": {
+    "accepted": {
+      "east_m": 175,
+      "north_m": 65
+    },
+    "cell": {
+      "col": 17,
+      "index": 117,
+      "row": 5
+    },
+    "requested": {
+      "east_m": 175,
+      "north_m": 65
+    }
+  },
+  "modelVersion": "placeholder-astar-0.1.0",
+  "requestId": "req-1-abc123",
+  "start": {
+    "accepted": {
+      "east_m": 25,
+      "north_m": 65
+    },
+    "cell": {
+      "col": 2,
+      "index": 102,
+      "row": 5
+    },
+    "requested": {
+      "east_m": 25,
+      "north_m": 65
+    }
+  },
+  "status": "success"
+}

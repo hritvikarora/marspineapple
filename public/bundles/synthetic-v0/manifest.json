@@ -1,0 +1,215 @@
+{
+  "schema": "mars-pathfinder/region-bundle",
+  "schemaVersion": "1.0",
+  "bundleId": "synthetic-v0",
+  "bundleVersion": "synthetic-v0.1.0",
+  "datasetVersion": "synthetic-fixture-2026-11-14",
+  "synthetic": true,
+  "title": "SYNTHETIC FIXTURE - not Mars data",
+  "description": "Hand-inspectable 20x12 synthetic grid for development and automated tests. Contains a ridge with two gaps, an unknown-quality corridor, a low-quality strip, a rough patch, a missing-elevation hole, a manual exclusion and a sealed basin.",
+  "createdDate": "2026-11-14",
+  "crs": {
+    "description": "Synthetic local planar frame (no planetary CRS)",
+    "body": "synthetic",
+    "sourceCrs": null,
+    "localOriginInSource": null,
+    "verticalReference": "synthetic datum (values mimic Jezero-like negative heights)",
+    "horizontalUnits": "m",
+    "verticalUnits": "m"
+  },
+  "grid": {
+    "width": 20,
+    "height": 12,
+    "cellSizeEast_m": 10,
+    "cellSizeNorth_m": 10,
+    "extent": {
+      "west_m": 0,
+      "east_m": 200,
+      "south_m": 0,
+      "north_m": 120
+    },
+    "orientation": "north-up",
+    "order": "row-major",
+    "sampleConvention": "cell-center"
+  },
+  "layers": {
+    "elevation": {
+      "file": "elevation.f32",
+      "dtype": "float32",
+      "byteOrder": "little-endian",
+      "units": "m",
+      "nodata": "NaN",
+      "definition": "Synthetic analytic surface (see scripts/make-fixture.mjs).",
+      "byteLength": 960,
+      "sha256": "16477647b2a71db067b58f37e604dbd7e028dff76c6304a6d9da36a9a211d3d2"
+    },
+    "slope": {
+      "file": "slope.f32",
+      "dtype": "float32",
+      "byteOrder": "little-endian",
+      "units": "deg",
+      "nodata": "NaN",
+      "definition": "atan(|grad z|), central differences over 2 cells (one-sided at outer edge).",
+      "byteLength": 960,
+      "sha256": "bc8e9e26376a553e1ee185463e2a9828e7957c6897f1d10772eae6d500fa3dc7"
+    },
+    "roughness": {
+      "file": "roughness.f32",
+      "dtype": "float32",
+      "byteOrder": "little-endian",
+      "units": "m",
+      "nodata": "NaN",
+      "definition": "RMS residual after least-squares plane removal over 3x3 cells (30 m x 30 m).",
+      "byteLength": 960,
+      "sha256": "c93f30e9e815d4fe1fa0e5e727629bbd1e0dc7f76a42a7eaa95188ce11f7c5fc"
+    },
+    "quality": {
+      "file": "quality.u8",
+      "dtype": "uint8",
+      "byteOrder": "little-endian",
+      "units": "class-code",
+      "nodata": 0,
+      "definition": "0 no elevation, 1 good, 2 low, 3 unknown (synthetic assignment).",
+      "byteLength": 240,
+      "sha256": "87823724101716674b34472c56c4743b667f9de023ed23bfee2d6c63112e9a3f"
+    },
+    "exclusion": {
+      "file": "exclusion.u8",
+      "dtype": "uint8",
+      "byteOrder": "little-endian",
+      "units": "class-code",
+      "nodata": null,
+      "definition": "0 none, 1 missing elevation, 2 unsupported derivative neighbourhood, 3 outside extent, 4 manual.",
+      "byteLength": 240,
+      "sha256": "c4e2894ca72c798e4ca7ffd894c858c9af43d33e508b1b6758094914c58b26ee"
+    }
+  },
+  "qualityClasses": [
+    {
+      "code": 0,
+      "key": "no-elevation",
+      "label": "No elevation",
+      "sourceCategories": [
+        "synthetic:nodata"
+      ]
+    },
+    {
+      "code": 1,
+      "key": "good",
+      "label": "Documented good quality",
+      "sourceCategories": [
+        "synthetic:good"
+      ]
+    },
+    {
+      "code": 2,
+      "key": "low",
+      "label": "Documented low quality",
+      "sourceCategories": [
+        "synthetic:low"
+      ]
+    },
+    {
+      "code": 3,
+      "key": "unknown",
+      "label": "Unknown quality",
+      "sourceCategories": [
+        "synthetic:unknown"
+      ]
+    }
+  ],
+  "strictQualitySupported": true,
+  "pointsOfInterest": [
+    {
+      "id": "syn-outpost",
+      "name": "Synthetic outpost",
+      "kind": "outpost",
+      "position": {
+        "east_m": 25,
+        "north_m": 65
+      },
+      "purpose": "Start point for the synthetic fixture.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "synthetic-generator"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "syn-east-bench",
+      "name": "East bench (synthetic)",
+      "kind": "science-stop",
+      "position": {
+        "east_m": 175,
+        "north_m": 65
+      },
+      "purpose": "Destination across the ridge; exposes the north-gap vs south-gap tradeoff.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "synthetic-generator"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "syn-sealed-basin",
+      "name": "Sealed basin (synthetic no-path test)",
+      "kind": "test",
+      "position": {
+        "east_m": 175,
+        "north_m": 15
+      },
+      "purpose": "Enclosed by walls; every policy must return no-path.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "synthetic-generator"
+      ],
+      "synthetic": true
+    },
+    {
+      "id": "syn-unknown-knoll",
+      "name": "Unknown-quality knoll (synthetic)",
+      "kind": "test",
+      "position": {
+        "east_m": 125,
+        "north_m": 105
+      },
+      "purpose": "Inside unknown-quality area; strict mode must reject this endpoint.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "synthetic-generator"
+      ],
+      "synthetic": true
+    }
+  ],
+  "displayAssets": [],
+  "sources": [
+    {
+      "id": "synthetic-generator",
+      "mission": "none",
+      "instrument": "none",
+      "title": "scripts/make-fixture.mjs",
+      "creator": "MARS PATHFINDER team",
+      "url": "",
+      "version": "0.1.0",
+      "rights": "Team-generated synthetic data",
+      "usedFor": "Development and automated tests only"
+    }
+  ],
+  "limitations": [
+    "SYNTHETIC: this grid is not derived from any NASA observation.",
+    "Quality classes are artificially assigned to exercise uncertainty-aware routing."
+  ],
+  "processing": {
+    "script": "scripts/make-fixture.mjs",
+    "parameters": {
+      "width": 20,
+      "height": 12,
+      "cellSize_m": 10,
+      "ridgeHeight_m": 40
+    }
+  }
+}
