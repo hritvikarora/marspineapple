@@ -86,7 +86,7 @@ test('rapid destination switching: only the last request result is ever shown', 
   expect(seen.at(-1)).toBe('no-path');
 });
 
-test('release build: release id, synthetic banner, tiles off, no external requests', async ({ page }) => {
+test('production build pinned to synthetic: release id, synthetic banner, tiles off, no external requests', async ({ page }) => {
   const external: string[] = [];
   page.on('request', (r) => !r.url().startsWith('http://localhost') && external.push(r.url()));
   await openApp(page);

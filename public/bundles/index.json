@@ -1,7 +1,17 @@
 {
-  "release": "synthetic-v0",
+  "release": "jezero-west-hirise-v0.1.0",
   "dev": "synthetic-v0",
   "bundles": [
+    {
+      "id": "jezero-west-hirise-v0.1.0",
+      "synthetic": false,
+      "description": "REAL Mars data (Role A, Irene Plemic): western Jezero delta front, USGS Mars 2020 TRN HiRISE 1 m DTM, 1000x1000 cells of 0.94857 m E x 1 m N. Quality uniformly unknown (no per-pixel quality layer); strict mode unsupported."
+    },
+    {
+      "id": "jezero-west-ctx20m-v0.1.0",
+      "synthetic": false,
+      "description": "REAL Mars data (Role A): same area from the USGS CTX 20 m DTM mosaic, 51x51 cells of 18.97 m E x 20 m N. Coarse fallback (load with VITE_BUNDLE=jezero-west-ctx20m-v0.1.0)."
+    },
     {
       "id": "synthetic-v0",
       "synthetic": true,

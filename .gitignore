@@ -8,5 +8,6 @@ coverage
 .env*
 !.env.example
 dist-e2e
+dist-e2e-syn
 test-results
 playwright-report

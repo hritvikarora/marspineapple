@@ -34,27 +34,39 @@ const step = (s) => console.log(`  ✓ ${s}`);
 try {
   await page.goto(url, { waitUntil: 'load' });
   const release = page.getByTestId('release-id');
-  await release.filter({ hasText: 'bundle synthetic' }).waitFor({ timeout: 10000 });
+  await release.filter({ hasText: /bundle \S+/ }).waitFor({ timeout: 15000 });
+  await page.getByLabel('start preset').locator('option[value]:not([value=""])').first().waitFor({ state: 'attached', timeout: 30000 });
   step(`release id: ${await release.textContent()}`);
   const synthetic = (await page.getByTestId('synthetic-badge').count()) > 0;
   const banner = await page.getByTestId('synthetic-production-warning').count();
   if (synthetic && banner !== 1) throw new Error('production build serves synthetic data but shows no warning banner');
-  step(`synthetic production warning ${banner ? 'shown' : 'not needed'}`);
-  await page.getByLabel('start preset').selectOption('syn-outpost');
-  await page.getByLabel('destination preset').selectOption('syn-east-bench');
+  if (!synthetic && banner !== 0) throw new Error('real-data build shows the synthetic warning banner');
+  step(`${synthetic ? 'SYNTHETIC' : 'real'} bundle; synthetic production warning ${banner ? 'shown' : 'not shown'}`);
+  const routeTimeout = 30000;
+  // Synthetic fixture: fixed presets incl. the sealed basin. Real bundles: first POIs in the manifest.
+  const pois = await page.getByLabel('start preset').locator('option').evaluateAll((os) => os.map((o) => o.value).filter(Boolean));
+  if (pois.length < 2) throw new Error(`bundle has ${pois.length} POI preset(s); need 2`);
+  const [from, to, alt] = synthetic ? ['syn-outpost', 'syn-east-bench', 'syn-sealed-basin'] : [pois[0], pois[1], pois[2] ?? pois[0]];
+  await page.getByLabel('start preset').selectOption(from);
+  await page.getByLabel('destination preset').selectOption(to);
+  let t0 = Date.now();
   await page.getByTestId('calculate').click();
-  await page.getByTestId('route-status').filter({ hasText: 'Status: success' }).waitFor({ timeout: 10000 });
+  await page.getByTestId('route-status').filter({ hasText: 'Status: success' }).waitFor({ timeout: routeTimeout });
   const n = await page.getByRole('radio', { name: /feasible|aware/ }).count();
-  step(`route success via real Web Worker, ${n} candidate(s)`);
-  await page.getByLabel('destination preset').selectOption('syn-sealed-basin');
+  step(`route ${from} -> ${to}: success via real Web Worker in ${Date.now() - t0} ms, ${n} candidate(s)`);
+  await page.getByLabel('destination preset').selectOption(alt);
   await page.getByTestId('stale').waitFor();
   step('stale label after destination change');
+  if (synthetic) {
+    await page.getByTestId('calculate').click();
+    await page.getByTestId('route-status').filter({ hasText: 'no-path' }).waitFor({ timeout: routeTimeout });
+    step('no-path state for sealed basin');
+  }
+  await page.getByLabel('destination preset').selectOption(to);
+  t0 = Date.now();
   await page.getByTestId('calculate').click();
-  await page.getByTestId('route-status').filter({ hasText: 'no-path' }).waitFor({ timeout: 10000 });
-  step('no-path state for sealed basin');
-  await page.getByLabel('destination preset').selectOption('syn-east-bench');
-  await page.getByTestId('calculate').click();
-  await page.getByTestId('route-status').filter({ hasText: 'Status: success' }).waitFor({ timeout: 10000 });
+  await page.getByTestId('route-status').filter({ hasText: 'Status: success' }).waitFor({ timeout: routeTimeout });
+  step(`re-route success in ${Date.now() - t0} ms`);
   // Selection + hover sync across map / profile / briefing / 3D.
   const attrs = async () =>
     page.evaluate(() => {
@@ -66,7 +78,7 @@ try {
         t3dHover: a('terrain-view', 'data-hover-index'), fallback: a('terrain-fallback', 'data-kind'),
       };
     });
-  await page.getByRole('radio', { name: /uncertainty-aware/ }).check();
+  await page.getByRole('radio', { name: /feasible|aware/ }).last().check();
   await page.getByLabel('Inspect position along route').fill('4');
   let a = await attrs();
   if (!(a.map === a.profile && a.profile === a.briefing && a.map && a.mapHover === '4' && a.briefingHover === '4'))
