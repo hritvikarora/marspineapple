@@ -342,3 +342,30 @@ export function createDefaultRoutePlannerClient(
   }
   return new RoutePlannerClient({ engine: createDefaultRoutingEngine() });
 }
+
+export {
+  MAP_INTERNAL_QUALITY_TO_MARSPINEAPPLE,
+  MAP_MARSPINEAPPLE_QUALITY_TO_INTERNAL,
+  MODEL_VERSION,
+  ROUTE_POLICIES_ORDER,
+  solveRoute,
+  type MarsCellRef,
+  type MarsElevationProfile,
+  type MarsEndpointResolution,
+  type MarsExtent,
+  type MarsGridSpec,
+  type MarsInvalidInputReason,
+  type MarsLocalPoint,
+  type MarsLocalPoint3,
+  type MarsNoPathReason,
+  type MarsPolicyWeights,
+  type MarsQualityInterval,
+  type MarsRouteCandidate,
+  type MarsRouteFinalResponse,
+  type MarsRouteLeg,
+  type MarsRouteMetrics,
+  type MarsRoutePolicyId,
+  type MarsRouteRequest,
+  type MarsRoutingGrid,
+  type MarsSolveHooks,
+} from './marspineappleAdapter.js';

@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   AsyncWorkspaceMutex,
   BinaryMinHeap,
+  MAP_INTERNAL_QUALITY_TO_MARSPINEAPPLE,
+  MAP_MARSPINEAPPLE_QUALITY_TO_INTERNAL,
+  MODEL_VERSION,
   QUALITY_CODE,
-  RoutePlannerClient,
   SolverWorkspace,
+  solveRoute,
+  type MarsRoutingGrid,
   assertAStarMatchesDijkstra,
   buildDraped3DRoutePolyline,
   buildElevationSupportMask,
@@ -1246,5 +1250,206 @@ describe('T40: Public Assembly, Full F01-F12 Cross-Module Conformance & 200x200 
     expect(Number.isFinite(medianSolveMs)).toBe(true);
     expect(Number.isFinite(p95SolveMs)).toBe(true);
     expect(Number.isFinite(worstSolveMs)).toBe(true);
+  });
+});
+
+describe('solveRoute marspineappleAdapter', () => {
+  it('maps marspineapple quality codes bijectively and exposes MODEL_VERSION', () => {
+    expect(MODEL_VERSION).toBe('eva-astar-1.0.0');
+    expect(Array.from(MAP_MARSPINEAPPLE_QUALITY_TO_INTERNAL)).toEqual([3, 0, 2, 1]);
+    expect(Array.from(MAP_INTERNAL_QUALITY_TO_MARSPINEAPPLE)).toEqual([1, 3, 2, 0]);
+    for (let raw = 0; raw < 4; raw++) {
+      const internal = MAP_MARSPINEAPPLE_QUALITY_TO_INTERNAL[raw]!;
+      expect(MAP_INTERNAL_QUALITY_TO_MARSPINEAPPLE[internal]).toBe(raw);
+    }
+  });
+
+  it('handles Role A uniform-UNKNOWN anisotropic Jezero grid, subset policies, and strict-quality rejection', () => {
+    const width = 10;
+    const height = 6;
+    const n = width * height;
+    const cellSizeEast_m = 0.948567;
+    const cellSizeNorth_m = 1.0;
+
+    const elevation = new Float32Array(n).fill(-2500);
+    const slope = new Float32Array(n).fill(1);
+    const roughness = new Float32Array(n).fill(0.02);
+    const quality = new Uint8Array(n).fill(3); // marspineapple 3 = UNKNOWN
+    const exclusion = new Uint8Array(n).fill(0);
+
+    // Place a moderate sloped/rough patch along row 3, cols 3..6 so terrain-aware detours while shortest crosses it.
+    for (let c = 3; c <= 6; c++) {
+      const idx = 3 * width + c;
+      elevation[idx] = -2499.85;
+      slope[idx] = 14.5;
+      roughness[idx] = 0.28;
+    }
+
+    const grid: MarsRoutingGrid = {
+      manifest: {
+        strictQualitySupported: false,
+        grid: {
+          width,
+          height,
+          cellSizeEast_m,
+          cellSizeNorth_m,
+          extent: {
+            west_m: -50,
+            east_m: -50 + width * cellSizeEast_m,
+            south_m: 20,
+            north_m: 20 + height * cellSizeNorth_m,
+          },
+          orientation: 'north-up',
+          order: 'row-major',
+          sampleConvention: 'cell-center',
+        },
+      },
+      bundleVersion: 'jezero-west-hirise-v0.1.0',
+      elevation,
+      slope,
+      roughness,
+      quality,
+      exclusion,
+    };
+
+    const start = { east_m: -50 + 0.5 * cellSizeEast_m, north_m: 22.5 }; // row 3, col 0
+    const destination = { east_m: -50 + 9.5 * cellSizeEast_m, north_m: 22.5 }; // row 3, col 9
+
+    // 1. UI subset request when uncertainty-aware is hidden under Role A
+    const subsetRes = solveRoute(grid, {
+      requestId: 'jezero-subset',
+      bundleVersion: 'jezero-west-hirise-v0.1.0',
+      modelVersion: MODEL_VERSION,
+      start,
+      destination,
+      policies: ['shortest-feasible', 'terrain-aware'],
+      strictQuality: false,
+      roundTrip: false,
+    });
+    expect(subsetRes.status).toBe('success');
+    if (subsetRes.status !== 'success') return;
+    expect(subsetRes.candidates.length).toBe(2);
+    expect(subsetRes.candidates[0]!.outbound.path[0]!.elevation_m).toBeLessThan(-2400);
+    expect(subsetRes.candidates[0]!.outbound.metrics.unknownQualityPct).toBeCloseTo(100, 3);
+
+    // 2. Full 3-policy request under uniform UNKNOWN reuses terrain-aware (gamma_eff = 0)
+    const fullRes = solveRoute(grid, {
+      requestId: 'jezero-uniform-all',
+      bundleVersion: 'jezero-west-hirise-v0.1.0',
+      modelVersion: MODEL_VERSION,
+      start,
+      destination,
+      policies: ['shortest-feasible', 'terrain-aware', 'uncertainty-aware'],
+      strictQuality: false,
+      roundTrip: false,
+    });
+    expect(fullRes.status).toBe('success');
+    if (fullRes.status !== 'success') return;
+    const uncCandidate = fullRes.candidates.find((c) => c.policies.includes('uncertainty-aware'));
+    expect(uncCandidate).toBeDefined();
+    expect(uncCandidate!.policies).toContain('terrain-aware');
+    expect(
+      uncCandidate!.explanation.some((line) =>
+        line.includes('Uniform quality across admissible terrain')
+      )
+    ).toBe(true);
+
+    // 3. strictQuality rejected cleanly when bundle does not support strict quality
+    const strictRes = solveRoute(grid, {
+      requestId: 'jezero-strict',
+      bundleVersion: 'jezero-west-hirise-v0.1.0',
+      modelVersion: MODEL_VERSION,
+      start,
+      destination,
+      policies: ['shortest-feasible', 'terrain-aware'],
+      strictQuality: true,
+      roundTrip: false,
+    });
+    expect(strictRes.status).toBe('invalid-input');
+    if (strictRes.status === 'invalid-input') {
+      expect(strictRes.reason).toBe('strict-quality-unsupported');
+    }
+  });
+
+  it('avoids marspineapple LOW(2) and UNKNOWN(3) quality zones in uncertainty-aware & strict modes', () => {
+    const width = 9;
+    const height = 7;
+    const n = width * height;
+    const elevation = new Float32Array(n).fill(-2450);
+    const slope = new Float32Array(n).fill(0);
+    const roughness = new Float32Array(n).fill(0);
+    const quality = new Uint8Array(n).fill(1); // marspineapple 1 = GOOD
+    const exclusion = new Uint8Array(n).fill(0);
+
+    // Degraded quality corridor across middle rows 2..4, cols 2..6
+    for (let r = 2; r <= 4; r++) {
+      for (let c = 2; c <= 6; c++) {
+        quality[r * width + c] = r === 3 ? 2 : 3; // LOW on row 3, UNKNOWN on rows 2 and 4
+      }
+    }
+
+    const grid: MarsRoutingGrid = {
+      manifest: {
+        strictQualitySupported: true,
+        grid: {
+          width,
+          height,
+          cellSizeEast_m: 1,
+          cellSizeNorth_m: 1,
+          extent: { west_m: 0, east_m: width, south_m: 0, north_m: height },
+          orientation: 'north-up',
+          order: 'row-major',
+          sampleConvention: 'cell-center',
+        },
+      },
+      bundleVersion: 'synthetic-mixed-v1',
+      elevation,
+      slope,
+      roughness,
+      quality,
+      exclusion,
+    };
+
+    const start = { east_m: 0.5, north_m: 3.5 }; // row 3, col 0
+    const destination = { east_m: 8.5, north_m: 3.5 }; // row 3, col 8
+
+    const res = solveRoute(grid, {
+      requestId: 'mixed-quality',
+      bundleVersion: 'synthetic-mixed-v1',
+      modelVersion: MODEL_VERSION,
+      start,
+      destination,
+      policies: ['shortest-feasible', 'terrain-aware', 'uncertainty-aware'],
+      strictQuality: false,
+      roundTrip: true,
+    });
+    expect(res.status).toBe('success');
+    if (res.status !== 'success') return;
+
+    const shortest = res.candidates.find((c) => c.policies.includes('shortest-feasible'))!;
+    const uncertainty = res.candidates.find((c) => c.policies.includes('uncertainty-aware'))!;
+    expect(shortest).toBeDefined();
+    expect(uncertainty).toBeDefined();
+    expect(shortest.outbound.metrics.lowQualityLength_m).toBeGreaterThan(0);
+    expect(uncertainty.outbound.metrics.lowQualityLength_m).toBe(0);
+    expect(uncertainty.outbound.metrics.unknownQualityLength_m).toBe(0);
+    expect(uncertainty.missionStatus).toBe('round-trip-complete');
+    expect(uncertainty.returnLeg).not.toBeNull();
+
+    const strictRes = solveRoute(grid, {
+      requestId: 'mixed-quality-strict',
+      bundleVersion: 'synthetic-mixed-v1',
+      modelVersion: MODEL_VERSION,
+      start,
+      destination,
+      policies: ['shortest-feasible'],
+      strictQuality: true,
+      roundTrip: false,
+    });
+    expect(strictRes.status).toBe('success');
+    if (strictRes.status === 'success') {
+      const ivals = strictRes.candidates[0]!.outbound.qualityIntervals;
+      expect(ivals.every((iv) => iv.quality === 1)).toBe(true);
+    }
   });
 });
