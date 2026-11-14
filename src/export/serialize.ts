@@ -2,7 +2,8 @@
  * Deterministic JSON export (reproducibility artifact). OWNER: Role C.
  * - Keys sorted recursively; arrays keep order; 2-space indent; trailing newline.
  * - Non-finite numbers become null (JSON has no NaN/Infinity).
- * - No timestamps unless the caller passes one explicitly; no URLs or local file paths.
+ * - No timestamps or session ids (requestId) unless passed explicitly; no URLs or local file paths.
+ *   Same app/bundle/model version + same inputs => byte-identical file.
  */
 import type { RegionManifest, ReleaseId, RouteCandidate, RouteFinalResponse } from '../contracts';
 import type { MissionInputs } from '../state/store';
@@ -74,7 +75,6 @@ export function buildExportObject(i: ExportInput) {
       sources: i.manifest.sources.map((s) => ({ id: s.id, mission: s.mission, instrument: s.instrument, title: s.title, version: s.version })),
     },
     request: {
-      requestId: r.requestId,
       policies: i.mission.policies,
       weightOverrides: i.mission.weightOverrides,
       strictQuality: i.mission.strictQuality,

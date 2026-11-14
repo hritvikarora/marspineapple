@@ -34,8 +34,11 @@ export const BUNDLE_OVERRIDE = {
 };
 export const BUNDLE_INDEX_URL = 'bundles/index.json';
 
-/** Client-side hard timeout for a route request (ms). */
-export const ROUTE_TIMEOUT_MS = 20000;
+/** Client-side hard timeout for a route request (ms). VITE_ROUTE_TIMEOUT_MS (100..120000) overrides. */
+export const ROUTE_TIMEOUT_MS: number = (() => {
+  const n = Number(str('VITE_ROUTE_TIMEOUT_MS'));
+  return Number.isInteger(n) && n >= 100 && n <= 120000 ? n : 20000;
+})();
 
 /**
  * Optional external context imagery (NASA Trek WMTS). OFF by default; routing never waits on it.
