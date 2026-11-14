@@ -118,6 +118,7 @@ export const Assumptions: FC<AssumptionsSlotProps> = ({
               type="checkbox"
               className="assumptions-checkbox"
               data-testid="round-trip-toggle"
+              aria-label="Round trip"
               checked={mission.roundTrip}
               onChange={handleRoundTripChange}
             />

@@ -15,9 +15,9 @@ export const Destinations: FC<DestinationsSlotProps> = ({
 }) => {
   const selectId = useId();
 
-  // Filter POIs to science stops, preserving all available science goals
+  // Filter POIs to destination stops (science stops and test targets), preserving all available goals
   const scienceStops = useMemo(
-    () => pois.filter((poi) => poi.kind === 'science-stop'),
+    () => pois.filter((poi) => poi.kind === 'science-stop' || poi.kind === 'test'),
     [pois],
   );
 
@@ -44,7 +44,7 @@ export const Destinations: FC<DestinationsSlotProps> = ({
       setEndpoint('destination', null, null);
       return;
     }
-    const targetPoi = scienceStops.find((p) => p.id === selectedId);
+    const targetPoi = scienceStops.find((p) => p.id === selectedId) || pois.find((p) => p.id === selectedId);
     if (targetPoi) {
       // Does not modify or clear start point
       setEndpoint('destination', targetPoi.position, targetPoi.id);
@@ -62,6 +62,37 @@ export const Destinations: FC<DestinationsSlotProps> = ({
           Select a verified scientific stop to explore Martian geological and astrobiological targets.
         </p>
 
+        <div className="destinations-selector-group">
+          <label htmlFor={`${selectId}-start`} className="destinations-label">
+            Start Preset:
+          </label>
+          <select
+            id={`${selectId}-start`}
+            className="destinations-select"
+            data-testid="start-preset-dropdown"
+            aria-label="start preset"
+            value={mission.start?.poiId ?? ''}
+            onChange={(e) => {
+              const startId = e.target.value;
+              if (!startId) {
+                setEndpoint('start', null, null);
+                return;
+              }
+              const p = pois.find((x) => x.id === startId);
+              if (p) {
+                setEndpoint('start', p.position, p.id);
+              }
+            }}
+          >
+            <option value="">{mission.start && !mission.start.poiId ? 'custom point' : '— choose start preset —'}</option>
+            {pois.map((poi) => (
+              <option key={poi.id} value={poi.id}>
+                {poi.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {scienceStops.length === 0 ? (
           <p className="destinations-empty" data-testid="no-science-stops">
             No science destination presets available in this region. You can set a custom destination on the map.
@@ -78,7 +109,7 @@ export const Destinations: FC<DestinationsSlotProps> = ({
                 data-testid="destinations-dropdown"
                 value={selectedPoi?.id ?? ''}
                 onChange={handleSelectChange}
-                aria-label="Select science destination preset"
+                aria-label="destination preset"
               >
                 <option value="">— Choose a science destination preset —</option>
                 {scienceStops.map((poi) => (

@@ -118,6 +118,7 @@ export const LayerControls: FC<LayerControlsSlotProps> = ({ layers, dispatch }) 
                       type="checkbox"
                       className="layer-control-checkbox"
                       data-testid={`layer-toggle-${key}`}
+                      aria-label={key}
                       checked={currentSetting.visible}
                       onChange={(e) => handleVisibilityChange(key, e.target.checked)}
                     />

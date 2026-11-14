@@ -86,8 +86,8 @@ describe('TASK-003: Science Destination Selector', () => {
 
     const select = screen.getByTestId('destinations-dropdown') as HTMLSelectElement;
     expect(select.options).toHaveLength(3); // placeholder + 2 science stops
-    expect(screen.queryByText(/Outpost Alpha/)).toBeNull();
-    expect(screen.queryByText(/North Ridge Viewpoint/)).toBeNull();
+    expect(within(select).queryByText(/Outpost Alpha/)).toBeNull();
+    expect(within(select).queryByText(/North Ridge Viewpoint/)).toBeNull();
     expect(screen.getAllByText(/Gullied Crater Rim/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Basaltic Sand Sheet/).length).toBeGreaterThan(0);
   });
