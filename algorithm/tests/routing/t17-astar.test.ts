@@ -501,9 +501,6 @@ describe('T17 Deterministic 8-Neighbor A* Search Engine', () => {
 
   it('terminates only when goal is popped from the heap, not on neighbor discovery (4-node counterexample)', () => {
     // 1x4 grid: index 0 (start), index 1 (a), index 2 (b), index 3 (goal)
-    const bundle = createFlatBundle(4, 1, 5, 5);
-    const ws = createWorkspace(4);
-
     // Custom graph where s(0)->a(1) cost=5, a(1)->g(3) cost=30 (total 35),
     // s(0)->b(2) cost=6, b(2)->g(3) cost=6 (total 12), and h(1)=5, h(2)=5 if we map indices carefully.
     // Let's use a 3x3 grid with dx=dy=5m:

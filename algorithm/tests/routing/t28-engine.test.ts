@@ -10,11 +10,9 @@ import {
   type PolicyId,
   type PolicyWeightVector,
   type QualityClass,
-  type QualityMode,
   type RegionRoutingBundle,
   type ReturnLegResult,
   type RouteExplanation,
-  type RouteMetrics,
   type RouteRequest,
 } from '../../src/contracts/routing.js';
 import {

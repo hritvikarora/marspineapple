@@ -18,7 +18,6 @@ const BASE_PROFILE: ConstraintProfile = {
 };
 
 function makeBundle(overrides?: Partial<RegionRoutingBundle>): RegionRoutingBundle {
-  const n = 4;
   return {
     regionId: 'jezero-test',
     datasetVersion: '1',
