@@ -4,6 +4,7 @@
  */
 import { useCallback, useState } from 'react';
 import { ContextImageryStatus } from '../app/ContextImageryStatus';
+import { OptionalAssetsStatus } from '../app/OptionalAssetsStatus';
 import type { SelectOptions } from '../app/bundleSelection';
 import { TerrainSlot } from '../app/TerrainSlot';
 import type { TerrainLoader } from '../app/terrainLoader';
@@ -66,7 +67,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
     a.href = url;
     a.download = exportFileName(release, selection.candidateId);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 10_000); // revoking synchronously can cancel the download
   };
 
   const mapEl = bundle ? (
@@ -113,6 +114,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                 {which === 'start' ? 'Start' : 'Destination'}{' '}
                 <select
                   aria-label={`${which} preset`}
+                  data-testid={`${which}-preset`}
                   value={m[which]?.poiId ?? ''}
                   onChange={(e) => {
                     const p = pois.find((x) => x.id === e.target.value);
@@ -166,7 +168,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               <button type="button" onClick={requestRoute} disabled={!can.ok || run.kind === 'running'} data-testid="calculate">
                 {state.routeCandidates.length ? 'Recalculate routes' : 'Calculate routes'}
               </button>
-              {run.kind === 'running' && <button type="button" onClick={cancelRoute}>Cancel</button>}
+              {run.kind === 'running' && <button type="button" onClick={cancelRoute} data-testid="cancel-route">Cancel</button>}
               {!can.ok && <span className="muted"> {can.reason}</span>}
             </div>
             <fieldset>
@@ -180,7 +182,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             <div role="radiogroup" aria-label="View mode">
               {(['2d', '3d'] as const).map((v) => (
                 <label key={v}>
-                  <input type="radio" name="view" checked={state.viewMode === v} onChange={() => dispatch({ type: 'view/setMode', mode: v })} /> {v.toUpperCase()}
+                  <input type="radio" name="view" data-testid={`view-${v}`} checked={state.viewMode === v} onChange={() => dispatch({ type: 'view/setMode', mode: v })} /> {v.toUpperCase()}
                 </label>
               ))}
             </div>
@@ -209,25 +211,26 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               />
             )}
             <ElevationProfile selection={selection} onHover={onHover} />
+            <OptionalAssetsStatus bundle={bundle} />
             <ContextImageryStatus config={deps.tileConfig ?? TILE_CONFIG} fetchImpl={deps.tileFetch} />
           </section>
 
           <section className="results" aria-live="polite">
             <h2>Result</h2>
-            <p data-testid="route-status">
+            <p data-testid="route-status" data-status={run.kind === 'finished' ? run.response.status : run.kind}>
               {run.kind === 'idle' && 'No route calculated yet.'}
               {run.kind === 'running' && `Calculating… (${run.exploredNodes} cells explored)`}
               {run.kind === 'finished' && <span data-status={run.response.status}>Status: {run.response.status}</span>}
               {state.isStale && <strong className="stale" data-testid="stale"> STALE — inputs changed, recalculate.</strong>}
             </p>
-            {run.kind === 'finished' && run.response.status !== 'success' && 'message' in run.response && <p className="error">{run.response.message}</p>}
+            {run.kind === 'finished' && run.response.status !== 'success' && 'message' in run.response && <p className="error" data-testid="route-message">{run.response.message}</p>}
             <ol>
               {state.routeCandidates.map((c) => {
                 const x = c.outbound.metrics;
                 return (
                   <li key={c.candidateId}>
                     <label>
-                      <input type="radio" name="candidate" checked={selection.candidateId === c.candidateId} onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })} />{' '}
+                      <input type="radio" name="candidate" data-testid={`candidate-${c.candidateId}`} checked={selection.candidateId === c.candidateId} onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })} />{' '}
                       <strong>{c.policies.join(' + ')}</strong>: {fmt(x.horizontalDistance_m)} m horizontal, ascent {fmt(x.ascent_m, 1)} m, max slope {fmt(x.maxTerrainSlope_deg, 1)}°, max grade {fmt(x.maxAbsEdgeGrade_deg, 1)}°, unknown quality {fmt(x.unknownQualityLength_m)} m ({fmt(x.unknownQualityPct)}% of distance), low quality {fmt(x.lowQualityLength_m)} m · {c.missionStatus}
                     </label>
                     <ul className="muted">{c.explanation.map((e, i) => <li key={i}>{e}</li>)}</ul>
@@ -235,7 +238,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                 );
               })}
             </ol>
-            <button type="button" onClick={onExport} disabled={!(run.kind === 'finished' && run.response.status === 'success')}>
+            <button type="button" onClick={onExport} data-testid="export-json" disabled={!(run.kind === 'finished' && run.response.status === 'success')}>
               Export JSON
             </button>
             <Briefing selection={selection} release={release} manifest={bundle.manifest} mission={m} />

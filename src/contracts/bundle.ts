@@ -22,6 +22,8 @@ export interface GridBundle {
   quality: Uint8Array;
   /** ExclusionCode per cell */
   exclusion: Uint8Array;
+  /** Absolute URL the manifest was loaded from (display assets resolve against it). */
+  manifestUrl: string;
   /** Whether SHA-256 hashes were verified (false when SubtleCrypto is unavailable, e.g. plain-http LAN). */
   hashesVerified: boolean;
 }

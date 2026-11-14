@@ -185,7 +185,25 @@
       "synthetic": true
     }
   ],
-  "displayAssets": [],
+  "displayAssets": [
+    {
+      "id": "synthetic-texture",
+      "file": "texture.svg",
+      "kind": "texture",
+      "optional": true,
+      "byteLength": 15343,
+      "sha256": "11a0da9ec401ef84745b48a53ba431d0db8a7b8479b9f8335a4e411506eb23f2",
+      "extent": {
+        "west_m": 0,
+        "east_m": 200,
+        "south_m": 0,
+        "north_m": 120
+      },
+      "sourceIds": [
+        "synthetic-generator"
+      ]
+    }
+  ],
   "sources": [
     {
       "id": "synthetic-generator",

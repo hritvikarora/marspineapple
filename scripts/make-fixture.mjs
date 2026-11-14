@@ -106,6 +106,17 @@ const files = {
   exclusion: write('exclusion.u8', exclusion),
 };
 
+// Optional display texture (SVG, display-only; NOT analytical, so bundleVersion is unchanged).
+const svgCells = [];
+for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) {
+  const v = Number.isFinite(elevation[idx(r, c)]) ? Math.round(80 + 6 * (elevation[idx(r, c)] + 2606) / 1.2) : 0;
+  const g = Math.max(0, Math.min(255, v));
+  svgCells.push(`<rect x="${c}" y="${r}" width="1" height="1" fill="rgb(${g},${Math.round(g * 0.7)},${Math.round(g * 0.5)})"/>`);
+}
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W * 8}" height="${H * 8}" shape-rendering="crispEdges">${svgCells.join('')}<text x="0.5" y="${H - 0.5}" font-size="1.2" fill="#fff">SYNTHETIC</text></svg>\n`;
+const texture = Buffer.from(svg, 'utf8');
+writeFileSync(join(outDir, 'texture.svg'), texture);
+
 const center = (r, c) => ({ east_m: (c + 0.5) * DE, north_m: H * DN - (r + 0.5) * DN });
 const poi = (id, name, kind, r, c, purpose) => ({
   id, name, kind, position: center(r, c), purpose,
@@ -157,7 +168,9 @@ const manifest = {
     poi('syn-sealed-basin', 'Sealed basin (synthetic no-path test)', 'test', 10, 17, 'Enclosed by walls; every policy must return no-path.'),
     poi('syn-unknown-knoll', 'Unknown-quality knoll (synthetic)', 'test', 1, 12, 'Inside unknown-quality area; strict mode must reject this endpoint.'),
   ],
-  displayAssets: [],
+  displayAssets: [
+    { id: 'synthetic-texture', file: 'texture.svg', kind: 'texture', optional: true, byteLength: texture.byteLength, sha256: sha(texture), extent: { west_m: 0, east_m: W * DE, south_m: 0, north_m: H * DN }, sourceIds: ['synthetic-generator'] },
+  ],
   sources: [
     { id: 'synthetic-generator', mission: 'none', instrument: 'none', title: 'scripts/make-fixture.mjs', creator: 'MARS PATHFINDER team', url: '', version: '0.1.0', rights: 'Team-generated synthetic data', usedFor: 'Development and automated tests only' },
   ],

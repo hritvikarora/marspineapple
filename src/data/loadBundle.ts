@@ -225,6 +225,7 @@ export async function loadAndValidateBundle(manifestUrl: string, opts: LoadOptio
   return {
     manifest,
     bundleVersion: manifest.bundleVersion,
+    manifestUrl: manifestAbs,
     width,
     height,
     // Float32Array over a fetched buffer uses platform endianness; all target browsers are little-endian.
