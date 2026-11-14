@@ -27,7 +27,7 @@ TASK-001 is DONE under user-approved local demo acceptance. All 20 leaves (TASK-
 | --- | --- | --- | --- | --- | --- |
 | TASK-001 | Reconcile and deliver working UI foundation in `src/ui/**` | None | DONE | Dhani | User-approved for local demo development. Implementation verified at `f74b45a4934a067d989068c7a10587e7e586794b`. Automated single-leaf disposable worktree execution and physical device/screen-reader testing deferred as non-blocking for demo; explicit Git diff and import review required during leaf reviews. |
 | TASK-002 | Mission context and initial guidance (`src/ui/features/mission-context`) | TASK-001 only | TODO | — | `handoffs/TASK-002.md` not yet created. |
-| TASK-003 | Science destination selector (`src/ui/features/destinations`) | TASK-001 only | TODO | — | `handoffs/TASK-003.md` not yet created. |
+| TASK-003 | Science destination selector (`src/ui/features/destinations`) | TASK-001 only | REVIEW | Dhani | Implementation verified; all tests pass; submitted for review in `handoffs/TASK-003.md`. |
 | TASK-004 | Endpoint forms and selection modes (`src/ui/features/endpoints`) | TASK-001 only | TODO | — | `handoffs/TASK-004.md` not yet created. |
 | TASK-005 | Supported mission assumptions (`src/ui/features/assumptions`) | TASK-001 only | TODO | — | `handoffs/TASK-005.md` not yet created. |
 | TASK-006 | Calculate, cancel and request feedback (`src/ui/features/request-controls`) | TASK-001 only | TODO | — | `handoffs/TASK-006.md` not yet created. |
