@@ -33,7 +33,7 @@ TASK-001 is DONE under user-approved local demo acceptance. All 20 leaves (TASK-
 | TASK-006 | Calculate, cancel and request feedback (`src/ui/features/request-controls`) | TASK-001 only | REVIEW | Dhani | Implementation verified; all tests pass; submitted for review in `handoffs/TASK-006.md`. |
 | TASK-007 | Map boundary, orientation and meter scale (`src/ui/features/map-chrome`) | TASK-001 only | REVIEW | Dhani | Implementation verified; all tests pass; submitted for review in `handoffs/TASK-007.md`. |
 | TASK-008 | Registered terrain raster layers (`src/ui/features/map-rasters`) | TASK-001 only | REVIEW | Dhani | Implementation verified; all tests pass; submitted for review in `handoffs/TASK-008.md`. |
-| TASK-009 | Layer controls and legends (`src/ui/features/layer-controls`) | TASK-001 only | TODO | — | `handoffs/TASK-009.md` not yet created. |
+| TASK-009 | Layer controls and legends (`src/ui/features/layer-controls`) | TASK-001 only | REVIEW | Dhani | Implementation verified; all tests pass; submitted for review in `handoffs/TASK-009.md`. |
 | TASK-010 | Mission and science map markers (`src/ui/features/map-markers`) | TASK-001 only | TODO | — | `handoffs/TASK-010.md` not yet created. |
 | TASK-011 | Candidate route map overlays (`src/ui/features/map-routes`) | TASK-001 only | TODO | — | `handoffs/TASK-011.md` not yet created. |
 | TASK-012 | Route comparison and selection (`src/ui/features/comparison`) | TASK-001 only | TODO | — | `handoffs/TASK-012.md` not yet created. |
