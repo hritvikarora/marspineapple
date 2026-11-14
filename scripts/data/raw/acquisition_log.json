@@ -1,0 +1,82 @@
+{
+ "run_utc": "2026-11-14T12:29:02.477866+00:00",
+ "items": [
+  {
+   "type": "full_download",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.tif",
+   "file": "raw/ctx/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.tif"
+  },
+  {
+   "type": "full_download",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.xml",
+   "file": "raw/ctx/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.xml"
+  },
+  {
+   "type": "full_download",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0.tif",
+   "file": "raw/ctx/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0.tif"
+  },
+  {
+   "type": "full_download",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0.xml",
+   "file": "raw/ctx/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0.xml"
+  },
+  {
+   "type": "windowed_extract",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif",
+   "file": "raw/hrsc_mola/hrsc_mola_blend200m_v2_jezero_window.tif",
+   "window_col_row_w_h": [
+    76168,
+    21072,
+    267,
+    267
+   ],
+   "requested_bounds": [
+    77.0,
+    18.0,
+    77.9,
+    18.9
+   ]
+  },
+  {
+   "type": "windowed_extract",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+   "file": "raw/hirise/hirise_dtm_1m_candidate_aoi_buffered.tif",
+   "window_col_row_w_h": [
+    9953,
+    11894,
+    1500,
+    1500
+   ],
+   "requested_bounds": [
+    4587319.0,
+    1093224.0,
+    4588819.0,
+    1094724.0
+   ]
+  },
+  {
+   "type": "windowed_extract",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first.tif",
+   "file": "raw/hirise/hirise_ortho_25cm_candidate_aoi_buffered.tif",
+   "window_col_row_w_h": [
+    39812,
+    47576,
+    6000,
+    6000
+   ],
+   "requested_bounds": [
+    4587319.0,
+    1093224.0,
+    4588819.0,
+    1094724.0
+   ]
+  }
+ ],
+ "aoi_buffered_bounds_eqc_m": [
+  4587319.0,
+  1093224.0,
+  4588819.0,
+  1094724.0
+ ]
+}

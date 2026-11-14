@@ -1,0 +1,136 @@
+{
+ "_note": "Only verified facts recorded. 'unknown' = not verified. Status ladder: identified < accessible < downloaded < inspected < processed < validated. Checksums: see raw/CHECKSUMS.sha256 (sha256 of the local file, which for windowed extracts is OUR subset, not the distributor file).",
+ "datasets": [
+  {
+   "id": "hirise_dtm_mosaic_1m",
+   "mission": "Mars Reconnaissance Orbiter",
+   "instrument": "HiRISE",
+   "producer": "USGS Astrogeology Science Center (Fergason, Galuszka, Hare, Mayer, Redding, Smith)",
+   "distributor": "USGS Astrogeology (planetarymaps.usgs.gov -> AWS S3 asc-pds-services)",
+   "title": "High-Resolution Imaging Science Experiment Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation",
+   "file": "JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+   "doi": "10.5066/P9REJ9JN",
+   "version": "soc_006 (from filename); no separate version field found",
+   "publication_date": "2020-07-24",
+   "license": "CC0 1.0 / US public domain (USGS data catalog); use constraint: 'Please cite authors'",
+   "distributor_file_size_bytes": 1839545409,
+   "format": "GeoTIFF, float32, uncompressed, strip-organised (1 row/strip), NOT a COG, no overviews",
+   "http_range_requests": "yes (HTTP 206 verified, Accept-Ranges: bytes); windowed read via GDAL /vsicurl/ works",
+   "local_files": [
+    "raw/hirise/hirise_dtm_1m_candidate_aoi_buffered.tif (1500x1500 window, values unchanged)",
+    "raw/hirise/*.xml, *.lbl (metadata)"
+   ],
+   "status": "validated (package v0.1.0)"
+  },
+  {
+   "id": "hirise_orthomosaic_25cm",
+   "mission": "Mars Reconnaissance Orbiter",
+   "instrument": "HiRISE",
+   "producer": "USGS Astrogeology Science Center",
+   "distributor": "USGS Astrogeology (AWS S3)",
+   "title": "HiRISE orthomosaic for Mars 2020 TRN (JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first)",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first.tif",
+   "doi": "unknown (not verified; mosaic DOI 10.5066/P9REJ9JN covers the DTM release)",
+   "version": "soc_006",
+   "publication_date": "metadata pubdate 2019-10-24 (XML); unknown if this is the release date",
+   "license": "unknown (assumed same USGS terms as DTM release - NOT verified)",
+   "distributor_file_size_bytes": 7358500000,
+   "_size_note": "approx from S3 listing (7358.5 MB)",
+   "format": "GeoTIFF uint8, uncompressed, strip-organised, no overviews, nodata=0; same grid origin as DTM (4577366, 1106618)",
+   "http_range_requests": "yes (windowed read verified)",
+   "local_files": [
+    "raw/hirise/hirise_ortho_25cm_candidate_aoi_buffered.tif (6000x6000 window)"
+   ],
+   "status": "validated (package v0.1.0)"
+  },
+  {
+   "id": "ctx_dtm_mosaic_20m",
+   "mission": "Mars Reconnaissance Orbiter",
+   "instrument": "CTX",
+   "producer": "USGS Astrogeology Science Center (Fergason et al.)",
+   "distributor": "USGS Astrogeology (AWS S3)",
+   "title": "Context Camera Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.tif",
+   "doi": "10.5066/P906QQT8",
+   "version": "soc_008 (filename); CTX processing script v7.1",
+   "publication_date": "2020-07-24",
+   "license": "unknown explicit licence; Astropedia: Access constraints None, Use constraints 'Please cite authors'",
+   "distributor_file_size_bytes": 9662387,
+   "format": "GeoTIFF float32 uncompressed, strips",
+   "http_range_requests": "yes (same S3 bucket); fully downloaded anyway",
+   "local_files": [
+    "raw/ctx/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0.tif (full file)"
+   ],
+   "status": "validated (package v0.1.0)"
+  },
+  {
+   "id": "ctx_orthomosaic_6m",
+   "mission": "Mars Reconnaissance Orbiter",
+   "instrument": "CTX",
+   "producer": "USGS Astrogeology Science Center",
+   "distributor": "USGS Astrogeology (AWS S3)",
+   "title": "Context Camera Orthorectified image Mosaic for Mars 2020 Terrain Relative Navigation (LVS map)",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0.tif",
+   "doi": "10.5066/P9GV1ND3",
+   "version": "soc_008",
+   "publication_date": "2020-07-24",
+   "license": "unknown explicit licence; USGS 'Please cite authors'",
+   "distributor_file_size_bytes": 36269402,
+   "format": "GeoTIFF uint8, internal overviews 2..63, nodata=0",
+   "http_range_requests": "yes",
+   "local_files": [
+    "raw/ctx/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0.tif (full file)"
+   ],
+   "status": "processed (fallback texture; alignment checked vs HiRISE ortho)"
+  },
+  {
+   "id": "hrsc_mola_blend_200m_v2",
+   "mission": "Mars Global Surveyor + Mars Express",
+   "instrument": "MOLA + HRSC",
+   "producer": "Fergason, Hare & Laura (USGS) from DLR/NASA GSFC data",
+   "distributor": "USGS Astrogeology (AWS S3)",
+   "title": "Mars MGS MOLA - MEX HRSC Blended DEM Global 200m v2",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif",
+   "doi": "none found; cite Astropedia https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m",
+   "version": "v2",
+   "publication_date": "2018-01-31 (Astropedia)",
+   "license": "unknown",
+   "distributor_file_size_bytes": 11384463908,
+   "distributor_md5": "e98092a06bea74d5ec9a704dcd1fe318 (published .md5; not verifiable without full download)",
+   "format": "GeoTIFF int16, geographic lat/lon (Mars 2000 sphere), uncompressed strips; external .ovr exists",
+   "http_range_requests": "yes (206 verified; windowed read OK)",
+   "local_files": [
+    "raw/hrsc_mola/hrsc_mola_blend200m_v2_jezero_window.tif (267x267, 77.0-77.9E, 18.0-18.9N)"
+   ],
+   "status": "inspected"
+  },
+  {
+   "id": "hirise_individual_dtms_1m",
+   "title": "Individual HiRISE DTMs Jezero_C/DL/E/N/W/CR_NORTH/CR_SOUTH (72-132 MB each)",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/index.html",
+   "status": "accessible (listed with sizes; not downloaded). Note: CR (crater rim) DTM has documented y-parallax quality issues."
+  },
+  {
+   "id": "jpl_ctx_dem_20m_science_maps",
+   "title": "M20_JezeroCrater_CTXDEM_20m.tif (JPL Science Investigation Maps, 90.3 MB) + CTX ortho 5 m (359.6 MB)",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/CTX/ScienceInvestigationMaps_JPL/",
+   "status": "accessible (listed; not downloaded)"
+  },
+  {
+   "id": "mola_megdr_463m",
+   "mission": "Mars Global Surveyor",
+   "instrument": "MOLA",
+   "title": "MOLA MEGDR",
+   "status": "identified only (not needed: HRSC-MOLA blend already includes MOLA)"
+  },
+  {
+   "id": "hrsc_level5_dtm",
+   "mission": "Mars Express",
+   "instrument": "HRSC",
+   "title": "HRSC Level-5 DTM over Jezero (ESA PSA)",
+   "status": "identified only (no URL verified; used by USGS as vertical reference for CTX mosaic)"
+  }
+ ],
+ "candidate_science_points_UNVERIFIED": "superseded by pois.json (NASA/JPL waypoints)"
+}

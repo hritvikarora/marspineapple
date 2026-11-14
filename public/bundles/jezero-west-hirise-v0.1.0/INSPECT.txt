@@ -1,0 +1,14 @@
+jezero-west-hirise-v0.1.0 (1000x1000, row 0 = north, cell 0.94857 m E x 1.0 m N, ground metres)
+elevation m  min -2551.178 p50 -2514.771 max -2457.138 non-finite 0
+slope deg    min 0.003 p50 5.206 max 71.082 non-finite 0
+roughness m  min 0.001 p50 0.019 max 0.813 non-finite 0
+quality codes {3: 1000000}
+exclusion codes {0: 1000000}
+cell r0 c0: east_m 0.474 north_m 999.500 elev -2462.849 slope 3.83
+cell r0 c999: east_m 948.093 north_m 999.500 elev -2493.715 slope 0.70
+cell r999 c0: east_m 0.474 north_m 0.500 elev -2507.023 slope 5.24
+cell r999 c999: east_m 948.093 north_m 0.500 elev -2550.688 slope 2.75
+cell r500 c500: east_m 474.758 north_m 499.500 elev -2528.480 slope 4.24
+poi-p3: east_m 610.687 north_m 656.7
+poi-p4: east_m 358.558 north_m 187.2
+poi-p5: east_m 752.498 north_m 344.0

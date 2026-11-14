@@ -1,0 +1,8 @@
+raw/*
+!raw/CHECKSUMS.sha256
+!raw/acquisition_log.json
+package/
+.venv/
+__pycache__/
+.pytest_cache/
+*.tif

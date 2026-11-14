@@ -1,0 +1,12 @@
+landing 3 wp 13 3 0 77.450886 18.444627 -2569.91 core False buf False dist_km 2.75
+seitah13 286 wp 286 9 0 77.441373 18.432661 -2574.4375 core False buf False dist_km 2.54
+skinner19 484 wp 477 26 1004 77.406168 18.458895 -2520.852539 core True buf True dist_km 0.23
+wildcat20 518 wp 502 26 1222 77.405925 18.458647 -2523.167969 core True buf True dist_km 0.21
+ench21 566 wp 565 29 0 77.40144 18.450726 -2526.525146 core True buf True dist_km 0.33
+depot24 690 wp 686 32 1184 77.408447 18.453372 -2545.203 core True buf True dist_km 0.32
+belva25 789 wp 784 39 926 77.368632 18.482727 -2421.568848 core False buf False dist_km 2.52
+lookoutmtn28 857 wp 856 42 0 77.364706 18.481089 -2415.696289 core False buf False dist_km 2.64
+bunsen37 1074 wp 1068 50 1618 77.327217 18.491821 -2382.910889 core False buf False dist_km 4.78
+bright39 1178 wp 1177 54 0 77.303836 18.496112 -2362.848145 core False buf False dist_km 6.09
+broom44 1438 wp 1435 69 2124 77.258503 18.461727 -1918.451782 core False buf False dist_km 8.16
+tablelands 1433 wp 1431 69 2000 77.2592 18.461407 -1906.711426 core False buf False dist_km 8.12

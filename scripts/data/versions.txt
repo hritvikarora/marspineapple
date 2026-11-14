@@ -1,0 +1,1 @@
+python 3.13.5 rasterio 1.5.2 GDAL(bundled) 3.12.2 numpy 2.5.4 pyproj 3.8.0 PROJ 9.8.1
