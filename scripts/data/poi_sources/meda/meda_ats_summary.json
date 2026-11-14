@@ -1,0 +1,158 @@
+{
+ "13": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0013/WE__0013___________CAL_ATS_________________P01.CSV",
+  "error": "HTTP Error 404: Not Found"
+ },
+ "15": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0015/WE__0015___________CAL_ATS_________________P01.CSV",
+  "n": 54121,
+  "ats123_mean_min_K": 192.22,
+  "ats123_mean_max_K": 254.91,
+  "min_C": -80.9,
+  "max_C": -18.2
+ },
+ "16": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0016/WE__0016___________CAL_ATS_________________P01.CSV",
+  "n": 103223,
+  "ats123_mean_min_K": 190.69,
+  "ats123_mean_max_K": 252.67,
+  "min_C": -82.5,
+  "max_C": -20.5
+ },
+ "248": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0180_0299/sol_0248/WE__0248___________CAL_ATS_________________P01.CSV",
+  "n": 47664,
+  "ats123_mean_min_K": 195.67,
+  "ats123_mean_max_K": 253.64,
+  "min_C": -77.5,
+  "max_C": -19.5
+ },
+ "262": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0180_0299/sol_0262/WE__0262___________CAL_ATS_________________P01.CSV",
+  "n": 13660,
+  "ats123_mean_min_K": 207.01,
+  "ats123_mean_max_K": 254.28,
+  "min_C": -66.1,
+  "max_C": -18.9
+ },
+ "286": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0180_0299/sol_0286/WE__0286___________CAL_ATS_________________P01.CSV",
+  "n": 47933,
+  "ats123_mean_min_K": 195.02,
+  "ats123_mean_max_K": 263.08,
+  "min_C": -78.1,
+  "max_C": -10.1
+ },
+ "298": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0180_0299/sol_0298/WE__0298___________CAL_ATS_________________P01.CSV",
+  "n": 47990,
+  "ats123_mean_min_K": 197.85,
+  "ats123_mean_max_K": 267.72,
+  "min_C": -75.3,
+  "max_C": -5.4
+ },
+ "502": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0420_0539/sol_0502/WE__0502___________CAL_ATS_________________P01.CSV",
+  "n": 39432,
+  "ats123_mean_min_K": 190.4,
+  "ats123_mean_max_K": 251.43,
+  "min_C": -82.8,
+  "max_C": -21.7
+ },
+ "509": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0420_0539/sol_0509/WE__0509___________CAL_ATS_________________P01.CSV",
+  "n": 32847,
+  "ats123_mean_min_K": 187.97,
+  "ats123_mean_max_K": 251.01,
+  "min_C": -85.2,
+  "max_C": -22.1
+ },
+ "565": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0565/WE__0565___________CAL_ATS_________________P01.CSV",
+  "n": 45439,
+  "ats123_mean_min_K": 185.88,
+  "ats123_mean_max_K": 249.56,
+  "min_C": -87.3,
+  "max_C": -23.6
+ },
+ "575": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0575/WE__0575___________CAL_ATS_________________P01.CSV",
+  "n": 26535,
+  "ats123_mean_min_K": 191.94,
+  "ats123_mean_max_K": 249.3,
+  "min_C": -81.2,
+  "max_C": -23.9
+ },
+ "629": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0629/WE__0629___________CAL_ATS_________________P01.CSV",
+  "n": 25615,
+  "ats123_mean_min_K": 193.02,
+  "ats123_mean_max_K": 255.82,
+  "min_C": -80.1,
+  "max_C": -17.3
+ },
+ "736": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0660_0779/sol_0736/WE__0736___________CAL_ATS_________________P01.CSV",
+  "n": 27145,
+  "ats123_mean_min_K": 206.97,
+  "ats123_mean_max_K": 256.56,
+  "min_C": -66.2,
+  "max_C": -16.6
+ },
+ "749": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0660_0779/sol_0749/WE__0749___________CAL_ATS_________________P01.CSV",
+  "n": 33787,
+  "ats123_mean_min_K": 194.75,
+  "ats123_mean_max_K": 254.38,
+  "min_C": -78.4,
+  "max_C": -18.8
+ },
+ "1084": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1020_1139/sol_1084/WE__1084___________CAL_ATS_________________P01.CSV",
+  "n": 69937,
+  "ats123_mean_min_K": 197.65,
+  "ats123_mean_max_K": 261.38,
+  "min_C": -75.5,
+  "max_C": -11.8
+ },
+ "1088": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1020_1139/sol_1088/WE__1088___________CAL_ATS_________________P01.CSV",
+  "n": 76747,
+  "ats123_mean_min_K": 196.64,
+  "ats123_mean_max_K": 259.64,
+  "min_C": -76.5,
+  "max_C": -13.5
+ },
+ "1210": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1140_1259/sol_1210/WE__1210___________CAL_ATS_________________P01.CSV",
+  "n": 8520,
+  "ats123_mean_min_K": 191.48,
+  "ats123_mean_max_K": 255.38,
+  "min_C": -81.7,
+  "max_C": -17.8
+ },
+ "1215": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1140_1259/sol_1215/WE__1215___________CAL_ATS_________________P01.CSV",
+  "n": 18739,
+  "ats123_mean_min_K": 192.03,
+  "ats123_mean_max_K": 257.41,
+  "min_C": -81.1,
+  "max_C": -15.7
+ },
+ "1431": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1380_1499/sol_1431/WE__1431___________CAL_ATS_________________P01.CSV",
+  "n": 50301,
+  "ats123_mean_min_K": 201.88,
+  "ats123_mean_max_K": 254.02,
+  "min_C": -71.3,
+  "max_C": -19.1
+ },
+ "1433": {
+  "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1380_1499/sol_1433/WE__1433___________CAL_ATS_________________P01.CSV",
+  "n": 46670,
+  "ats123_mean_min_K": 199.95,
+  "ats123_mean_max_K": 255.53,
+  "min_C": -73.2,
+  "max_C": -17.6
+ }
+}

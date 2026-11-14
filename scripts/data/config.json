@@ -1,0 +1,12 @@
+{
+  "_comment": "Candidate AOI (not final). Grid CRS = Equirectangular Mars 2000 Sphere IAU (R=3396190 m, lat_ts=0, lon_0=0), same as USGS Mars2020 TRN products. Coordinates snapped to whole metres on the HiRISE 1 m grid and 20 m CTX grid edges are NOT matched (CTX origin is fractional).",
+  "mars_radius_m": 3396190.0,
+  "aoi_center_lonlat": [77.4035, 18.4560],
+  "aoi_core_size_m": 1000,
+  "aoi_buffer_m": 250,
+  "aoi_rationale": "Western Jezero delta front: candidate cluster of Perseverance delta-front campaign sites (Hawksbill Gap, Enchanted Lake, Three Forks, Skinner/Wildcat Ridge) per a THIRD-PARTY landmark CSV; coordinates must be verified against NASA/JPL sources before being used as science targets.",
+  "hirise_dtm_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+  "hirise_ortho_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_orthoMosaic_25cm_Eqc_latTs0_lon0_first.tif",
+  "hrsc_mola_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif",
+  "hrsc_mola_window_lonlat": [77.0, 18.0, 77.9, 18.9]
+}

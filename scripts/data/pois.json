@@ -1,0 +1,674 @@
+{
+ "version": "0.1.0",
+ "created": "2026-11-14",
+ "crs_note": "lon/lat planetocentric, east-positive, Mars 2000 sphere R=3396190 m; eqc_x/eqc_y = package grid CRS (Equirectangular, lat_ts=0, lon_0=0)",
+ "vertical_check": "JPL elev_geoid vs HiRISE DTM at 62 waypoints: median difference -0.006 m (p05 -4.3, p95 +0.09) -> HiRISE DTM heights are in the same areoid-referenced system as JPL 'elev_geoid' (note: JPL localization itself uses these maps, so this is consistency, not independent proof).",
+ "temperature_caveat": "MEDA air temperature (ATS) is measured ~1 m-scale near the rover mast/body and is season- and time-of-day dependent; it describes that sol, not a permanent property of the site. Sensor positions for ATS1..5 not yet verified in MEDA docs. Ground temperature (TIRS) exists in MEDA products but not yet extracted.",
+ "references_verified": {
+  "checked": "2026-11-14 via Crossref API",
+  "10.1126/science.abo2196": "Farley et al. 2022, Science – Aqueously altered igneous rocks sampled on the floor of Jezero crater, Mars",
+  "10.1126/science.abo2756": "Liu et al. 2022, Science – An olivine cumulate outcrop on the floor of Jezero crater, Mars",
+  "10.1126/science.abl4051": "Mangold et al. 2021, Science – Perseverance rover reveals an ancient delta-lake system and flood deposits at Jezero crater, Mars",
+  "10.1038/s41586-025-09413-0": "Hurowitz et al. 2025, Nature – Redox-driven mineral and organic associations in Jezero Crater, Mars"
+ },
+ "removed_unverified": "Previous third-party landmark CSV (rab-software.de) no longer used for coordinates.",
+ "pois": [
+  {
+   "id": "P1",
+   "name": "Octavia E. Butler Landing Site",
+   "geologic_unit": "Crater floor – Máaz formation (Jezero floor)",
+   "location": {
+    "lon_e": 77.450886,
+    "lat_n": 18.444627,
+    "elev_geoid_m": -2569.91,
+    "eqc_x_m": 4590877.8,
+    "eqc_y_m": 1093299.7,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 13,
+     "site": 3,
+     "drive": 0
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": false,
+   "role": "outside AOI: context-only VR stop (no 1 m terrain package yet)",
+   "sample_or_event": "Landing (sol 0); 'Sid' cores Ha'ahóni/Atsá (sols 371/377) near landing / Ch'ał outcrop",
+   "observation": "Flat crater floor with scattered dark rocks, regolith and distant view of delta scarp and crater rim (Mastcam-Z sol 3–4).",
+   "interpretation": "Máaz: igneous (basaltic-to-andesitic) lava-flow or volcaniclastic rocks, later aqueously altered (Farley et al. 2022, Science, doi:10.1126/science.abo2196).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #1",
+     "sols": "3, 11",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/",
+     "photojournal": "https://science.nasa.gov/photojournal/mastcam-zs-first-360-degree-panorama/ (PIA24264)"
+    },
+    {
+     "id": "Mastcam-Z 360 #2 (110 mm, delta horizon)",
+     "sols": "4",
+     "url": "https://mastcamz.asu.edu/galleries/mastcam-zs-first-high-resolution-mosaic-sol-4/",
+     "photojournal": "PIA23727"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0012XRAS_0030000_CYL_S_AUTOGENJ01.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 15,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0015/WE__0015___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -80.9,
+     "air_temp_max_C": -18.2,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 54121
+    },
+    {
+     "sol": 16,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0000_0089/sol_0016/WE__0016___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -82.5,
+     "air_temp_max_C": -20.5,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 103223
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P2",
+   "name": "South Séítah (Brac / Issole)",
+   "geologic_unit": "Crater floor – Séítah formation",
+   "location": {
+    "lon_e": 77.441373,
+    "lat_n": 18.432661,
+    "elev_geoid_m": -2574.4375,
+    "eqc_x_m": 4590314.0,
+    "eqc_y_m": 1092590.4,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 286,
+     "site": 9,
+     "drive": 0
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": false,
+   "role": "outside AOI: context-only VR stop (no 1 m terrain package yet)",
+   "sample_or_event": "Cores Salette/Coulettes (Brac, sols 262/271), Robine/Malay (Issole, sols 298/337)",
+   "observation": "Layered, ridged dark outcrops among sand ripples/dunes; rover had to navigate dune field.",
+   "interpretation": "Séítah: olivine-rich cumulate (slow-cooled magma/thick melt sheet), stratigraphically below Máaz (Liu et al. 2022, Science, doi:10.1126/science.abo2756; Farley et al. 2022).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #13 (Site 9 Drive 0, within Séítah)",
+     "sols": "286–312",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Mastcam-Z 360 #12 'Village' 110 mm",
+     "sols": "214–215",
+     "url": "https://mastcamz.asu.edu/galleries/mastcam-z-360-panorama-12-village-outcrop-110-mm-mosaic-within-seitah-sols-214-215/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0286_RAS_0090000_CYL_S_AUTOGENJ05.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 286,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0180_0299/sol_0286/WE__0286___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -78.1,
+     "air_temp_max_C": -10.1,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 47933
+    },
+    {
+     "sol": 298,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0180_0299/sol_0298/WE__0298___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -75.3,
+     "air_temp_max_C": -5.4,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 47990
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P3",
+   "name": "Delta front – Skinner Ridge / Wildcat Ridge (Hawksbill Gap ascent)",
+   "geologic_unit": "Western delta front (lower delta sedimentary rocks)",
+   "location": {
+    "lon_e": 77.405925,
+    "lat_n": 18.458647,
+    "elev_geoid_m": -2523.167969,
+    "eqc_x_m": 4588212.8,
+    "eqc_y_m": 1094130.7,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 502,
+     "site": 26,
+     "drive": 1222
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": true,
+   "role": "inside AOI: terrain + routes + VR",
+   "sample_or_event": "Cores Swift Run/Skyland (Skinner Ridge, sols 490/495); Hazeltop/Bearwallow (Wildcat Ridge, sols 509/516)",
+   "observation": "Steep layered scarp of the delta front; fine-grained layered sedimentary rocks.",
+   "interpretation": "Wildcat Ridge: fine-grained mudstone/sandstone deposited as a lake dried, with sulfates; SHERLOC detected organic-molecule signals (NASA/JPL release, Sept 2022 – NOT a biosignature claim).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #19 Skinner Ridge",
+     "sols": "484–492",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Mastcam-Z 360 #20 Wildcat Ridge",
+     "sols": "518–534",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Mastcam-Z 360 #18 High-res Rockytop scarp",
+     "sols": "466–474",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0502_RAS_0261222_CYL_S_AUTOGENJ01.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 484,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0420_0539/sol_0484/WE__0484___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -71.8,
+     "air_temp_max_C": -20.5,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 17625
+    },
+    {
+     "sol": 490,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0420_0539/sol_0490/WE__0490___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -82.6,
+     "air_temp_max_C": -19.0,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 35145
+    },
+    {
+     "sol": 509,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0420_0539/sol_0509/WE__0509___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -85.2,
+     "air_temp_max_C": -22.1,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 32847
+    },
+    {
+     "sol": 518,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0420_0539/sol_0518/WE__0518___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -84.0,
+     "air_temp_max_C": -20.4,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 29281
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P4",
+   "name": "Delta front base – Enchanted Lake / Amalik / Hidden Harbor",
+   "geologic_unit": "Base of western delta front",
+   "location": {
+    "lon_e": 77.40144,
+    "lat_n": 18.450726,
+    "elev_geoid_m": -2526.525146,
+    "eqc_x_m": 4587947.0,
+    "eqc_y_m": 1093661.2,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 565,
+     "site": 29,
+     "drive": 0
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": true,
+   "role": "inside AOI: terrain + routes + VR",
+   "sample_or_event": "Cores Shuyak/Mageik (Amalik, sols 575/619), Kukaklek (Hidden Harbor, 631); regolith Atmo Mountain/Crosswind Lake (634/639)",
+   "observation": "Bright, thin-layered rocks in the foreground, delta cliffs in the background, sand in between (Mastcam-Z sol 425 description).",
+   "interpretation": "Basal delta-front sediments (sandstones/mudstones) laid down in standing water; interpretation per Mars 2020 delta-front team abstracts (e.g. EPSC2022-1098, LPSC 2023 #2716).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #21 Enchanted Lake",
+     "sols": "566–586",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Mastcam-Z 360 #22 Hidden Harbor workspace",
+     "sols": "614–619",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Enchanted Lake mosaic (partial)",
+     "sols": "425",
+     "url": "https://mastcamz.asu.edu/galleries/enchanted-lake/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0565_RAS_0290000_CYL_S_AUTOGENJ01.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 565,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0565/WE__0565___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -87.3,
+     "air_temp_max_C": -23.6,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 45439
+    },
+    {
+     "sol": 566,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0566/WE__0566___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -85.9,
+     "air_temp_max_C": -17.7,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 39823
+    },
+    {
+     "sol": 575,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0575/WE__0575___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -81.2,
+     "air_temp_max_C": -23.9,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 26535
+    },
+    {
+     "sol": 629,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0540_0659/sol_0629/WE__0629___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -80.1,
+     "air_temp_max_C": -17.3,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 25615
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P5",
+   "name": "Three Forks Sample Depot",
+   "geologic_unit": "Crater floor at foot of delta front",
+   "location": {
+    "lon_e": 77.408447,
+    "lat_n": 18.453372,
+    "elev_geoid_m": -2545.203,
+    "eqc_x_m": 4588362.3,
+    "eqc_y_m": 1093818.0,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 686,
+     "site": 32,
+     "drive": 1184
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": true,
+   "role": "inside AOI: terrain + routes + VR",
+   "sample_or_event": "10 sample tubes deposited on the surface (depot, Dec 2022–Jan 2023)",
+   "observation": "Flat, sandy plain in front of the delta scarp; deposited tubes visible in the 360° pano.",
+   "interpretation": "Mission/engineering landmark rather than a distinct geological unit; good 'human-history' VR stop.",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #24 Three Forks Depot #2 (all samples)",
+     "sols": "690–692",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Mastcam-Z 360 #23 Depot #1",
+     "sols": "670",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0686_RZS_0321184_CYL_L_AUTOGENJ03.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 690,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0660_0779/sol_0690/WE__0690___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -84.4,
+     "air_temp_max_C": -16.8,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 59472
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P6",
+   "name": "Upper fan – Belva crater / Berea",
+   "geologic_unit": "Upper delta/fan deposits",
+   "location": {
+    "lon_e": 77.368632,
+    "lat_n": 18.482727,
+    "elev_geoid_m": -2421.568848,
+    "eqc_x_m": 4586002.2,
+    "eqc_y_m": 1095558.0,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 784,
+     "site": 39,
+     "drive": 926
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": false,
+   "role": "outside AOI: context-only VR stop (no 1 m terrain package yet)",
+   "sample_or_event": "Core Melyn (Berea, sol 749); Otis Peak (Emerald Lake, 832)",
+   "observation": "Elevated fan surface; Belva crater exposes inclined layers in its walls.",
+   "interpretation": "Upper fan: coarser fluvial (river) deposits incl. boulder conglomerates, recording higher-energy flows than the lake-bottom deposits below (Mangold et al. 2021, Science, doi:10.1126/science.abl4051 for delta architecture).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #25 Belva crater...",
+     "sols": "789",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0784_RZS_0390926_CYL_L_AUTOGENJ02.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 749,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0660_0779/sol_0749/WE__0749___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -78.4,
+     "air_temp_max_C": -18.8,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 33787
+    },
+    {
+     "sol": 789,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_0780_0899/sol_0789/WE__0789___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -77.4,
+     "air_temp_max_C": -19.3,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 34863
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P7",
+   "name": "Margin unit – Bunsen Peak / Neretva Vallis",
+   "geologic_unit": "Margin unit (inner crater rim carbonate-bearing deposits)",
+   "location": {
+    "lon_e": 77.327217,
+    "lat_n": 18.491821,
+    "elev_geoid_m": -2382.910889,
+    "eqc_x_m": 4583547.4,
+    "eqc_y_m": 1096097.1,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 1068,
+     "site": 50,
+     "drive": 1618
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": false,
+   "role": "outside AOI: context-only VR stop (no 1 m terrain package yet)",
+   "sample_or_event": "Core Comet Geyser (Bunsen Peak, sol 1088)",
+   "observation": "Raised rocky outcrop near the margin of the fan; Neretva Vallis inlet channel visible.",
+   "interpretation": "NASA sample record lists rock type 'silica-cemented carbonate'; margin unit carbonates possibly formed at an ancient lakeshore (interpretation, debated).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #37 Bunsen Peak and Neretva Vallis",
+     "sols": "1074–1082",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1068_RZS_0501618_CYL_L_AUTOGENJ04.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 1074,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1020_1139/sol_1074/WE__1074___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -74.0,
+     "air_temp_max_C": -12.3,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 47773
+    },
+    {
+     "sol": 1088,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1020_1139/sol_1088/WE__1088___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -76.5,
+     "air_temp_max_C": -13.5,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 76747
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P8",
+   "name": "Bright Angel / Cheyava Falls (Neretva Vallis)",
+   "geologic_unit": "Bright Angel formation in Neretva Vallis",
+   "location": {
+    "lon_e": 77.303836,
+    "lat_n": 18.496112,
+    "elev_geoid_m": -2362.848145,
+    "eqc_x_m": 4582161.5,
+    "eqc_y_m": 1096351.5,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 1177,
+     "site": 54,
+     "drive": 0
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": false,
+   "role": "outside AOI: context-only VR stop (no 1 m terrain package yet)",
+   "sample_or_event": "Core Sapphire Canyon (Cheyava Falls, sol 1215)",
+   "observation": "Light-toned outcrop in the river-valley; 'Cheyava Falls' rock with mm-scale light spots with dark rims ('leopard spots') and veins.",
+   "interpretation": "Fe-phosphate/sulfide reaction fronts associated with organic matter considered a 'potential biosignature' by NASA – requires lab confirmation on Earth (NASA release July 2024; peer-reviewed: Hurowitz et al. 2025, Nature, doi:10.1038/s41586-025-09413-0).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #39 Bright Angel outcrop (Cheyava Falls ~110 m away)",
+     "sols": "1178",
+     "url": "https://mastcamz.asu.edu/galleries/sol-1178-mastcam-z-360-panorama-39-bright-angel-outcrop-z63/",
+     "photojournal": "PIA26369"
+    },
+    {
+     "id": "Cheyava Falls workspace mosaic",
+     "sols": "1217",
+     "url": "https://mastcamz.asu.edu/galleries/sol-1217-beaver-falls-cheyava-falls-sapphire-canyon-apollo-temple-steamboat-mountain-workspace-01-mastcam-z-mosaic/",
+     "photojournal": "PIA26401"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1177_RZS_0540000_CYL_L_AUTOGENJ02.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 1178,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1140_1259/sol_1178/WE__1178___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -85.7,
+     "air_temp_max_C": -17.6,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 48650
+    },
+    {
+     "sol": 1210,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1140_1259/sol_1210/WE__1210___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -81.7,
+     "air_temp_max_C": -17.8,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 8520
+    },
+    {
+     "sol": 1215,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1140_1259/sol_1215/WE__1215___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -81.1,
+     "air_temp_max_C": -15.7,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 18739
+    }
+   ],
+   "caveat": null
+  },
+  {
+   "id": "P9_optional",
+   "name": "Crater rim – Witch Hazel Hill (Tablelands / Broom Point)",
+   "geologic_unit": "Jezero crater rim",
+   "location": {
+    "lon_e": 77.258503,
+    "lat_n": 18.461727,
+    "elev_geoid_m": -1918.451782,
+    "eqc_x_m": 4579474.4,
+    "eqc_y_m": 1094313.3,
+    "source": "NASA/JPL Mars 2020 rover localization waypoints (MMGIS M20_waypoints.json, file name 'M20_waypoints_sol2022_all')",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+    "waypoint": {
+     "sol": 1435,
+     "site": 69,
+     "drive": 2124
+    },
+    "meaning": "rover position at end of the last drive on/before the panorama sol = where the 360° panorama was (approximately) taken",
+    "confidence": "high for rover position (official JPL localization); the named outcrop/target itself may be metres to tens of metres away"
+   },
+   "in_aoi_core": false,
+   "role": "outside AOI: context-only VR stop (no 1 m terrain package yet)",
+   "sample_or_event": "Cores Silver Mountain (1401), Green Gardens (serpentinite, 1433), Main River (1441)",
+   "observation": "Rim slopes with diverse light/dark blocks; ~600 m higher than the crater floor (JPL elev_geoid ≈ −1918 m vs ≈ −2570 m at landing).",
+   "interpretation": "Ancient crustal/impact-related rocks; Green Gardens listed by NASA as serpentinite (water–rock alteration).",
+   "panoramas": [
+    {
+     "id": "Mastcam-Z 360 #44 Broom Point",
+     "sols": "1438–1443",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    },
+    {
+     "id": "Mastcam-Z 360 #41 Lookout Hill rim crest (Gigapan)",
+     "sols": "1356–1358",
+     "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+    }
+   ],
+   "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
+   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "navcam_autopano": {
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1438XRZS_0692124_CYL_L_AUTOGENJ02.jpg",
+    "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
+   },
+   "temperature": [
+    {
+     "sol": 1431,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1380_1499/sol_1431/WE__1431___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -71.3,
+     "air_temp_max_C": -19.1,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 50301
+    },
+    {
+     "sol": 1433,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1380_1499/sol_1433/WE__1433___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -73.2,
+     "air_temp_max_C": -17.6,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 46670
+    },
+    {
+     "sol": 1438,
+     "available": true,
+     "product": "MEDA CAL_ATS (PDS4, NMSU Atmospheres Node)",
+     "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/data_calibrated_env/sol_1380_1499/sol_1438/WE__1438___________CAL_ATS_________________P01.CSV",
+     "air_temp_min_C": -74.7,
+     "air_temp_max_C": -19.0,
+     "method": "mean of ATS_LOCAL_TEMP1..3 per record; min/max over the sol's recorded samples only (MEDA does not record 24 h continuously)",
+     "n_records": 48512
+    }
+   ],
+   "caveat": "Lies in the HiRISE 'CR' stereo model area which USGS flags for y-parallax quality issues."
+  }
+ ]
+}

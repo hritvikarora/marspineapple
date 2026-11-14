@@ -1,0 +1,264 @@
+{
+  "schema": "mars-pathfinder/region-bundle",
+  "schemaVersion": "1.0",
+  "bundleId": "jezero-west-hirise-v0.1.0",
+  "bundleVersion": "jezero-west-hirise-v0.1.0",
+  "datasetVersion": "usgs-m2020-trn-hirise-soc006_role-a-proc-0.1.0",
+  "synthetic": false,
+  "title": "Jezero crater – western delta front (HiRISE 1 m)",
+  "description": "~0.95 km² of the western Jezero delta front (Hawksbill Gap / Enchanted Lake / Three Forks), Mars. Native USGS HiRISE 1 m DTM samples with Horn slope and plane-residual roughness. Real Mars data.",
+  "createdDate": "2026-11-14",
+  "crs": {
+    "description": "Mars 2000 sphere (R=3396190 m), Equirectangular lat_ts=0 lon_0=0 (USGS Mars2020 TRN grid); local frame = ground metres from SW corner, east scaled by cos(18.456°)",
+    "body": "Mars",
+    "sourceCrs": "PROJCS[\"Equirectangular Mars 2000 Sphere IAU\",GEOGCS[\"D_Mars_2000_Sphere\",DATUM[\"Mars_2000_(Sphere)\",SPHEROID[\"Mars_2000_Sphere_IAU\",3396190,0],AUTHORITY[\"ESRI\",\"106971\"]],PRIMEM[\"Reference_Meridian\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Equirectangular\"],PARAMETER[\"standard_parallel_1\",0],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+    "localOriginInSource": {
+      "x": 4587569.0,
+      "y": 1093474.0,
+      "units": "m (source Equirectangular x/y of the SW outer corner; east_m = (x - x0)*cos(lat_c), north_m = y - y0)"
+    },
+    "verticalReference": "Metres as distributed in the USGS Mars 2020 TRN DTMs (file names 'MOLAtopography_DeltaGeoid'); empirically equal to JPL rover 'elev_geoid' (median diff -0.006 m over 62 waypoints) -> areoid-referenced (MOLA-style). USGS XML text mentions the IAU 2000 sphere; exact datum wording is a producer ambiguity. Negative values are normal (Jezero floor ~ -2.5 km).",
+    "horizontalUnits": "m",
+    "verticalUnits": "m"
+  },
+  "grid": {
+    "width": 1000,
+    "height": 1000,
+    "cellSizeEast_m": 0.9485670310210961,
+    "cellSizeNorth_m": 1.0,
+    "extent": {
+      "west_m": 0.0,
+      "east_m": 948.5670310210961,
+      "south_m": 0.0,
+      "north_m": 1000.0
+    },
+    "orientation": "north-up",
+    "order": "row-major",
+    "sampleConvention": "cell-center"
+  },
+  "layers": {
+    "elevation": {
+      "file": "elevation.f32",
+      "dtype": "float32",
+      "byteOrder": "little-endian",
+      "units": "m",
+      "byteLength": 4000000,
+      "sha256": "a8a046c3448a20d795263d756aef1d6b858b2e41d7799f70cd88441c949aceec",
+      "nodata": "NaN",
+      "definition": "Native HiRISE 1 m DTM samples copied 1:1 (no resampling) at cell centres; NaN = source NoData. Vertical reference: see crs.verticalReference."
+    },
+    "slope": {
+      "file": "slope.f32",
+      "dtype": "float32",
+      "byteOrder": "little-endian",
+      "units": "deg",
+      "byteLength": 4000000,
+      "sha256": "507bccaaadb2d1e1fb097b7bfae4d70a7a9a4cdd9df3764cf25f68da1d98d732",
+      "nodata": "NaN",
+      "definition": "Horn (1981) 3x3 finite differences on ground spacing (dx = 0.94857 m, dy = 1 m), computed on a 250 m margin then cropped; degrees, 0 = flat."
+    },
+    "roughness": {
+      "file": "roughness.f32",
+      "dtype": "float32",
+      "byteOrder": "little-endian",
+      "units": "m",
+      "byteLength": 4000000,
+      "sha256": "9a752f38cfa6afa7b0cb3a1b7dabe9e06f8d1ea274ddf66540995294958df3db",
+      "nodata": "NaN",
+      "definition": "RMS residual after least-squares plane fit over 5x5 cells (4.74 m E x 5 m N ground); NaN where the window is incomplete."
+    },
+    "quality": {
+      "file": "quality.u8",
+      "dtype": "uint8",
+      "byteOrder": "little-endian",
+      "units": "class-code",
+      "byteLength": 1000000,
+      "sha256": "21f9b56105cdbdcd9581abbf0bb154986331b84524ad0b5cd510019a005f3845",
+      "nodata": 0,
+      "definition": "0 no elevation; 3 unknown for every valid cell. The USGS DTM mosaic publishes NO per-pixel quality/figure-of-merit layer, only global statistics (see limitations); no per-pixel quality was invented. Codes 1/2 unused."
+    },
+    "exclusion": {
+      "file": "exclusion.u8",
+      "dtype": "uint8",
+      "byteOrder": "little-endian",
+      "units": "class-code",
+      "byteLength": 1000000,
+      "sha256": "d29751f2649b32ff572b5e0a9f541ea660a50f94ff0beedfb0b692b924cc8025",
+      "nodata": null,
+      "definition": "0 none, 1 missing elevation, 2 unsupported derivative (3x3 slope or roughness window incomplete), 3 outside source extent, 4 manual (none applied in this version). Slope limits are NOT baked in (route model profile)."
+    }
+  },
+  "qualityClasses": [
+    {
+      "code": 0,
+      "key": "no-elevation",
+      "label": "No elevation",
+      "sourceCategories": [
+        "source NoData (-3.4028226550889045e38)"
+      ]
+    },
+    {
+      "code": 1,
+      "key": "good",
+      "label": "Documented good quality",
+      "sourceCategories": []
+    },
+    {
+      "code": 2,
+      "key": "low",
+      "label": "Documented low quality",
+      "sourceCategories": []
+    },
+    {
+      "code": 3,
+      "key": "unknown",
+      "label": "Unknown quality (no per-pixel quality published)",
+      "sourceCategories": [
+        "USGS DTM mosaic valid sample without per-pixel figure-of-merit"
+      ]
+    }
+  ],
+  "strictQualitySupported": false,
+  "pointsOfInterest": [
+    {
+      "id": "poi-p3",
+      "name": "Delta front – Skinner Ridge / Wildcat Ridge (Hawksbill Gap ascent)",
+      "kind": "science-stop",
+      "position": {
+        "east_m": 610.687,
+        "north_m": 656.7
+      },
+      "purpose": "Western delta front (lower delta sedimentary rocks). Cores Swift Run/Skyland (Skinner Ridge, sols 490/495); Hazeltop/Bearwallow (Wildcat Ridge, sols 509/516). VR stop: Mastcam-Z 360° panoramas Mastcam-Z 360 #19 Skinner Ridge, Mastcam-Z 360 #20 Wildcat Ridge, Mastcam-Z 360 #18 High-res Rockytop scarp (credit NASA/JPL-Caltech/ASU/MSSS). Position = JPL rover waypoint sol 502 site 26 drive 1222 (where the panorama was taken); the named outcrop may be metres to tens of metres away.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "jpl-m20-waypoints"
+      ],
+      "synthetic": false
+    },
+    {
+      "id": "poi-p4",
+      "name": "Delta front base – Enchanted Lake / Amalik / Hidden Harbor",
+      "kind": "science-stop",
+      "position": {
+        "east_m": 358.558,
+        "north_m": 187.2
+      },
+      "purpose": "Base of western delta front. Cores Shuyak/Mageik (Amalik, sols 575/619), Kukaklek (Hidden Harbor, 631); regolith Atmo Mountain/Crosswind Lake (634/639). VR stop: Mastcam-Z 360° panoramas Mastcam-Z 360 #21 Enchanted Lake, Mastcam-Z 360 #22 Hidden Harbor workspace, Enchanted Lake mosaic (partial) (credit NASA/JPL-Caltech/ASU/MSSS). Position = JPL rover waypoint sol 565 site 29 drive 0 (where the panorama was taken); the named outcrop may be metres to tens of metres away.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "jpl-m20-waypoints"
+      ],
+      "synthetic": false
+    },
+    {
+      "id": "poi-p5",
+      "name": "Three Forks Sample Depot",
+      "kind": "science-stop",
+      "position": {
+        "east_m": 752.498,
+        "north_m": 344.0
+      },
+      "purpose": "Crater floor at foot of delta front. 10 sample tubes deposited on the surface (depot, Dec 2022–Jan 2023). VR stop: Mastcam-Z 360° panoramas Mastcam-Z 360 #24 Three Forks Depot #2 (all samples), Mastcam-Z 360 #23 Depot #1 (credit NASA/JPL-Caltech/ASU/MSSS). Position = JPL rover waypoint sol 686 site 32 drive 1184 (where the panorama was taken); the named outcrop may be metres to tens of metres away.",
+      "officialName": false,
+      "positionalUncertainty_m": null,
+      "sourceIds": [
+        "jpl-m20-waypoints"
+      ],
+      "synthetic": false
+    }
+  ],
+  "displayAssets": [
+    {
+      "id": "jezero-west-hirise-v0.1.0-texture",
+      "file": "texture-hirise-2048.jpg",
+      "kind": "texture",
+      "optional": true,
+      "byteLength": 833772,
+      "sha256": "06fbe41c0a7ff72f04276a15532e78259a951e3c53a278f34b6af08389fe02c3",
+      "extent": {
+        "west_m": 0.0,
+        "east_m": 948.5670310210961,
+        "south_m": 0.0,
+        "north_m": 1000.0
+      },
+      "sourceIds": [
+        "usgs-m2020-hirise-ortho"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "usgs-m2020-hirise-dtm",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "title": "High-Resolution Imaging Science Experiment Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation (JEZ_hirise_soc_006, 1 m)",
+      "creator": "Fergason, Galuszka, Hare, Mayer, Redding, Smith - USGS Astrogeology Science Center",
+      "url": "https://doi.org/10.5066/P9REJ9JN",
+      "version": "soc_006 (published 2020-07-24)",
+      "rights": "CC0 1.0 / US public domain (USGS); please cite authors",
+      "usedFor": "Elevation samples (copied 1:1), slope and roughness derivation"
+    },
+    {
+      "id": "usgs-m2020-hirise-ortho",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "title": "HiRISE orthomosaic for Mars 2020 TRN (JEZ_hirise_soc_006_orthoMosaic_25cm)",
+      "creator": "USGS Astrogeology Science Center; HiRISE: NASA/JPL-Caltech/UArizona",
+      "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/index.html",
+      "version": "soc_006",
+      "rights": "USGS/NASA public data; credit NASA/JPL-Caltech/UArizona and USGS",
+      "usedFor": "Optional display texture (downsampled 4000->2048 px)"
+    },
+    {
+      "id": "usgs-m2020-ctx-dtm",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "CTX",
+      "title": "Context Camera Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation (JEZ_ctx_B_soc_008, 20 m)",
+      "creator": "Fergason et al. - USGS Astrogeology Science Center",
+      "url": "https://doi.org/10.5066/P906QQT8",
+      "version": "soc_008 (published 2020-07-24)",
+      "rights": "USGS public data; please cite authors",
+      "usedFor": "Coarse fallback elevation; consistency check of HiRISE"
+    },
+    {
+      "id": "jpl-m20-waypoints",
+      "mission": "Mars 2020",
+      "instrument": "Rover localization (MMGIS)",
+      "title": "M20_waypoints.json (NASA/JPL Mars 2020 rover waypoints, sol 2022 release)",
+      "creator": "NASA/JPL-Caltech",
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+      "version": "M20_waypoints_sol2022_all",
+      "rights": "NASA public data",
+      "usedFor": "Positions of science stops (rover positions where Mastcam-Z 360° panoramas were taken)"
+    }
+  ],
+  "limitations": [
+    "Equirectangular source (lat_ts=0): projected E-W metres were converted to ground metres with cos(lat_c)=0.948567; cells are 0.94857 m (E) x 1.0 m (N).",
+    "No per-pixel quality layer exists in the USGS DTM mosaic: all valid cells are quality 3 (unknown); strict quality mode is not supported.",
+    "Producer statistics: HiRISE orthoimages co-registered < 3 m (99th pct); HiRISE vs CTX median vertical offset ~0.4 m (CTX above).",
+    "Vertical reference wording is ambiguous in USGS metadata (IAU sphere vs MOLA areoid); values match JPL areoid elevations within cm at science stops.",
+    "Science-stop names are informal Mars 2020 team names, not IAU-approved names.",
+    "Roughness is a detrended residual at 5 x 5 cells; it is not a rock-size or hazard map."
+  ],
+  "processing": {
+    "script": "scripts/data/process.py + scripts/data/export_bundle.py",
+    "parameters": {
+      "aoi_x_west_m": 4587569.0,
+      "aoi_x_east_m": 4588569.0,
+      "aoi_y_south_m": 1093474.0,
+      "aoi_y_north_m": 1094474.0,
+      "lon_west_e": 77.395064,
+      "lon_east_e": 77.411934,
+      "lat_south_n": 18.447568,
+      "lat_north_n": 18.464438,
+      "cos_lat_center": 0.9485670310210961,
+      "slope_method": "Horn 1981 3x3",
+      "roughness_window_cells": 5,
+      "margin_m": 250,
+      "resampling": "none",
+      "package_version": "0.1.0"
+    }
+  }
+}
