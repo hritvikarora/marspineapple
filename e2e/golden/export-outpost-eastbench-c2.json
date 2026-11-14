@@ -1,0 +1,489 @@
+{
+  "candidates": [
+    {
+      "candidateId": "c0",
+      "explanation": [
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "one-way",
+      "outbound": {
+        "metrics": {
+          "ascent_m": 15,
+          "cellCount": 16,
+          "descent_m": 0,
+          "horizontalDistance_m": 174.8528137423857,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 6.054498479394494,
+          "maxTerrainSlope_deg": 8.049467086791992,
+          "surfaceDistance_m": 175.5661836443264,
+          "unknownQualityLength_m": 82.42640687119285,
+          "unknownQualityPct": 47.14045207910316
+        },
+        "path": [
+          {
+            "east_m": 25,
+            "elevation_m": -2600.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 35,
+            "elevation_m": -2599.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 45,
+            "elevation_m": -2598.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 55,
+            "elevation_m": -2597.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 65,
+            "elevation_m": -2596,
+            "north_m": 75
+          },
+          {
+            "east_m": 75,
+            "elevation_m": -2594.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 85,
+            "elevation_m": -2593,
+            "north_m": 95
+          },
+          {
+            "east_m": 95,
+            "elevation_m": -2592,
+            "north_m": 95
+          },
+          {
+            "east_m": 105,
+            "elevation_m": -2591,
+            "north_m": 95
+          },
+          {
+            "east_m": 115,
+            "elevation_m": -2590,
+            "north_m": 95
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2589,
+            "north_m": 95
+          },
+          {
+            "east_m": 135,
+            "elevation_m": -2588.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 145,
+            "elevation_m": -2588,
+            "north_m": 75
+          },
+          {
+            "east_m": 155,
+            "elevation_m": -2587,
+            "north_m": 75
+          },
+          {
+            "east_m": 165,
+            "elevation_m": -2586,
+            "north_m": 75
+          },
+          {
+            "east_m": 175,
+            "elevation_m": -2585.5,
+            "north_m": 65
+          }
+        ],
+        "qualityIntervals": [
+          {
+            "fromDistance_m": 0,
+            "quality": 1,
+            "toDistance_m": 58.2842712474619
+          },
+          {
+            "fromDistance_m": 58.2842712474619,
+            "quality": 3,
+            "toDistance_m": 140.71067811865476
+          },
+          {
+            "fromDistance_m": 140.71067811865476,
+            "quality": 1,
+            "toDistance_m": 174.8528137423857
+          }
+        ],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 174.8528137423857
+        }
+      },
+      "policies": [
+        "shortest-feasible"
+      ],
+      "returnLeg": null
+    },
+    {
+      "candidateId": "c1",
+      "explanation": [
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "one-way",
+      "outbound": {
+        "metrics": {
+          "ascent_m": 15,
+          "cellCount": 16,
+          "descent_m": 0,
+          "horizontalDistance_m": 174.8528137423857,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 6.054498479394494,
+          "maxTerrainSlope_deg": 6.379370212554932,
+          "surfaceDistance_m": 175.5661836443264,
+          "unknownQualityLength_m": 78.2842712474619,
+          "unknownQualityPct": 44.77152501692066
+        },
+        "path": [
+          {
+            "east_m": 25,
+            "elevation_m": -2600.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 35,
+            "elevation_m": -2599,
+            "north_m": 75
+          },
+          {
+            "east_m": 45,
+            "elevation_m": -2598,
+            "north_m": 75
+          },
+          {
+            "east_m": 55,
+            "elevation_m": -2597,
+            "north_m": 75
+          },
+          {
+            "east_m": 65,
+            "elevation_m": -2596,
+            "north_m": 75
+          },
+          {
+            "east_m": 75,
+            "elevation_m": -2594.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 85,
+            "elevation_m": -2593,
+            "north_m": 95
+          },
+          {
+            "east_m": 95,
+            "elevation_m": -2592,
+            "north_m": 95
+          },
+          {
+            "east_m": 105,
+            "elevation_m": -2591,
+            "north_m": 95
+          },
+          {
+            "east_m": 115,
+            "elevation_m": -2590,
+            "north_m": 95
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2589,
+            "north_m": 95
+          },
+          {
+            "east_m": 135,
+            "elevation_m": -2588.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 145,
+            "elevation_m": -2587.5,
+            "north_m": 85
+          },
+          {
+            "east_m": 155,
+            "elevation_m": -2587,
+            "north_m": 75
+          },
+          {
+            "east_m": 165,
+            "elevation_m": -2586,
+            "north_m": 75
+          },
+          {
+            "east_m": 175,
+            "elevation_m": -2585.5,
+            "north_m": 65
+          }
+        ],
+        "qualityIntervals": [
+          {
+            "fromDistance_m": 0,
+            "quality": 1,
+            "toDistance_m": 58.2842712474619
+          },
+          {
+            "fromDistance_m": 58.2842712474619,
+            "quality": 3,
+            "toDistance_m": 136.5685424949238
+          },
+          {
+            "fromDistance_m": 136.5685424949238,
+            "quality": 1,
+            "toDistance_m": 174.8528137423857
+          }
+        ],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 339.4708470051694
+        }
+      },
+      "policies": [
+        "terrain-aware"
+      ],
+      "returnLeg": null
+    },
+    {
+      "candidateId": "c2",
+      "explanation": [
+        "32 m longer than c0 but crosses 82 m less unknown-quality terrain.",
+        "32 m longer than c1 but crosses 78 m less unknown-quality terrain.",
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "one-way",
+      "outbound": {
+        "metrics": {
+          "ascent_m": 15.5,
+          "cellCount": 20,
+          "descent_m": 0.5,
+          "horizontalDistance_m": 206.5685424949238,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 6.054498479394494,
+          "maxTerrainSlope_deg": 6.379370212554932,
+          "surfaceDistance_m": 207.27297836891395,
+          "unknownQualityLength_m": 0,
+          "unknownQualityPct": 0
+        },
+        "path": [
+          {
+            "east_m": 25,
+            "elevation_m": -2600.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 35,
+            "elevation_m": -2599.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 45,
+            "elevation_m": -2598.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 55,
+            "elevation_m": -2599,
+            "north_m": 55
+          },
+          {
+            "east_m": 65,
+            "elevation_m": -2598.5,
+            "north_m": 45
+          },
+          {
+            "east_m": 75,
+            "elevation_m": -2598,
+            "north_m": 35
+          },
+          {
+            "east_m": 85,
+            "elevation_m": -2596.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 95,
+            "elevation_m": -2595.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 105,
+            "elevation_m": -2594.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 115,
+            "elevation_m": -2593.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2592.5,
+            "north_m": 25
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2592,
+            "north_m": 35
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2591.5,
+            "north_m": 45
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2591,
+            "north_m": 55
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -2590.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 135,
+            "elevation_m": -2589.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 145,
+            "elevation_m": -2588.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 155,
+            "elevation_m": -2587.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 165,
+            "elevation_m": -2586.5,
+            "north_m": 65
+          },
+          {
+            "east_m": 175,
+            "elevation_m": -2585.5,
+            "north_m": 65
+          }
+        ],
+        "qualityIntervals": [
+          {
+            "fromDistance_m": 0,
+            "quality": 1,
+            "toDistance_m": 206.5685424949238
+          }
+        ],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 316.4526277403096
+        }
+      },
+      "policies": [
+        "uncertainty-aware"
+      ],
+      "returnLeg": null
+    }
+  ],
+  "endpoints": {
+    "destination": {
+      "accepted": {
+        "east_m": 175,
+        "north_m": 65
+      },
+      "cell": {
+        "col": 17,
+        "index": 117,
+        "row": 5
+      },
+      "requested": {
+        "east_m": 175,
+        "north_m": 65
+      }
+    },
+    "start": {
+      "accepted": {
+        "east_m": 25,
+        "north_m": 65
+      },
+      "cell": {
+        "col": 2,
+        "index": 102,
+        "row": 5
+      },
+      "requested": {
+        "east_m": 25,
+        "north_m": 65
+      }
+    }
+  },
+  "format": "mars-pathfinder/route-export@1",
+  "limitations": [
+    "SYNTHETIC: this grid is not derived from any NASA observation.",
+    "Quality classes are artificially assigned to exercise uncertainty-aware routing.",
+    "Educational simulation: not a validated EVA or rover safety assessment."
+  ],
+  "region": {
+    "bundleId": "synthetic-v0",
+    "bundleVersion": "synthetic-v0.1.0",
+    "cellSize_m": {
+      "east": 10,
+      "north": 10
+    },
+    "crs": "Synthetic local planar frame (no planetary CRS)",
+    "datasetVersion": "synthetic-fixture-2026-11-14",
+    "sources": [
+      {
+        "id": "synthetic-generator",
+        "instrument": "none",
+        "mission": "none",
+        "title": "scripts/make-fixture.mjs",
+        "version": "0.1.0"
+      }
+    ],
+    "synthetic": true,
+    "title": "SYNTHETIC FIXTURE - not Mars data",
+    "verticalReference": "synthetic datum (values mimic Jezero-like negative heights)"
+  },
+  "release": {
+    "appVersion": "0.1.0",
+    "bundleVersion": "synthetic-v0.1.0",
+    "modelVersion": "placeholder-astar-0.1.0"
+  },
+  "request": {
+    "destinationPoiId": "syn-east-bench",
+    "policies": [
+      "shortest-feasible",
+      "terrain-aware",
+      "uncertainty-aware"
+    ],
+    "roundTrip": false,
+    "startPoiId": "syn-outpost",
+    "strictQuality": false,
+    "weightOverrides": {}
+  },
+  "selectedCandidateId": "c2",
+  "units": {
+    "distance": "m",
+    "elevation": "m",
+    "exposurePct": "% of horizontalDistance_m",
+    "grade": "deg",
+    "slope": "deg",
+    "weightedCost": "dimensionless weighted cost (not comparable across policies)"
+  }
+}

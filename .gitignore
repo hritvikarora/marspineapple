@@ -7,3 +7,6 @@ coverage
 *.local
 .env*
 !.env.example
+dist-e2e
+test-results
+playwright-report
