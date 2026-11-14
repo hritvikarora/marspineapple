@@ -4,8 +4,8 @@ Updated: 14 November 2026. Source audit completed on branch `dhani/ui-planning` 
 Baseline established: `OWNERS.md` and `INTERFACE.md` govern team ownership and contracts.
 UI role (Dhani) scope is restricted to `src/ui/**`, reusing Role C's existing contracts, state store, worker client, bundle loader, export serializer, and 3D slot.
 
-Coordinator: unassigned. Foundation owner: Dhani (UI foundation within `src/ui/**`).
-Frozen foundation revision: **not yet created**.
+Coordinator: Dhani (coordinator). Foundation owner: Dhani (UI foundation within `src/ui/**`).
+Frozen foundation revision: `ui-foundation-v1` (implementation at `f74b45a4934a067d989068c7a10587e7e586794b`; user-approved demo acceptance).
 Shared repository: `martian-pineapple-team` at `7480107`.
 Current UI specification: 21 tasks (TASK-001 foundation + 20 independent leaf features).
 
@@ -19,13 +19,13 @@ Current UI specification: 21 tasks (TASK-001 foundation + 20 independent leaf fe
 | REVIEW | Implementation submitted with evidence | Reviewer accepts to DONE or returns to IN_PROGRESS/BLOCKED with findings. |
 | DONE | Reviewer accepted all task acceptance criteria and Definition of Done | Reopen only with recorded regression or a new foundation contract version. |
 
-All rows currently remain TODO. A leaf may enter IN_PROGRESS only after TASK-001 is DONE. All 20 leaves can then start concurrently. The coordinator alone updates this shared file from agents' task-specific handoffs.
+TASK-001 is DONE under user-approved local demo acceptance. All 20 leaves (TASK-002 through TASK-021) can now branch from `ui-foundation-v1` concurrently. The coordinator alone updates this shared file from agents' task-specific handoffs.
 
 ## Task tracker
 
 | ID | Title | Dependency | Status | Owner | Evidence / blocking note |
 | --- | --- | --- | --- | --- | --- |
-| TASK-001 | Reconcile and deliver working UI foundation in `src/ui/**` | None | REVIEW | Dhani | Foundation updated with review fixes, verified, and resubmitted in `handoffs/TASK-001.md`. |
+| TASK-001 | Reconcile and deliver working UI foundation in `src/ui/**` | None | DONE | Dhani | User-approved for local demo development. Implementation verified at `f74b45a4934a067d989068c7a10587e7e586794b`. Automated single-leaf disposable worktree execution and physical device/screen-reader testing deferred as non-blocking for demo; explicit Git diff and import review required during leaf reviews. |
 | TASK-002 | Mission context and initial guidance (`src/ui/features/mission-context`) | TASK-001 only | TODO | — | `handoffs/TASK-002.md` not yet created. |
 | TASK-003 | Science destination selector (`src/ui/features/destinations`) | TASK-001 only | TODO | — | `handoffs/TASK-003.md` not yet created. |
 | TASK-004 | Endpoint forms and selection modes (`src/ui/features/endpoints`) | TASK-001 only | TODO | — | `handoffs/TASK-004.md` not yet created. |
@@ -53,7 +53,9 @@ All rows currently remain TODO. A leaf may enter IN_PROGRESS only after TASK-001
 | --- | --- | --- |
 | Actual source audit | Audited on branch `dhani/ui-planning` (`7480107`); Node 26 / npm 11; React 19 + TypeScript + Vite | Foundation freeze |
 | Frozen UI contracts and external adapter seams | Contracts frozen in `src/contracts/` and `INTERFACE.md`; UI boundary reconciled in TASKS.md | Foundation freeze |
-| Working UI shell/map/store/harness | Minimal stubs in `src/ui/`; modular foundation pending in TASK-001 | Any leaf implementation |
+| Working UI shell/map/store/harness | Implemented and verified in TASK-001; user-approved for demo development; automated disposable-tree isolation and physical accessibility deferred | Any leaf implementation (UNBLOCKED for demo) |
+| Leaf isolation & ownership automation | Static dependency, diff, and import rules implemented in `check-isolation.mjs`; automated disposable-tree runner deferred. Required: explicit Git diff and import review on every leaf | Leaf integration / hardening |
+| Physical accessibility & screen readers | Automated a11y, visible focus, ARIA, and touch target checks pass; physical hardware and screen reader verification deferred | Release readiness |
 | Existing integration test compliance | All smoke test hooks (`data-testid`, ARIA labels) mapped and preserved | Foundation freeze |
 | Real region bundle, sources and versions | Not yet supplied by Role A (`synthetic-v0` fixture in use) | Real-data acceptance / release |
 | Real route worker/service | Ayush's placeholder solver active in `src/routing/` | Real-route acceptance / release |
@@ -67,5 +69,6 @@ All rows currently remain TODO. A leaf may enter IN_PROGRESS only after TASK-001
 | --- | --- | --- |
 | 2026-11-14 | Initial planning files created | 21 TODO; 0 IN_PROGRESS; 0 BLOCKED; 0 REVIEW; 0 DONE. |
 | 2026-11-14 | Reconciled planning files with actual repository: aligned with `OWNERS.md` and `INTERFACE.md`, restricted UI scope to `src/ui/**`, retained Canvas map, mapped existing contracts/reducer, updated verification scripts to use existing package commands | 21 TODO; 0 IN_PROGRESS; 0 BLOCKED; 0 REVIEW; 0 DONE. |
+| 2026-11-14 | TASK-001 accepted for local demo development by user; isolation-tooling and physical accessibility verification gaps recorded as deferred work; explicit Git diff and import reviews required during leaf reviews; tagged ui-foundation-v1 | 1 DONE; 20 TODO; leaves unblocked for parallel development. |
 
 When changing a status, record the actual owner, revision and evidence link. Do not infer completion from file existence, fixtures, a screenshot or another agent's statement alone. If a contract amendment reopens TASK-001, record the revised base and revalidation needs before allowing further leaf work.

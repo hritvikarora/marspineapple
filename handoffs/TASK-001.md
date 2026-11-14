@@ -1,7 +1,8 @@
 # TASK-001 handoff
-Status: REVIEW
+Status: DONE (Accepted for Local Demo Development)
 Foundation base revision: 5c2725ade58cea52073aad30d4676e849d22c1cf
-Branch/commit: task/TASK-001-foundation (implementation commit f74b45a4934a067d989068c7a10587e7e586794b)
+Branch/commit: task/TASK-001-foundation (implementation commit f74b45a4934a067d989068c7a10587e7e586794b; acceptance tag ui-foundation-v1)
+Acceptance note: Formally accepted by user on 2026-11-14 as the foundation baseline for local demo development, with known verification limitations (automated disposable-tree isolation runner and physical screen-reader/hardware testing deferred). Explicit Git diff and import review is required during leaf verification.
 Changed paths:
   - src/ui/App.tsx
   - src/ui/MapCanvas.tsx

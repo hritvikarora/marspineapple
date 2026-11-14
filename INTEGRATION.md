@@ -77,6 +77,9 @@ The foundation owner must demonstrate all of these before the coordinator marks 
 
 Then freeze/tag `ui-foundation-v1`, record its actual full commit in TASK_STATUS.md, and let leaf agents branch from it. Foundation changes after this point are versioned amendments.
 
+> [!NOTE]
+> **User-approved demo acceptance:** On 2026-11-14, TASK-001 was formally accepted by the user as the baseline for local demo development with known verification limitations (automated disposable-tree isolation runners and physical screen-reader/device checks deferred). Where automated isolation tooling is incomplete, reviewers must perform explicit Git diff and import reviews rather than claiming automation alone has passed.
+
 ## 4. Leaf branches, entry points and merge process
 
 After implementation authorization and foundation completion, create one branch/worktree per leaf from the frozen commit. Branch form: `task/TASK-XXX-<slug>`. Each leaf owner edits only its exclusive path under `src/ui/features/<slug>/**` and writes its own handoff.
@@ -116,6 +119,12 @@ TASK-001 must implement the following checks in UI-owned scripts/tests under `sr
 | Registry check | Reject duplicate/missing public entries for included features, duplicate IDs/slots and ID-slot mismatch. |
 | Isolation check | In a disposable tree or mock harness, retain the foundation plus one leaf. Run typecheck, unit tests, and build; all other leaf code must be absent. |
 | Foundation immutability | Confirm frozen foundation files are unchanged by leaf commits. |
+
+> [!IMPORTANT]
+> **Verification standard during demo phase:** Automated static rules are implemented in `src/ui/scripts/check-isolation.mjs`. However, full disposable-tree execution is deferred. Reviewers must explicitly verify every leaf branch using:
+> 1. `git diff --stat ui-foundation-v1...HEAD` to prove changes are strictly confined to `src/ui/features/<slug>/**` and `handoffs/TASK-XXX.md`.
+> 2. Source code inspection to confirm zero imports from sibling features or unapproved external packages.
+> 3. Clean execution of `npm run typecheck`, `npm run lint`, and `npm test -- src/ui/features/<slug>`.
 
 ## 6. Interaction contracts during assembly
 
