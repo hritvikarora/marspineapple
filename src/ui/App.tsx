@@ -2,40 +2,50 @@
  * ⚠️ MINIMAL APP SHELL — layout/UX OWNER: Dhani. Composition (data loading, state, worker
  * wiring) is Role C. Replace the markup freely; keep using `useAppState` + `useRouteRunner`.
  */
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { APP_VERSION, BUNDLE_MANIFEST_URL, EXPECTED_MODEL_VERSION } from '../config';
+import { useCallback, useState } from 'react';
+import { ContextImageryStatus } from '../app/ContextImageryStatus';
+import type { SelectOptions } from '../app/bundleSelection';
+import { TerrainSlot } from '../app/TerrainSlot';
+import type { TerrainLoader } from '../app/terrainLoader';
+import { useRegionLoader } from '../app/useRegionLoader';
+import type { WebGLSupport } from '../app/webgl';
+import { APP_VERSION, EXPECTED_MODEL_VERSION, IS_PRODUCTION_BUILD, TILE_CONFIG, type TileConfig } from '../config';
 import { ROUTE_POLICIES, formatReleaseId, type LocalPoint, type RoutePolicyId } from '../contracts';
-import { BundleLoadError, loadAndValidateBundle } from '../data/loadBundle';
 import { exportFileName, serializeRouteExport } from '../export/serialize';
 import { useAppState } from '../state/context';
-import { selectCanRequestRoute, type LayerKey } from '../state/store';
+import { selectCanRequestRoute, selectSelection, type LayerKey, type Terrain3dStatus } from '../state/store';
 import { useRouteRunner } from '../state/useRouteRunner';
 import type { RouteWorkerClientOptions } from '../worker/client';
+import { Briefing } from './Briefing';
+import { ElevationProfile } from './ElevationProfile';
 import { MapCanvas } from './MapCanvas';
 
-const TerrainView = lazy(() => import('../terrain3d/TerrainView'));
+/** Injection points for tests/integration; production uses the defaults. */
+export interface AppDeps {
+  workerOptions?: RouteWorkerClientOptions;
+  bundleSelection?: SelectOptions;
+  detectWebGL?: () => WebGLSupport;
+  loadTerrainView?: TerrainLoader;
+  tileConfig?: TileConfig;
+  tileFetch?: typeof fetch;
+  production?: boolean;
+}
 
 const fmt = (n: number, d = 0) => n.toFixed(d);
 
-export function App({ workerOptions }: { workerOptions?: RouteWorkerClientOptions } = {}) {
+export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   const { state, dispatch } = useAppState();
-  const { requestRoute, cancelRoute } = useRouteRunner(workerOptions);
+  const { requestRoute, cancelRoute } = useRouteRunner(deps.workerOptions);
+  useRegionLoader(deps.bundleSelection);
   const [pickMode, setPickMode] = useState<'start' | 'destination'>('destination');
-
-  useEffect(() => {
-    let alive = true;
-    dispatch({ type: 'region/loading', manifestUrl: BUNDLE_MANIFEST_URL });
-    loadAndValidateBundle(BUNDLE_MANIFEST_URL)
-      .then((bundle) => alive && dispatch({ type: 'region/loaded', bundle }))
-      .catch((e: unknown) => {
-        if (!alive) return;
-        const err = e instanceof BundleLoadError ? e : new BundleLoadError('fetch-manifest', String(e), BUNDLE_MANIFEST_URL);
-        dispatch({ type: 'region/failed', error: { stage: err.stage, message: err.message, url: err.url, layer: err.layer } });
-      });
-    return () => {
-      alive = false;
-    };
-  }, [dispatch]);
+  const selection = selectSelection(state);
+  const onHover = useCallback(
+    (pathIndex: number | null) =>
+      dispatch({ type: 'view/hover', sample: pathIndex === null || !selection.candidateId ? null : { candidateId: selection.candidateId, pathIndex } }),
+    [dispatch, selection.candidateId],
+  );
+  const on3dStatus = useCallback((status: Terrain3dStatus) => dispatch({ type: 'view/set3dStatus', status }), [dispatch]);
+  const production = deps.production ?? IS_PRODUCTION_BUILD;
 
   const region = state.loadedRegion;
   const bundle = region.status === 'ready' ? region.bundle : null;
@@ -50,14 +60,28 @@ export function App({ workerOptions }: { workerOptions?: RouteWorkerClientOption
 
   const onExport = () => {
     if (!bundle || run.kind !== 'finished' || run.response.status !== 'success') return;
-    const json = serializeRouteExport({ release, manifest: bundle.manifest, mission: m, response: run.response, selectedCandidateId: state.selectedCandidateId });
+    const json = serializeRouteExport({ release, manifest: bundle.manifest, mission: m, response: run.response, selectedCandidateId: selection.candidateId });
     const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = exportFileName(release, state.selectedCandidateId);
+    a.download = exportFileName(release, selection.candidateId);
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const mapEl = bundle ? (
+    <MapCanvas
+      bundle={bundle}
+      candidates={state.routeCandidates}
+      selectedCandidateId={selection.candidateId}
+      start={m.start?.point ?? null}
+      destination={m.destination?.point ?? null}
+      layers={state.display.layers}
+      stale={state.isStale}
+      hover={selection.hover}
+      onPick={(p) => setEndpoint(pickMode, p, null)}
+    />
+  ) : null;
 
   return (
     <div className="app">
@@ -67,6 +91,12 @@ export function App({ workerOptions }: { workerOptions?: RouteWorkerClientOption
         <span className="release" data-testid="release-id">{formatReleaseId(release)}</span>
       </header>
 
+      {production && bundle?.manifest.synthetic && (
+        <div role="alert" className="error banner" data-testid="synthetic-production-warning">
+          ⚠ This production build is serving the SYNTHETIC fixture bundle ({bundle.bundleVersion}), not Mars data. Set the release bundle in
+          bundles/index.json before publishing.
+        </div>
+      )}
       {region.status === 'loading' && <p role="status">Loading region bundle…</p>}
       {region.status === 'error' && (
         <div role="alert" className="error" data-testid="bundle-error">
@@ -158,28 +188,28 @@ export function App({ workerOptions }: { workerOptions?: RouteWorkerClientOption
 
           <section className="view">
             {state.viewMode === '2d' ? (
-              <MapCanvas
-                bundle={bundle}
-                candidates={state.routeCandidates}
-                selectedCandidateId={state.selectedCandidateId}
-                start={m.start?.point ?? null}
-                destination={m.destination?.point ?? null}
-                layers={state.display.layers}
-                stale={state.isStale}
-                onPick={(p) => setEndpoint(pickMode, p, null)}
-              />
+              mapEl
             ) : (
-              <Suspense fallback={<p>Loading 3D view…</p>}>
-                <TerrainView
-                  bundle={bundle}
-                  candidates={state.routeCandidates}
-                  selectedCandidateId={state.selectedCandidateId}
-                  highlightPathIndex={null}
-                  verticalExaggeration={1}
-                  camera={state.display.camera}
-                />
-              </Suspense>
+              <TerrainSlot
+                viewProps={{
+                  bundle,
+                  candidates: state.routeCandidates,
+                  selectedCandidateId: selection.candidateId,
+                  highlightPathIndex: selection.hover?.pathIndex ?? null,
+                  verticalExaggeration: 1,
+                  camera: state.display.camera,
+                  onCameraChange: (camera) => dispatch({ type: 'view/setCamera', camera }),
+                  onSelectCandidate: (candidateId) => dispatch({ type: 'route/select', candidateId }),
+                }}
+                status={state.display.terrain3d}
+                onStatus={on3dStatus}
+                fallback={mapEl}
+                detectWebGL={deps.detectWebGL}
+                load={deps.loadTerrainView}
+              />
             )}
+            <ElevationProfile selection={selection} onHover={onHover} />
+            <ContextImageryStatus config={deps.tileConfig ?? TILE_CONFIG} fetchImpl={deps.tileFetch} />
           </section>
 
           <section className="results" aria-live="polite">
@@ -197,7 +227,7 @@ export function App({ workerOptions }: { workerOptions?: RouteWorkerClientOption
                 return (
                   <li key={c.candidateId}>
                     <label>
-                      <input type="radio" name="candidate" checked={state.selectedCandidateId === c.candidateId} onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })} />{' '}
+                      <input type="radio" name="candidate" checked={selection.candidateId === c.candidateId} onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })} />{' '}
                       <strong>{c.policies.join(' + ')}</strong>: {fmt(x.horizontalDistance_m)} m horizontal, ascent {fmt(x.ascent_m, 1)} m, max slope {fmt(x.maxTerrainSlope_deg, 1)}°, max grade {fmt(x.maxAbsEdgeGrade_deg, 1)}°, unknown quality {fmt(x.unknownQualityLength_m)} m ({fmt(x.unknownQualityPct)}% of distance), low quality {fmt(x.lowQualityLength_m)} m · {c.missionStatus}
                     </label>
                     <ul className="muted">{c.explanation.map((e, i) => <li key={i}>{e}</li>)}</ul>
@@ -208,6 +238,7 @@ export function App({ workerOptions }: { workerOptions?: RouteWorkerClientOption
             <button type="button" onClick={onExport} disabled={!(run.kind === 'finished' && run.response.status === 'success')}>
               Export JSON
             </button>
+            <Briefing selection={selection} release={release} manifest={bundle.manifest} mission={m} />
           </section>
         </main>
       )}

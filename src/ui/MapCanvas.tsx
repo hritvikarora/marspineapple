@@ -14,12 +14,14 @@ interface Props {
   destination: LocalPoint | null;
   layers: DisplayState['layers'];
   stale: boolean;
+  /** Shared hover sample (from the selection view-model). */
+  hover: { pathIndex: number; point: LocalPoint } | null;
   onPick: (p: LocalPoint) => void;
 }
 
 const PX_PER_CELL = 28;
 
-export function MapCanvas({ bundle, candidates, selectedCandidateId, start, destination, layers, stale, onPick }: Props) {
+export function MapCanvas({ bundle, candidates, selectedCandidateId, start, destination, layers, stale, hover, onPick }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const { grid } = bundle.manifest;
   const sx = PX_PER_CELL / grid.cellSizeEast_m;
@@ -85,6 +87,10 @@ export function MapCanvas({ bundle, candidates, selectedCandidateId, start, dest
       const [px, py] = toPx(poi.position);
       ctx.strokeStyle = '#ffd400'; ctx.lineWidth = 2; ctx.strokeRect(px - 5, py - 5, 10, 10);
     }
+    if (hover) {
+      const [hx, hy] = toPx(hover.point);
+      ctx.strokeStyle = '#ffd400'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI * 2); ctx.stroke();
+    }
     marker(start, '#2ecc71', 'S');
     marker(destination, '#e74c3c', 'D');
     // north arrow + 50 m scale bar (local metres)
@@ -99,6 +105,8 @@ export function MapCanvas({ bundle, candidates, selectedCandidateId, start, dest
       width={W}
       height={H}
       data-testid="map-canvas"
+      data-selected-candidate={selectedCandidateId ?? ''}
+      data-hover-index={hover?.pathIndex ?? ''}
       aria-label="Map: click to place the selected endpoint"
       style={{ cursor: 'crosshair', maxWidth: '100%', imageRendering: 'pixelated' }}
       onClick={(e) => {

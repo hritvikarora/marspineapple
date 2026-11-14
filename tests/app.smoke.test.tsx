@@ -8,7 +8,8 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EXPECTED_MODEL_VERSION } from '../src/config';
 import { AppStateProvider } from '../src/state/AppStateProvider';
-import { App } from '../src/ui/App';
+import { App, type AppDeps } from '../src/ui/App';
+import { TILE_CONFIG } from '../src/config';
 import { FakeWorker, fileFetch } from './helpers';
 
 beforeEach(() => {
@@ -19,10 +20,10 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const renderApp = () =>
+const renderApp = (deps: AppDeps = {}) =>
   render(
     <AppStateProvider modelVersion={EXPECTED_MODEL_VERSION}>
-      <App workerOptions={{ createWorker: () => new FakeWorker() }} />
+      <App deps={{ workerOptions: { createWorker: () => new FakeWorker() }, ...deps }} />
     </AppStateProvider>,
   );
 
@@ -66,5 +67,33 @@ describe('app shell smoke', () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('bundle-error').textContent).toContain('fetch-raster'));
     expect(screen.queryByTestId('map-canvas')).toBeNull();
+  });
+
+  it('warns visibly when a production build serves the synthetic fixture', async () => {
+    vi.stubGlobal('fetch', fileFetch());
+    renderApp({ production: true });
+    await waitFor(() => expect(screen.getByTestId('synthetic-production-warning').textContent).toContain('SYNTHETIC'));
+  });
+
+  it('does not show the production warning in dev/test', async () => {
+    vi.stubGlobal('fetch', fileFetch());
+    renderApp();
+    await waitFor(() => screen.getByTestId('release-id').textContent?.includes('synthetic'));
+    expect(screen.queryByTestId('synthetic-production-warning')).toBeNull();
+  });
+
+  it('a hanging tile service never blocks bundle loading or routing', async () => {
+    vi.stubGlobal('fetch', fileFetch());
+    const hanging = (() => new Promise<Response>(() => undefined)) as typeof fetch;
+    renderApp({ tileConfig: { ...TILE_CONFIG, enabled: true, timeoutMs: 60_000 }, tileFetch: hanging });
+    await waitFor(() => screen.getByLabelText('start preset'));
+    expect(screen.getByTestId('imagery-status').dataset.status).toBe('pending');
+    fireEvent.change(screen.getByLabelText('start preset'), { target: { value: 'syn-outpost' } });
+    fireEvent.change(screen.getByLabelText('destination preset'), { target: { value: 'syn-east-bench' } });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('calculate'));
+    });
+    await waitFor(() => expect(screen.getByTestId('route-status').textContent).toContain('success'));
+    expect(screen.getByTestId('imagery-status').dataset.status).toBe('pending');
   });
 });
