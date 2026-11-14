@@ -48,7 +48,7 @@ test('happy journey: preset -> route -> each candidate -> 3D -> briefing -> gold
 
   // Export -> byte-identical to the committed golden file.
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByTestId(ids.exportJson).click()]);
-  expect(download.suggestedFilename()).toBe('mars-pathfinder_synthetic-v0.1.0_placeholder-astar-0.1.0_c2.json');
+  expect(download.suggestedFilename()).toBe('mars-pathfinder_synthetic-v0.1.0_placeholder-astar-0.2.0_c2.json');
   const text = readFileSync((await download.path())!, 'utf8');
   expect(text).not.toMatch(/\/home\/|\/workspace\/|\/Users\/|file:|https?:\/\/|[A-Za-z]:\\\\/);
   if (process.env.UPDATE_GOLDEN) writeFileSync(GOLDEN, text);
@@ -90,7 +90,7 @@ test('release build: release id, synthetic banner, tiles off, no external reques
   const external: string[] = [];
   page.on('request', (r) => !r.url().startsWith('http://localhost') && external.push(r.url()));
   await openApp(page);
-  await expect(page.getByTestId(ids.release)).toHaveText('app 0.1.0 · bundle synthetic-v0.1.0 · model placeholder-astar-0.1.0');
+  await expect(page.getByTestId(ids.release)).toHaveText('app 0.1.0 · bundle synthetic-v0.1.0 · model placeholder-astar-0.2.0');
   await expect(page.getByTestId('synthetic-badge')).toHaveText('SYNTHETIC DATA');
   await expect(page.getByTestId(ids.imagery)).toHaveAttribute('data-status', 'disabled');
   await expect(page.getByTestId(ids.assets)).toHaveText('Optional display assets: 1/1 available.');

@@ -30,7 +30,7 @@ import {
   type RouteRequest,
 } from '../contracts';
 
-export const PLACEHOLDER_MODEL_VERSION = 'placeholder-astar-0.1.0';
+export const PLACEHOLDER_MODEL_VERSION = 'placeholder-astar-0.2.0';
 
 export const PLACEHOLDER_PROFILE = {
   id: 'placeholder-demo-profile',
@@ -84,12 +84,28 @@ function cellAdmissible(g: RoutingGrid, i: number, strict: boolean): boolean {
   return true;
 }
 
-function cellPenalty(g: RoutingGrid, i: number, w: PolicyWeights): number {
+/** Terrain part of the per-cell penalty (averaged over an edge's two cells). */
+function terrainPenalty(g: RoutingGrid, i: number, w: PolicyWeights): number {
   const cap = PLACEHOLDER_PROFILE.maxNormalizedPenalty;
   const s = Math.min(cap, g.slope[i]! / PLACEHOLDER_PROFILE.slopeNorm_deg);
   const r = Math.min(cap, g.roughness[i]! / PLACEHOLDER_PROFILE.roughnessNorm_m);
-  const q = PLACEHOLDER_PROFILE.qualityPenalty[g.quality[i]!] ?? 1;
-  return w.slope * s + w.roughness * r + w.quality * q;
+  return w.slope * s + w.roughness * r;
+}
+
+/**
+ * Quality part of an edge's penalty. Uses the SAME conservative edge class as the reported exposure
+ * metrics (worse of the two endpoint cells), so minimising it can never increase reported
+ * unknown/low-quality metres. (Averaging the two cells' penalties, as v0.1.0 did, could make the
+ * uncertainty-aware route report MORE unknown-quality metres than shortest-feasible.)
+ */
+function edgeQualityPenalty(g: RoutingGrid, u: number, v: number): number {
+  return PLACEHOLDER_PROFILE.qualityPenalty[worseQuality(g.quality[u]!, g.quality[v]!)] ?? 1;
+}
+
+const QUALITY_RANK: Record<number, number> = { [QUALITY.GOOD]: 0, [QUALITY.LOW]: 1, [QUALITY.UNKNOWN]: 2, [QUALITY.NO_ELEVATION]: 3 };
+/** Conservative edge quality class: the worse of the two endpoint cells. */
+function worseQuality(qa: number, qb: number): QualityCode {
+  return (QUALITY_RANK[qa]! >= QUALITY_RANK[qb]! ? qa : qb) as QualityCode;
 }
 
 /** Deterministic neighbour order: N, NE, E, SE, S, SW, W, NW. */
@@ -169,7 +185,7 @@ function search(g: RoutingGrid, from: number, to: number, w: PolicyWeights, stri
       const len = Math.hypot(dr * dn, dc * de);
       const dz = Math.abs(g.elevation[v]! - g.elevation[u]!);
       if (dz / len > maxGradeTan) continue;
-      const cost = len * (1 + 0.5 * (cellPenalty(g, u, w) + cellPenalty(g, v, w)));
+      const cost = len * (1 + 0.5 * (terrainPenalty(g, u, w) + terrainPenalty(g, v, w)) + w.quality * edgeQualityPenalty(g, u, v));
       const cand = gScore[u]! + cost;
       if (cand < gScore[v]! - 1e-9) {
         gScore[v] = cand;
@@ -189,7 +205,6 @@ function search(g: RoutingGrid, from: number, to: number, w: PolicyWeights, stri
   return { cells, cost: gScore[to]! };
 }
 
-const QUALITY_RANK: Record<number, number> = { [QUALITY.GOOD]: 0, [QUALITY.LOW]: 1, [QUALITY.UNKNOWN]: 2, [QUALITY.NO_ELEVATION]: 3 };
 
 export function buildLeg(g: RoutingGrid, cells: number[], cost: number): RouteLeg {
   const grid = g.manifest.grid;
@@ -213,7 +228,7 @@ export function buildLeg(g: RoutingGrid, cells: number[], cost: number): RouteLe
     dist.push(hd);
     // Conservative edge class: the worse of the two endpoint cells.
     const qa = g.quality[cells[k - 1]!]!, qb = g.quality[cells[k]!]!;
-    const q = (QUALITY_RANK[qa]! >= QUALITY_RANK[qb]! ? qa : qb) as QualityCode;
+    const q = worseQuality(qa, qb);
     if (q === QUALITY.LOW) lowLen += len;
     if (q === QUALITY.UNKNOWN) unkLen += len;
     const last = intervals[intervals.length - 1];

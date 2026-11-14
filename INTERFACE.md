@@ -56,7 +56,7 @@ See `public/bundles/synthetic-v0/manifest.json` for a complete example and `INSP
 {
   "requestId": "req-1-abc123",
   "bundleVersion": "synthetic-v0.1.0",
-  "modelVersion": "placeholder-astar-0.1.0",
+  "modelVersion": "placeholder-astar-0.2.0",
   "start": { "east_m": 25, "north_m": 65 },
   "destination": { "east_m": 175, "north_m": 65 },
   "policies": ["shortest-feasible", "uncertainty-aware"],
@@ -104,7 +104,7 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
   "status": "success",
   "requestId": "req-1-abc123",
   "bundleVersion": "synthetic-v0.1.0",
-  "modelVersion": "placeholder-astar-0.1.0",
+  "modelVersion": "placeholder-astar-0.2.0",
   "computeMs": 0,
   "start": { "requested": { "east_m": 25, "north_m": 65 }, "cell": { "row": 5, "col": 2, "index": 102 }, "accepted": { "east_m": 25, "north_m": 65 } },
   "destination": { "requested": { "east_m": 175, "north_m": 65 }, "cell": { "row": 5, "col": 17, "index": 117 }, "accepted": { "east_m": 175, "north_m": 65 } },
@@ -141,7 +141,7 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
   "status": "no-path",
   "requestId": "req-2-def456",
   "bundleVersion": "synthetic-v0.1.0",
-  "modelVersion": "placeholder-astar-0.1.0",
+  "modelVersion": "placeholder-astar-0.2.0",
   "reason": "disconnected-under-limits",
   "message": "Destination is not connected to the start under the current terrain limits.",
   "policies": ["shortest-feasible", "uncertainty-aware"],
@@ -153,17 +153,17 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
 ### errors
 
 ```json
-{ "status": "invalid-input", "requestId": "req-3-ghi789", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.1.0",
+{ "status": "invalid-input", "requestId": "req-3-ghi789", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0",
   "reason": "endpoint-quality-excluded", "field": "destination",
   "message": "destination cell is outside the acceptable quality set in strict mode." }
 
-{ "status": "timeout", "requestId": "req-4", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.1.0",
+{ "status": "timeout", "requestId": "req-4", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0",
   "limitMs": 20000, "message": "Route calculation exceeded the time limit. This is not proof that no path exists." }
 
-{ "status": "data-error", "requestId": "req-5", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.1.0",
+{ "status": "data-error", "requestId": "req-5", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0",
   "stage": "worker-crash", "message": "Routing worker crashed." }
 
-{ "status": "cancelled", "requestId": "req-6", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.1.0" }
+{ "status": "cancelled", "requestId": "req-6", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0" }
 ```
 
 `invalid-input.reason` ∈ `version-mismatch | model-mismatch | bundle-not-loaded | endpoint-outside-region |
@@ -211,7 +211,9 @@ units and limitations. Filename: `mars-pathfinder_<bundleVersion>_<modelVersion>
 1. **Quality codes** `0/1/2/3` and exclusion codes `0–4` (Role A + Ayush).
 2. **Primary displayed distance** = `horizontalDistance_m`? (Dhani + Ayush).
 3. **Grade unit**: degrees (`maxAbsEdgeGrade_deg`) vs percent (Ayush + Dhani).
-4. **Edge quality rule**: worse of the two endpoint cells (Ayush).
+4. **Edge quality rule**: worse of the two endpoint cells (Ayush). Placeholder ≥ 0.2.0 uses this rule for BOTH the
+   exposure metrics and the quality term of the optimisation cost (the simulation fuzz found that mixing rules lets
+   uncertainty-aware report more unknown metres than shortest-feasible).
 5. **Raster format**: raw little-endian `.f32`/`.u8` per layer (Role A). No GeoTIFF in the browser.
 6. **Round trip**: computed per policy as a second leg; failed return ⇒ `round-trip-incomplete` (Ayush + Dhani).
 7. **Strict mode unsupported** ⇒ disabled control + `strict-quality-unsupported` (Dhani + Role A).

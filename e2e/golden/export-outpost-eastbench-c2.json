@@ -463,7 +463,7 @@
   "release": {
     "appVersion": "0.1.0",
     "bundleVersion": "synthetic-v0.1.0",
-    "modelVersion": "placeholder-astar-0.1.0"
+    "modelVersion": "placeholder-astar-0.2.0"
   },
   "request": {
     "destinationPoiId": "syn-east-bench",
