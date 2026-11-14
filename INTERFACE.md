@@ -201,7 +201,8 @@ routes.
 ## 8. Export (`src/export/serialize.ts`)
 
 `mars-pathfinder/route-export@1`: sorted keys, 2-space indent, trailing newline, `NaN/Infinity → null`, no timestamp
-unless explicitly passed, no URLs or local paths (asserted). Contains release id, region/bundle identity and sources,
+unless explicitly passed, no session ids (`requestId` is **not** exported, so the same inputs always give
+byte-identical files — the e2e suite compares against `e2e/golden/`), no URLs or local paths (asserted). Contains release id, region/bundle identity and sources,
 request settings, accepted endpoints, all candidates (metrics, path, quality intervals, cost), selected candidate,
 units and limitations. Filename: `mars-pathfinder_<bundleVersion>_<modelVersion>_<candidateId>.json`.
 
@@ -218,3 +219,5 @@ units and limitations. Filename: `mars-pathfinder_<bundleVersion>_<modelVersion>
 9. **Timing estimates** are not in v1 metrics; add `estimatedDuration_s` + `assumedSpeed_m_s` only if the team wants them.
 10. **Bundle selection**: `public/bundles/index.json` `{ release, dev, bundles[] }`; Role A edits `release`.
 11. **Display assets / textures** (`displayAssets[]`, optional, lazy-loaded) — fields to finalise with Role A + Role B.
+    The app already checks each optional asset's reachability + `byteLength` (`src/app/optionalAssets.ts`) and shows
+    `optional-assets-status`; a missing/corrupt texture never blocks routing.

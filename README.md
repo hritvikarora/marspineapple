@@ -32,10 +32,49 @@ npm run validate-bundle -- public/bundles/<bundle-dir>
 any sub-path. Don't open `index.html` via `file://` (module workers are blocked); serve it instead:
 `npx vite preview` or `cd dist && python3 -m http.server 8080`.
 
+## Testing
+
+| Command | What |
+|---|---|
+| `npm test` | Vitest unit/integration tests (node + jsdom). |
+| `npm run build && npm run build:e2e && npm run e2e` | Playwright browser e2e against the **built** app served under `/marspineapple/` (synthetic fixture). |
+| `npm run e2e:update-golden` | Rewrite `e2e/golden/export-outpost-eastbench-c2.json` after an intentional export change (review the diff!). |
+
+The e2e suite uses the installed Google Chrome (`channel: 'chrome'`, override with `PW_CHANNEL`), which is
+preinstalled on GitHub's ubuntu runners — no browser download. Two builds are served by `scripts/serve-static.mjs`:
+
+* **`release`** project → `dist/` (exactly what Pages deploys) on :4280 — `e2e/journey.spec.ts`: happy journey
+  (preset → calculate → select c0/c1/c2 → map/profile/briefing/3D sync → hover → print preview → JSON export
+  byte-identical to the golden file, no local paths/URLs), no-path (sealed basin), rapid destination switching
+  (stale responses discarded), release id / synthetic badge / no external requests.
+* **`variant`** project → `dist-e2e/` (`VITE_TILES=trek VITE_ROUTE_TIMEOUT_MS=1500`, public env only) on :4281 —
+  `e2e/failures.spec.ts`: invalid manifest (schema + version), raster byte-length mismatch, missing raster,
+  worker timeout, worker crash, missing optional texture, 3D chunk load failure, no WebGL, tile probe ok / offline / hanging.
+
+**No test hooks ship in the app.** Failures are injected from the outside with Playwright `page.route`
+(mutated manifest, 404/short rasters, a replacement or delayed worker script, aborted 3D chunk, offline/hanging
+tiles) and `addInitScript` (WebGL disabled). Every test fails on any console error not explicitly allow-listed
+for that test (`consoleGuard.allow(...)` in `e2e/fixtures.ts`) and asserts user-visible text.
+
+### `data-testid` contract (Dhani, Role B: please keep these when restyling)
+
+| testid | Element / meaning |
+|---|---|
+| `release-id`, `synthetic-badge`, `synthetic-production-warning` | Header release id, synthetic data badge/warning |
+| `bundle-error` | Region load failure message (stage + detail) |
+| `start-preset`, `destination-preset` | Start / destination `<select>`s (values = preset ids) |
+| `calculate`, `cancel-route`, `stale` | Run controls; stale-result notice |
+| `route-status` (+ `data-status`: idle/running/success/no-path/timeout/data-error/…), `route-message` | Route state + user message |
+| `candidate-<id>` | Candidate selector buttons (`candidate-c0`…) |
+| `map-canvas`, `profile`, `briefing`, `briefing-hover` | 2D map, elevation profile (hover slider), briefing, hover readout |
+| `view-2d`, `view-3d`, `terrain-view` (+ `data-selected-candidate`, `data-hover-index`), `terrain-fallback` | 3D toggle, 3D view, 2D fallback |
+| `export-json` | JSON export button |
+| `imagery-status`, `optional-assets-status` (+ `data-status`) | Context tiles status, optional display assets status |
+
 ## CI and deployment
 
-`.github/workflows/deploy.yml`: every push/PR runs typecheck, lint, test, build, `npm run audit` and the
-headless smoke against `dist/` served under `/marspineapple/`. Pushes to `main` (and manual
+`.github/workflows/deploy.yml`: every push/PR runs typecheck, lint, test, build, `npm run audit`, the
+headless smoke and the Playwright e2e suite against `dist/` served under `/marspineapple/` (only `dist/` is deployed). Pushes to `main` (and manual
 `workflow_dispatch`) then deploy `dist/` to GitHub Pages: https://hritvikarora.github.io/marspineapple/
 (requires Pages enabled with source "GitHub Actions"). The relative `base: './'` build works under that sub-path.
 
