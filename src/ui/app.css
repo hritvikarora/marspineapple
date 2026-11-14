@@ -1,0 +1,16 @@
+body { margin: 0; font-family: system-ui, sans-serif; background: #15110f; color: #eee; }
+.app { padding: 12px 16px; }
+header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h1 { font-size: 20px; margin: 0; }
+.release { font-family: ui-monospace, monospace; font-size: 12px; color: #bbb; }
+.badge.synthetic { background: #ffb000; color: #000; padding: 2px 6px; font-weight: bold; font-size: 12px; }
+main { display: grid; grid-template-columns: 300px 1fr; grid-template-areas: 'controls view' 'controls results'; gap: 12px; margin-top: 12px; }
+.controls { grid-area: controls; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.view { grid-area: view; }
+.results { grid-area: results; font-size: 14px; }
+fieldset { border: 1px solid #444; display: flex; flex-direction: column; gap: 2px; }
+.muted { color: #999; font-size: 12px; }
+.error { color: #ff7a7a; }
+.stale { color: #ffb000; }
+.placeholder3d { border: 1px dashed #666; padding: 24px; min-height: 200px; }
+button { padding: 6px 12px; }
