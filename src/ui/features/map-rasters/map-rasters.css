@@ -1,0 +1,25 @@
+/**
+ * Scoped styles for Map Rasters Feature (TASK-008)
+ */
+.map-rasters-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-1, 4px) var(--space-2, 8px);
+  background: rgba(9, 13, 22, 0.6);
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-xs, 11px);
+  color: var(--color-text-muted, #94a3b8);
+  margin-top: var(--space-1, 4px);
+}
+
+.map-rasters-label {
+  font-weight: 600;
+  color: var(--color-text-main, #f8fafc);
+}
+
+.map-rasters-list {
+  color: var(--color-accent, #60a5fa);
+  font-family: var(--font-mono, monospace);
+}

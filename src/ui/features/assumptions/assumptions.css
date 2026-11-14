@@ -1,0 +1,104 @@
+/**
+ * Scoped styles for Mission Assumptions Feature (TASK-005)
+ */
+.assumptions-panel {
+  margin-bottom: var(--space-4, 16px);
+}
+
+.assumptions-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+.assumptions-fieldset {
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: var(--radius-md, 6px);
+  padding: var(--space-3, 12px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+  background: var(--color-surface-sunken, #090d16);
+}
+
+.assumptions-legend {
+  font-size: var(--font-size-xs, 12px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-main, #f8fafc);
+  padding: 0 var(--space-2, 8px);
+}
+
+.assumptions-hint {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-muted, #94a3b8);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.assumptions-policies-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.assumptions-checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 8px);
+  cursor: pointer;
+  min-height: 44px; /* Accessible touch target */
+  padding: var(--space-1, 4px) 0;
+}
+
+.assumptions-checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--color-accent, #60a5fa);
+  flex-shrink: 0;
+}
+
+.assumptions-checkbox:focus-visible {
+  outline: 2px solid var(--color-focus, #73d0c1);
+  outline-offset: 2px;
+}
+
+.assumptions-checkbox-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.assumptions-policy-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--color-text-main, #f8fafc);
+}
+
+.assumptions-policy-desc {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--color-text-muted, #94a3b8);
+  line-height: 1.4;
+}
+
+.assumptions-warning {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-danger, #ef4444);
+  font-weight: 500;
+  margin: 0;
+  padding: var(--space-2, 8px);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm, 4px);
+}
+
+.assumptions-note {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--color-text-muted, #94a3b8);
+  font-style: italic;
+  margin: 0;
+}

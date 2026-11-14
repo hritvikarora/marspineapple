@@ -115,12 +115,37 @@ export interface RouteProgress extends ResponseBase {
   exploredNodes: number;
 }
 
+export interface SearchTraceFrame {
+  step: number;
+  policy: RoutePolicyId;
+  /** Row-major grid cell indices newly closed in this sampled batch (capped). */
+  closedCells: number[];
+  /** Sampled frontier cell indices currently in the open set (capped). */
+  frontierCells: number[];
+  /** Best path-so-far backtrace at this snapshot (sampled, preserving endpoints). */
+  currentBestCells: number[];
+  /** Current path cost gScore[u] at this snapshot. */
+  currentBestCost: number;
+  /** Number of closed expansions in this search at this snapshot. */
+  exploredCount: number;
+  /** Current open-set size at this snapshot. */
+  openSize: number;
+  /** Short deterministic caption describing this wavefront phase. */
+  note: string;
+}
+
+export interface SearchTraceData {
+  exploredTotal: number;
+  frames: SearchTraceFrame[];
+}
+
 export interface RouteSuccess extends ResponseBase {
   status: 'success';
   start: EndpointResolution;
   destination: EndpointResolution;
   candidates: RouteCandidate[];
   computeMs: number;
+  trace?: SearchTraceData;
 }
 
 export type NoPathReason = 'disconnected-under-limits' | 'strict-quality-disconnects' | 'unknown';

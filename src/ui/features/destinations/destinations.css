@@ -1,0 +1,171 @@
+/**
+ * Scoped styles for Science Destinations Feature (TASK-003)
+ */
+.destinations-panel {
+  margin-bottom: var(--space-4, 16px);
+}
+
+.destinations-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+.destinations-description {
+  font-size: var(--font-size-sm, 13px);
+  color: var(--color-text-muted, #94a3b8);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.destinations-empty {
+  font-size: var(--font-size-sm, 13px);
+  color: var(--color-text-muted, #94a3b8);
+  font-style: italic;
+  padding: var(--space-2, 8px) 0;
+  margin: 0;
+}
+
+.destinations-selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+
+.destinations-label {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--color-text-main, #f8fafc);
+}
+
+.destinations-select {
+  width: 100%;
+  min-height: 44px; /* Accessible 44px touch target */
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  background: var(--color-surface-sunken, #090d16);
+  color: var(--color-text-main, #f8fafc);
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-sm, 13px);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.destinations-select:focus-visible {
+  outline: 2px solid var(--color-focus, #73d0c1);
+  outline-offset: 2px;
+  border-color: var(--color-focus, #73d0c1);
+}
+
+.destinations-quick-picks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.destinations-quick-picks-heading {
+  font-size: var(--font-size-xs, 11px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.destinations-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+}
+
+.destinations-chip {
+  min-height: 36px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: var(--font-size-xs, 12px);
+}
+
+.destination-details {
+  background: var(--color-surface-sunken, #090d16);
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: var(--radius-md, 6px);
+  padding: var(--space-3, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.destination-details-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+}
+
+.destination-details-name {
+  margin: 0;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
+  color: var(--color-text-main, #f8fafc);
+}
+
+.destination-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm, 4px);
+  letter-spacing: 0.04em;
+}
+
+.destination-tag.official {
+  background: rgba(115, 208, 193, 0.15);
+  color: #73d0c1;
+  border: 1px solid rgba(115, 208, 193, 0.3);
+}
+
+.destination-tag.informal {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.destination-tag.synthetic {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.destination-purpose {
+  margin: 0;
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-main, #f8fafc);
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.destination-coords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+  margin: 0;
+  padding-top: var(--space-2, 8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.destination-coord-item {
+  display: flex;
+  gap: var(--space-1, 4px);
+  font-size: var(--font-size-xs, 11px);
+}
+
+.destination-coord-item dt {
+  color: var(--color-text-muted, #94a3b8);
+  font-weight: 500;
+}
+
+.destination-coord-item dd {
+  margin: 0;
+  color: var(--color-accent, #60a5fa);
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+}
