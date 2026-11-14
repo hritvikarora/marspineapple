@@ -21,6 +21,9 @@ npm test             # vitest (unit + jsdom app smoke)
 npm run build        # -> dist/
 npm run preview      # serve dist/ at http://localhost:4173
 npm run smoke        # headless Chrome journey against a running preview (needs local Chrome)
+npm run smoke:no-webgl  # same, with WebGL disabled (3D must degrade to 2D)
+npm run audit        # after build: gzip budgets + console/secret/local-path scan of dist/
+npm run audit:release   # same, but FAILS while production still serves the synthetic bundle
 npm run fixture      # regenerate the synthetic bundle (deterministic)
 npm run validate-bundle -- public/bundles/<bundle-dir>
 ```
@@ -52,8 +55,46 @@ flowchart LR
 * Invalidation rules, worker lifecycle, buffer ownership, coordinate conventions and JSON examples:
   **[INTERFACE.md](INTERFACE.md)**. Folder owners: **[OWNERS.md](OWNERS.md)**.
 * Release identifier `app · bundle · model` is shown in the header and embedded in exports.
-* Config that changes data/model behaviour lives in `src/config.ts` (`VITE_BUNDLE_MANIFEST` env var
-  overrides the bundle URL; it is public, not a secret).
+* Config that changes data/model behaviour lives in `src/config.ts`. All `VITE_*` values are public
+  (baked into the static build); the app uses no secrets.
+* **Selection sync:** `selectedCandidateId` and the hovered profile sample (`display.hover`) live in
+  the store. Map, elevation profile, 3D props, briefing and export all read the single
+  `selectSelection(state)` view-model, so they cannot disagree (tested in `tests/selectionSync.test.tsx`
+  and in the browser smoke).
+* **3D isolation:** `src/app/TerrainSlot.tsx` probes WebGL, lazy-loads `src/terrain3d` behind
+  `Suspense`, and wraps it in an error boundary. No WebGL, a chunk-load failure, a render throw or a
+  reported context loss (`onError`) records `display.terrain3d` and falls back to the 2D map with an
+  accurate message (+ Retry when WebGL exists). Profile and briefing are always visible.
+* **Optional context imagery:** `src/app/tiles.ts` (NASA Trek WMTS, CORS-enabled) is **off by
+  default** (`VITE_TILES=trek` to enable). Every fetch settles within 4 s (timeout/offline/http-error)
+  and nothing in bundle loading or routing waits for it.
+
+### Swapping in the real bundle (Role A)
+
+1. Put the bundle in `public/bundles/<bundleId>/` (manifest + rasters, INTERFACE.md §2) and run
+   `npm run validate-bundle -- public/bundles/<bundleId>`.
+2. Edit `public/bundles/index.json`: set `"release": "<bundleId>"` and add an entry to `bundles`.
+   Keep `"dev": "synthetic-v0"` so the dev server and tests stay on the fixture.
+3. `npm run build && npm run audit:release` — passes only when production no longer serves a
+   `synthetic: true` manifest. Until then every production build shows a red
+   "serving the SYNTHETIC fixture" banner.
+4. Ad-hoc overrides without editing files (public build-time env vars):
+   `VITE_BUNDLE=<bundleId> npm run build` or `VITE_BUNDLE_MANIFEST=<url> npm run dev`
+   (precedence: `VITE_BUNDLE_MANIFEST` > `VITE_BUNDLE` > `index.json`).
+
+### Asset budget (gzip, enforced by `npm run audit`)
+
+| Item | Budget | Current |
+|---|---|---|
+| Entry JS (initial load) | 150 KB | ~79 KB |
+| All JS incl. lazy chunks + worker | 450 KB | ~84 KB |
+| Routing worker | 50 KB | ~4 KB |
+| CSS | 30 KB | ~0.5 KB |
+| Each region bundle | 15 MB | synthetic 3.5 KB |
+| Total `dist/` raw | 60 MB | ~0.3 MB |
+
+three.js and Role B code must stay in the lazy `src/terrain3d` chunk; large textures/panoramas should be
+`displayAssets` loaded on demand.
 
 ```
 src/
@@ -62,7 +103,8 @@ src/
   state/       store, context, useRouteRunner                    (Role C)
   worker/      client (typed wrapper), handler, worker entry     (Role C protocol)
   routing/     solver — placeholderEngine.ts is a STUB           (Ayush)
-  ui/          App shell + MapCanvas — minimal STUBS             (Dhani)
+  app/         composition: bundle selection, 3D slot, tiles     (Role C)
+  ui/          App shell, MapCanvas, ElevationProfile, Briefing — minimal STUBS (Dhani)
   terrain3d/   TerrainView — STUB with agreed props              (Role B)
   export/      deterministic serializer                          (Role C)
 public/bundles/synthetic-v0/   synthetic fixture + INSPECT.txt   (generated)
@@ -88,7 +130,8 @@ periodically (timeouts) and `hooks.onProgress(n)` sparingly. Use `cellCenter`/`p
 `src/contracts/grid.ts`. Put your tests in `src/routing/*.test.ts` (vitest picks them up). Bump
 `MODEL_VERSION` whenever weights/limits change. Don't edit state or UI files — ask Role C.
 
-**Dhani (UI).** Own `src/ui/`. Read state with `useAppState()` and dispatch actions from
+**Dhani (UI).** Own `src/ui/`. `ElevationProfile` and `Briefing` are minimal stubs; derive everything from
+`selectSelection(state)` and write hover with the `view/hover` action. Read state with `useAppState()` and dispatch actions from
 `src/state/store.ts`; run routes with `useRouteRunner()` (`requestRoute`, `cancelRoute`). Never touch
 the worker. Use the `isStale` flag, `routeRun` state and `selectedCandidateId` (single selection for
 map/profile/3D/briefing). Keep the `data-testid`s / accessible labels used by `tests/app.smoke.test.tsx`
@@ -101,12 +144,16 @@ bytes ⇒ new `bundleVersion`. Keep raw archives outside the repo (`/raw` is git
 to point `BUNDLE_MANIFEST_URL` in `src/config.ts` at it.
 
 **Role B (3D).** Own `src/terrain3d/`. Implement the default export with `TerrainViewProps`
-(`src/terrain3d/TerrainView.tsx`). It is already lazy-loaded behind the 2D/3D toggle; keep three.js
-imports inside this folder so they stay out of the initial bundle. Use `toSceneXYZ` (X=east, Y=elev,
-Z=−north). Never mutate bundle arrays. Report failures through `onError` so the app falls back to 2D.
+(`src/terrain3d/TerrainView.tsx`). `TerrainSlot` already lazy-loads it, probes WebGL first and catches
+render errors; keep three.js imports inside this folder so they stay out of the initial bundle. Use
+`toSceneXYZ` (X=east, Y=elev, Z=−north). Never mutate bundle arrays. Highlight
+`highlightPathIndex` (shared hover) and `selectedCandidateId`; call `onSelectCandidate`/`onCameraChange`
+instead of keeping your own copies. On `webglcontextlost`, a missing texture or bad terrain call
+`onError({ kind, message })` — the app degrades to 2D. Keep `data-testid="terrain-view"` with
+`data-selected-candidate` / `data-hover-index` (used by tests and smoke).
 
-**Role C (integration).** Phases 3–5: real bundle switch, Dhani/Role B integration, error boundary
-around 3D, e2e journey incl. failure modes, asset budget, release checklist, deploy, demo, submission.
+**Role C (integration).** Remaining: point `release` at Role A's bundle, integrate Dhani's and Role B's
+real components, full e2e journey incl. failure modes, release checklist, deploy, demo, submission.
 
 ## Limitations (current)
 

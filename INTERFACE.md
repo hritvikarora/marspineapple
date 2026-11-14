@@ -190,6 +190,14 @@ endpoint-excluded | endpoint-quality-excluded | no-policies | strict-quality-uns
 
 Stale candidates are kept for labelled comparison (dashed on the map) until a new result arrives.
 
+**Selection + hover (non-invalidating).** `selectedCandidateId` and `display.hover = { candidateId, pathIndex }`
+(index into the selected candidate's `outbound.path` / `profile`) are the only selection state. Hover is accepted
+only for the selected candidate and a valid index, and is cleared when the selection or results change.
+Every consumer (map, profile, 3D props `selectedCandidateId` + `highlightPathIndex`, briefing, export) uses
+`selectSelection(state)`. **3D health** lives in `display.terrain3d` (`unknown | ok | unavailable{kind,message}`,
+kinds `webgl-unavailable | context-lost | render-error | load-error | terrain-data | texture`); it never touches
+routes.
+
 ## 8. Export (`src/export/serialize.ts`)
 
 `mars-pathfinder/route-export@1`: sorted keys, 2-space indent, trailing newline, `NaN/Infinity → null`, no timestamp
@@ -208,4 +216,5 @@ units and limitations. Filename: `mars-pathfinder_<bundleVersion>_<modelVersion>
 7. **Strict mode unsupported** ⇒ disabled control + `strict-quality-unsupported` (Dhani + Role A).
 8. **Cancellation model**: terminate/restart (current) vs cooperative chunks (Ayush may add).
 9. **Timing estimates** are not in v1 metrics; add `estimatedDuration_s` + `assumedSpeed_m_s` only if the team wants them.
-10. **Display assets / textures** (`displayAssets[]`, optional, lazy-loaded) — fields to finalise with Role A + Role B.
+10. **Bundle selection**: `public/bundles/index.json` `{ release, dev, bundles[] }`; Role A edits `release`.
+11. **Display assets / textures** (`displayAssets[]`, optional, lazy-loaded) — fields to finalise with Role A + Role B.
