@@ -1,0 +1,44 @@
+/**
+ * Shared Design Tokens. OWNER: Dhani.
+ * Reconciled color tokens, spacing, typography, and responsive rules.
+ */
+:root {
+  --color-surface: #101820;
+  --color-panel: #18242f;
+  --color-panel-header: #1f2f3d;
+  --color-text: #f3f6f8;
+  --color-muted: #b7c3cf;
+  --color-border: #526477;
+  --color-accent: #73d0c1;
+  --color-accent-hover: #5abdae;
+  --color-warning: #f4c76b;
+  --color-error: #ff9b9b;
+  --color-error-bg: #4a1515;
+  --color-success: #2ecc71;
+  --color-focus: #73d0c1;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --min-touch-target: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

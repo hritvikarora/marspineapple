@@ -25,7 +25,7 @@ All rows currently remain TODO. A leaf may enter IN_PROGRESS only after TASK-001
 
 | ID | Title | Dependency | Status | Owner | Evidence / blocking note |
 | --- | --- | --- | --- | --- | --- |
-| TASK-001 | Reconcile and deliver working UI foundation in `src/ui/**` | None | TODO | Dhani | Planning reconciled; executable UI foundation gate pending implementation. |
+| TASK-001 | Reconcile and deliver working UI foundation in `src/ui/**` | None | REVIEW | Dhani | Foundation implemented, verified, and submitted in `handoffs/TASK-001.md`. |
 | TASK-002 | Mission context and initial guidance (`src/ui/features/mission-context`) | TASK-001 only | TODO | — | `handoffs/TASK-002.md` not yet created. |
 | TASK-003 | Science destination selector (`src/ui/features/destinations`) | TASK-001 only | TODO | — | `handoffs/TASK-003.md` not yet created. |
 | TASK-004 | Endpoint forms and selection modes (`src/ui/features/endpoints`) | TASK-001 only | TODO | — | `handoffs/TASK-004.md` not yet created. |
