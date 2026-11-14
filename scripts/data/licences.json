@@ -1,0 +1,110 @@
+{
+ "_note": "Licence / usage-rights register. Each entry quotes the official page checked on 2026-11-14 (Europe/Rome). 'verified': true = licence text read on an official page of the producer/distributor; 'partial' = only a general agency policy applies, no dataset-specific licence found; false = unknown.",
+ "checked": "2026-11-14",
+ "entries": {
+  "hirise_dtm_mosaic_1m": {
+   "licence": "CC0 1.0 Universal (USGS: 'This work is marked with CC0 1.0 Universal'); Astropedia use constraint: 'Please cite authors'",
+   "credit_line": "USGS Astrogeology Science Center; HiRISE: NASA/JPL/University of Arizona",
+   "citation": "Fergason, R.L., Galuszka, D.M., Hare, T.M., Mayer, D.P., Redding, B.L. (2020). Mars 2020 Terrain Relative Navigation HiRISE DTM Mosaic. U.S. Geological Survey. https://doi.org/10.5066/P9REJ9JN",
+   "urls": [
+    "https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-hirise-dtm-mosaic",
+    "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic",
+    "https://uahirise.org/media/usage.php"
+   ],
+   "verified": true
+  },
+  "hirise_orthomosaic_25cm": {
+   "licence": "CC0 1.0 Universal (USGS data release page, Rights field); underlying HiRISE images public domain (UA HiRISE Image Usage Policy: 'there is no copyright restriction ... within the public domain')",
+   "credit_line": "USGS Astrogeology Science Center; Image: NASA/JPL/University of Arizona",
+   "citation": "Fergason, R.L., Galuszka, D.M., Hare, T.M., Mayer, D.P., Redding, B.L. (2020). Mars 2020 Terrain Relative Navigation HiRISE Orthorectified Image Mosaic. U.S. Geological Survey. https://doi.org/10.5066/P9QJDP48",
+   "doi": "10.5066/P9QJDP48",
+   "urls": [
+    "https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-hirise-orthorectified-image-mosaic",
+    "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_orthorectified_image_mosaic",
+    "https://uahirise.org/media/usage.php"
+   ],
+   "verified": true
+  },
+  "ctx_dtm_mosaic_20m": {
+   "licence": "CC0 1.0 Universal (USGS data release page, Rights field); Astropedia: Access constraints None, Use constraints 'Please cite authors'",
+   "credit_line": "USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS",
+   "citation": "Fergason, R.L., Galuszka, D.M., Hare, T.M., Mayer, D.P., Redding, B.L. (2020). Mars 2020 Terrain Relative Navigation CTX DTM Mosaic. U.S. Geological Survey. https://doi.org/10.5066/P906QQT8",
+   "urls": [
+    "https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-ctx-dtm-mosaic",
+    "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_ctx_dtm_mosaic"
+   ],
+   "verified": true
+  },
+  "ctx_orthomosaic_6m": {
+   "licence": "CC0 1.0 Universal (USGS data release page, Rights field); CTX images public domain, MSSS: 'While the images are in the Public Domain, NASA/JPL-Caltech/MSSS requests that you credit the source'",
+   "credit_line": "USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS",
+   "citation": "Fergason, R.L., Galuszka, D.M., Hare, T.M., Mayer, D.P., Redding, B.L. (2020). Mars 2020 Terrain Relative Navigation Context Camera Orthorectified Image Mosaic. U.S. Geological Survey. https://doi.org/10.5066/P9GV1ND3",
+   "urls": [
+    "https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-context-camera-orthorectified-image-mosaic",
+    "https://astrogeology.usgs.gov/search/map/Mars/Mars2020/JEZ_ctx_B_soc_008_orthoMosaic_6m_Eqc_latTs0_lon0",
+    "https://www.msss.com/news/index.php?id=141"
+   ],
+   "verified": true
+  },
+  "hrsc_mola_blend_200m_v2": {
+   "licence": "Mixed: Astropedia 'Access Constraints: MOLA (CC0) and HRSC (CC BY-SA 3.0 IGO)'; 'Use Constraints: Please cite authors'. HRSC licence confirmed by DLR (2014): CC BY-SA 3.0 IGO, attribution ESA/DLR/FU Berlin.",
+   "credit_line": "MOLA: NASA/GSFC; HRSC: ESA/DLR/FU Berlin, CC BY-SA 3.0 IGO; blend: USGS Astrogeology Science Center (Fergason, Hare & Laura 2018)",
+   "citation": "Fergason, R.L., Hare, T.M., Laura, J. (2018). HRSC and MOLA Blended Digital Elevation Model at 200m v2. Astrogeology PDS Annex, U.S. Geological Survey.",
+   "urls": [
+    "https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m",
+    "https://www.dlr.de/en/blog/archive/2014/simpler-usage-rights-as-of-today-mars-express-hrsc-images-licensed-under-creative-commons-licence"
+   ],
+   "verified": true,
+   "app_impact": "Used ONLY for a sanity check (not shipped in any bundle). If it is ever shipped or displayed, the CC BY-SA 3.0 IGO share-alike + attribution terms apply."
+  },
+  "jpl_m20_waypoints": {
+   "licence": "No dataset-specific licence found on the file or MMGIS. General NASA Images and Media Usage Guidelines: NASA content 'generally [is] not subject to copyright in the United States' and may be used for educational/informational purposes; 'NASA should be acknowledged as the source of the material'; no implied endorsement.",
+   "credit_line": "NASA/JPL-Caltech",
+   "citation": "NASA/JPL-Caltech, Mars 2020 rover waypoints (MMGIS), M20_waypoints.json, https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+   "urls": [
+    "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "https://www.jpl.nasa.gov/jpl-image-use-policy"
+   ],
+   "verified": "partial",
+   "note": "Credit line 'NASA/JPL-Caltech' follows JPL practice ('Courtesy NASA/JPL-Caltech' per JPL Image Use Policy, which formally covers jpl.nasa.gov sites; mars.nasa.gov is not a jpl.nasa.gov address)."
+  },
+  "mastcam_z_360_panoramas": {
+   "licence": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated.",
+   "credit_line": "NASA/JPL-Caltech/ASU/MSSS",
+   "citation": "Bell III, J.F. et al. & the Mastcam-Z Science and Operations Team (2025). Landscape Mosaics Acquired in Jezero Crater by the Mastcam-Z Investigation on the NASA Mars 2020 Mission's Perseverance Rover. 56th LPSC, Abstract #1719.",
+   "urls": [
+    "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+   ],
+   "verified": true,
+   "note": "The team 'would be grateful' for the abstract reference and the photo credit for any public or commercial use."
+  },
+  "meda_pds": {
+   "licence": "CC0 1.0 Universal and 'a work of the U.S. Government ... not subject to copyright protection in the United States. Foreign copyrights may apply.' (DataCite rights for DOI 10.17189/1522849)",
+   "credit_line": "MEDA: NASA PDS Atmospheres Node (Rodriguez-Manfredi & de la Torre Juarez 2021, doi:10.17189/1522849)",
+   "citation": "Rodriguez-Manfredi, J.A., de la Torre Juarez, M. (2021). Mars 2020 MEDA Bundle (v6.0). NASA Planetary Data System. https://doi.org/10.17189/1522849",
+   "urls": [
+    "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/bundle.xml",
+    "https://api.datacite.org/dois/10.17189/1522849"
+   ],
+   "verified": true,
+   "note": "Licence and citation verified via DataCite and the PDS4 bundle label. No mission-specific photo-style credit line was found; the credit uses the verified PDS citation."
+  },
+  "papers": {
+   "licence": "Cited only (short paraphrase of findings, no text/figures reproduced). Science papers (Farley 2022, Liu 2022, Mangold 2021): no licence in Crossref metadata - publisher copyright, not verified. Hurowitz et al. 2025 (Nature): CC BY-NC-ND 4.0 per Crossref metadata.",
+   "credit_line": "Cite as reference (author, year, journal, DOI)",
+   "urls": [
+    "https://api.crossref.org/works/10.1038/s41586-025-09413-0",
+    "https://doi.org/10.1126/science.abo2196",
+    "https://doi.org/10.1126/science.abo2756",
+    "https://doi.org/10.1126/science.abl4051"
+   ],
+   "verified": "partial"
+  },
+  "nasa_press_and_abstracts": {
+   "licence": "NASA/JPL press release (SHERLOC organics, Sept 2022) and conference abstracts (EPSC2022-1098, LPSC 2023 #2716): cited only; licence not checked.",
+   "credit_line": "Cite as reference",
+   "urls": [],
+   "verified": false
+  }
+ }
+}

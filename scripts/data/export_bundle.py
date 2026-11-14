@@ -22,24 +22,33 @@ sha = lambda b: hashlib.sha256(b).hexdigest()
 VERT = ("Metres as distributed in the USGS Mars 2020 TRN DTMs (file names 'MOLAtopography_DeltaGeoid'); empirically equal to JPL rover "
         "'elev_geoid' (median diff -0.006 m over 62 waypoints) -> areoid-referenced (MOLA-style). USGS XML text mentions the IAU 2000 sphere; "
         "exact datum wording is a producer ambiguity. Negative values are normal (Jezero floor ~ -2.5 km).")
+LIC = json.load(open("licences.json"))["entries"]  # licence register, verified on official pages (see licences.json "checked")
+def rights(k):
+    e = LIC[k]; v = {True: "verified", "partial": "partially verified (general policy only)", False: "unverified"}[e["verified"]]
+    lic = e["licence"].rstrip(); lic += "" if lic.endswith(".") else "."
+    return f"{lic} Credit: {e['credit_line']}. [{v} {json.load(open('licences.json'))['checked']}: {e['urls'][0]}]"
+def cite(k): return LIC[k].get("citation", "")
+AUTH = "Fergason, Galuszka, Hare, Mayer, Redding - USGS Astrogeology Science Center"
 SOURCES = {
  "usgs-m2020-hirise-dtm": dict(id="usgs-m2020-hirise-dtm", mission="Mars Reconnaissance Orbiter", instrument="HiRISE",
-   title="High-Resolution Imaging Science Experiment Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation (JEZ_hirise_soc_006, 1 m)",
-   creator="Fergason, Galuszka, Hare, Mayer, Redding, Smith - USGS Astrogeology Science Center", url="https://doi.org/10.5066/P9REJ9JN",
-   version="soc_006 (published 2020-07-24)", rights="CC0 1.0 / US public domain (USGS); please cite authors",
+   title="Mars 2020 Terrain Relative Navigation HiRISE DTM Mosaic (JEZ_hirise_soc_006, 1 m)",
+   creator=AUTH, url="https://doi.org/10.5066/P9REJ9JN", version="soc_006 (published 2020-07-24)", rights=rights("hirise_dtm_mosaic_1m"),
    usedFor="Elevation samples (copied 1:1), slope and roughness derivation"),
  "usgs-m2020-hirise-ortho": dict(id="usgs-m2020-hirise-ortho", mission="Mars Reconnaissance Orbiter", instrument="HiRISE",
-   title="HiRISE orthomosaic for Mars 2020 TRN (JEZ_hirise_soc_006_orthoMosaic_25cm)", creator="USGS Astrogeology Science Center; HiRISE: NASA/JPL-Caltech/UArizona",
-   url="https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/index.html", version="soc_006", rights="USGS/NASA public data; credit NASA/JPL-Caltech/UArizona and USGS",
+   title="Mars 2020 Terrain Relative Navigation HiRISE Orthorectified Image Mosaic (JEZ_hirise_soc_006_orthoMosaic_25cm)", creator=AUTH + "; HiRISE: NASA/JPL/University of Arizona",
+   url="https://doi.org/10.5066/P9QJDP48", version="soc_006", rights=rights("hirise_orthomosaic_25cm"),
    usedFor="Optional display texture (downsampled 4000->2048 px)"),
  "usgs-m2020-ctx-dtm": dict(id="usgs-m2020-ctx-dtm", mission="Mars Reconnaissance Orbiter", instrument="CTX",
-   title="Context Camera Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation (JEZ_ctx_B_soc_008, 20 m)", creator="Fergason et al. - USGS Astrogeology Science Center",
-   url="https://doi.org/10.5066/P906QQT8", version="soc_008 (published 2020-07-24)", rights="USGS public data; please cite authors", usedFor="Coarse fallback elevation; consistency check of HiRISE"),
- "usgs-m2020-ctx-ortho": dict(id="usgs-m2020-ctx-ortho", mission="Mars Reconnaissance Orbiter", instrument="CTX", title="Context Camera Orthorectified image Mosaic for Mars 2020 TRN (6 m)",
-   creator="USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS", url="https://doi.org/10.5066/P9GV1ND3", version="soc_008", rights="USGS public data; please cite authors", usedFor="Optional display texture of the coarse fallback"),
+   title="Mars 2020 Terrain Relative Navigation CTX DTM Mosaic (JEZ_ctx_B_soc_008, 20 m)", creator=AUTH + "; CTX: NASA/JPL-Caltech/MSSS",
+   url="https://doi.org/10.5066/P906QQT8", version="soc_008 (published 2020-07-24)", rights=rights("ctx_dtm_mosaic_20m"), usedFor="Coarse fallback elevation; consistency check of HiRISE"),
+ "usgs-m2020-ctx-ortho": dict(id="usgs-m2020-ctx-ortho", mission="Mars Reconnaissance Orbiter", instrument="CTX", title="Mars 2020 Terrain Relative Navigation Context Camera Orthorectified Image Mosaic (6 m)",
+   creator=AUTH + "; CTX: NASA/JPL-Caltech/MSSS", url="https://doi.org/10.5066/P9GV1ND3", version="soc_008", rights=rights("ctx_orthomosaic_6m"), usedFor="Optional display texture of the coarse fallback"),
  "jpl-m20-waypoints": dict(id="jpl-m20-waypoints", mission="Mars 2020", instrument="Rover localization (MMGIS)", title="M20_waypoints.json (NASA/JPL Mars 2020 rover waypoints, sol 2022 release)",
-   creator="NASA/JPL-Caltech", url="https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json", version="M20_waypoints_sol2022_all", rights="NASA public data",
+   creator="NASA/JPL-Caltech", url="https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json", version="M20_waypoints_sol2022_all", rights=rights("jpl_m20_waypoints"),
    usedFor="Positions of science stops (rover positions where Mastcam-Z 360° panoramas were taken)"),
+ "mastcam-z-360": dict(id="mastcam-z-360", mission="Mars 2020", instrument="Mastcam-Z", title="Mastcam-Z 360° Panorama Collection (Mastcam-Z team, ASU)",
+   creator="NASA/JPL-Caltech/ASU/MSSS; " + cite("mastcam_z_360_panoramas"), url="https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/", version="list as of sol 1889 (2026-06-13)",
+   rights=rights("mastcam_z_360_panoramas"), usedFor="Panorama IDs and credit named in the science-stop purpose text (images are not bundled)"),
 }
 
 def ld(rel):
@@ -85,7 +94,7 @@ def build(bundle_id, title, description, prefix, cell_e_proj, cell_n, bounds_m, 
             pois.append(dict(id=f"poi-{p['id'].lower()}", name=p["name"], kind="science-stop", position=dict(east_m=round(e, 3), north_m=round(n, 3)),
                 purpose=(f"{p['geologic_unit']}. {p['sample_or_event']}. VR stop: Mastcam-Z 360° panoramas {', '.join(q['id'] for q in p['panoramas'])} (credit NASA/JPL-Caltech/ASU/MSSS). "
                          f"Position = JPL rover waypoint sol {w['sol']} site {w['site']} drive {w['drive']} (where the panorama was taken); the named outcrop may be metres to tens of metres away."),
-                officialName=False, positionalUncertainty_m=None, sourceIds=["jpl-m20-waypoints"], synthetic=False))
+                officialName=False, positionalUncertainty_m=None, sourceIds=["jpl-m20-waypoints", "mastcam-z-360"], synthetic=False))
     assets = []
     if texture:
         tb = open(texture[0], "rb").read(); fn = os.path.basename(texture[1]); open(os.path.join(out, fn), "wb").write(tb)
@@ -140,11 +149,11 @@ build("jezero-west-hirise-v0.1.0", "Jezero crater – western delta front (HiRIS
       "RMS residual after least-squares plane fit over 5x5 cells (4.74 m E x 5 m N ground); NaN where the window is incomplete.",
       "Horn (1981) 3x3 finite differences on ground spacing (dx = 0.94857 m, dy = 1 m), computed on a 250 m margin then cropped; degrees, 0 = flat.",
       False, (f"{PKG}/textures/hirise_ortho_2048.jpg", "texture-hirise-2048.jpg"), "usgs-m2020-hirise-ortho",
-      ["usgs-m2020-hirise-dtm", "usgs-m2020-hirise-ortho", "usgs-m2020-ctx-dtm", "jpl-m20-waypoints"], 5)
+      ["usgs-m2020-hirise-dtm", "usgs-m2020-hirise-ortho", "usgs-m2020-ctx-dtm", "jpl-m20-waypoints", "mastcam-z-360"], 5)
 build("jezero-west-ctx20m-v0.1.0", "Jezero crater – western delta front (CTX 20 m COARSE fallback)",
       "COARSE FALLBACK. Same area at native USGS CTX 20 m posts (51x51). Use only if the HiRISE bundle cannot be used; label as coarse 20 m in the UI. Real Mars data.",
       "fallback_ctx20m", 20.0, 20.0, dict(left=Fb["bounds_m"]["left"], right=Fb["bounds_m"]["right"], bottom=Fb["bounds_m"]["bottom"], top=Fb["bounds_m"]["top"]),
       "RMS residual after least-squares plane fit over 3x3 cells (~57 m E x 60 m N ground); NOT comparable to 1 m roughness.",
       "Horn (1981) 3x3 on 20 m posts (dx = 18.97 m ground, dy = 20 m), computed with a 3-cell margin then cropped; degrees. Smooths slopes shorter than ~60 m.",
       True, (f"{PKG}/fallback_ctx20m/ctx_ortho_texture.jpg", "texture-ctx.jpg"), "usgs-m2020-ctx-ortho",
-      ["usgs-m2020-ctx-dtm", "usgs-m2020-ctx-ortho", "jpl-m20-waypoints"], 3)
+      ["usgs-m2020-ctx-dtm", "usgs-m2020-ctx-ortho", "jpl-m20-waypoints", "mastcam-z-360"], 3)

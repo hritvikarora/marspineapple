@@ -1,0 +1,36 @@
+/**
+ * Scoped styles for Map Routes Feature (TASK-011)
+ */
+.map-routes-status {
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  background: var(--color-surface-sunken, #090d16);
+  border: 1px solid var(--color-border-subtle, #334155);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-xs, 11px);
+  margin-top: var(--space-1, 4px);
+}
+
+.map-routes-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+  color: var(--color-text-muted, #94a3b8);
+}
+
+.map-routes-item strong {
+  color: var(--color-text-main, #f8fafc);
+  margin-right: var(--space-1, 4px);
+}
+
+.map-routes-stale-tag {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

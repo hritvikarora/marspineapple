@@ -29,3 +29,8 @@ cd ../.. && npm run validate-bundle -- public/bundles/jezero-west-hirise-v0.1.0
 `acquire.py`, `inspect_header.py`, `inspect_data.py`, `preview_overview.py`, `process.py`, `src/terrain.py`, `tests/`, `make_validation.py`,
 `make_pois.py` (+ `poi_sources/`), `export_bundle.py`, `config.json`, `requirements.lock`, `versions.txt`, `sources.json`, `package_template/`.
 Copia completa del lavoro (con evidenze e anteprime): repo privato `ireneplemic-cmyk/jezero-data-gis`.
+
+## Versioning note / Nota sulle versioni (2026-11-14)
+- **IT:** Aggiornamento solo dei metadati dei manifest (licenze, crediti e DOI verificati da `licences.json`, incluso il DOI dell'ortomosaico HiRISE 10.5066/P9QJDP48; nuova fonte `mastcam-z-360` citata nelle tappe). Nessun byte analitico è cambiato (raster `.f32/.u8` e texture identici, stessi SHA-256). Secondo INTERFACE.md §3 `bundleVersion` cambia solo quando cambia un byte analitico, quindi resta `jezero-west-hirise-v0.1.0` / `jezero-west-ctx20m-v0.1.0`.
+- **EN:** Manifest-metadata-only update (verified licences, credits and DOIs from `licences.json`, incl. HiRISE ortho DOI 10.5066/P9QJDP48; new `mastcam-z-360` source referenced by the science stops). No analytical byte changed (`.f32/.u8` rasters and textures byte-identical, same SHA-256). Per INTERFACE.md §3 `bundleVersion` changes only when an analytical byte changes, so it stays `jezero-west-hirise-v0.1.0` / `jezero-west-ctx20m-v0.1.0`.
+- Licence register: `licences.json` (official pages checked 2026-11-14). `make_pois.py` and `export_bundle.py` read it.

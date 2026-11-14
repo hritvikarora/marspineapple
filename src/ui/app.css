@@ -1,20 +1,324 @@
-body { margin: 0; font-family: system-ui, sans-serif; background: #15110f; color: #eee; }
-.app { padding: 12px 16px; }
-header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
-h1 { font-size: 20px; margin: 0; }
-.release { font-family: ui-monospace, monospace; font-size: 12px; color: #bbb; }
-.badge.synthetic { background: #ffb000; color: #000; padding: 2px 6px; font-weight: bold; font-size: 12px; }
-main { display: grid; grid-template-columns: 300px 1fr; grid-template-areas: 'controls view' 'controls results'; gap: 12px; margin-top: 12px; }
-.controls { grid-area: controls; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
-.view { grid-area: view; }
-.results { grid-area: results; font-size: 14px; }
-fieldset { border: 1px solid #444; display: flex; flex-direction: column; gap: 2px; }
-.muted { color: #999; font-size: 12px; }
-.error { color: #ff7a7a; }
-.stale { color: #ffb000; }
-.placeholder3d { border: 1px dashed #666; padding: 24px; min-height: 200px; }
-button { padding: 6px 12px; }
-.banner { border: 2px solid #ff7a7a; padding: 8px; margin: 8px 0; font-weight: bold; }
-.notice { border: 1px solid #ffb000; padding: 8px; margin-bottom: 8px; }
-.briefing { margin-top: 16px; border-top: 1px solid #444; }
-@media print { body { background: #fff; color: #000; } .controls, .view, button { display: none; } }
+/**
+ * Application Shell and Component Styles. OWNER: Dhani.
+ * Implements responsive layout (desktop & mobile 390x844), visible focus, 44px touch targets,
+ * button variants, and modal drawer styling.
+ */
+@import './shared/tokens.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  background: var(--color-surface, #101820);
+  color: var(--color-text, #f3f6f8);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus, #73d0c1) !important;
+  outline-offset: 2px !important;
+}
+
+.app {
+  padding: 12px 16px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border, #526477);
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.release {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--color-muted, #b7c3cf);
+}
+
+.badge.synthetic {
+  background: var(--color-warning, #f4c76b);
+  color: #000;
+  padding: 2px 8px;
+  font-weight: bold;
+  font-size: 11px;
+  border-radius: var(--radius-sm, 4px);
+  text-transform: uppercase;
+}
+
+.banner {
+  border: 2px solid var(--color-error, #ff9b9b);
+  background: var(--color-error-bg, #4a1515);
+  color: var(--color-error, #ff9b9b);
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-weight: bold;
+  border-radius: var(--radius-md, 6px);
+}
+
+/* Desktop Grid Layout (>= 900px) */
+main {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-areas:
+    'controls view'
+    'controls results';
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.controls {
+  grid-area: controls;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.view {
+  grid-area: view;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.results {
+  grid-area: results;
+  font-size: 14px;
+  border-top: 1px solid var(--color-border, #526477);
+  padding-top: 12px;
+}
+
+/* Mobile Responsive Layout (< 900px, e.g. 390x844) */
+@media (max-width: 899px) {
+  .app {
+    padding: 8px 12px;
+  }
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .controls, .view, .results {
+    width: 100%;
+    max-width: 100%;
+  }
+  canvas[data-testid="map-canvas"] {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Form Controls & 44px Minimum Touch Targets */
+button, .btn {
+  min-height: var(--min-touch-target, 44px);
+  min-width: var(--min-touch-target, 44px);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+button:disabled, .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-accent, #73d0c1);
+  color: #101820;
+  font-weight: 600;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-hover, #5abdae);
+}
+
+.btn-secondary {
+  background: var(--color-panel-header, #1f2f3d);
+  color: var(--color-text, #f3f6f8);
+  border-color: var(--color-border, #526477);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: #273b4d;
+}
+
+.btn-danger {
+  background: var(--color-error-bg, #4a1515);
+  color: var(--color-error, #ff9b9b);
+  border-color: var(--color-error, #ff9b9b);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text, #f3f6f8);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Form fields & inputs */
+select, input[type="text"], input[type="number"] {
+  min-height: var(--min-touch-target, 44px);
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--color-panel, #18242f);
+  color: var(--color-text, #f3f6f8);
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-sm, 4px);
+  width: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label:has(input[type="checkbox"]),
+label:has(input[type="radio"]) {
+  flex-direction: row;
+  align-items: center;
+  min-height: var(--min-touch-target, 44px);
+  cursor: pointer;
+  gap: 8px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+}
+
+fieldset {
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-sm, 4px);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+legend {
+  font-size: 12px;
+  color: var(--color-muted, #b7c3cf);
+  padding: 0 4px;
+}
+
+.muted {
+  color: var(--color-muted, #b7c3cf);
+  font-size: 12px;
+}
+
+.error {
+  color: var(--color-error, #ff9b9b);
+}
+
+.stale {
+  color: var(--color-warning, #f4c76b);
+  font-weight: bold;
+}
+
+.notice {
+  border-radius: var(--radius-sm, 4px);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-left: 4px solid transparent;
+}
+.notice-info {
+  background: #152433;
+  border-left-color: var(--color-accent, #73d0c1);
+}
+.notice-warning {
+  background: #332615;
+  border-left-color: var(--color-warning, #f4c76b);
+}
+.notice-error {
+  background: var(--color-error-bg, #4a1515);
+  border-left-color: var(--color-error, #ff9b9b);
+}
+.notice-success {
+  background: #153322;
+  border-left-color: var(--color-success, #2ecc71);
+}
+
+/* Modal Drawer */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer {
+  width: 420px;
+  max-width: 90vw;
+  height: 100%;
+  background: var(--color-panel, #18242f);
+  color: var(--color-text, #f3f6f8);
+  border-left: 1px solid var(--color-border, #526477);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border, #526477);
+}
+
+.drawer-close {
+  min-width: var(--min-touch-target, 44px);
+  min-height: var(--min-touch-target, 44px);
+  background: transparent;
+  border: 0;
+  color: var(--color-text, #f3f6f8);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.drawer-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Print view */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .controls, .view, button {
+    display: none;
+  }
+}
