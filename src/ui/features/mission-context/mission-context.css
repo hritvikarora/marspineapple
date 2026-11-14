@@ -1,0 +1,279 @@
+/**
+ * Mission Context & Guidance Styles. OWNER: Dhani (TASK-002).
+ * Strictly scoped styles with text wrapping, accessibility focus, and responsive layout.
+ */
+
+.mission-context {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+  background: var(--color-panel, #18242f);
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-md, 6px);
+  padding: 12px 14px;
+  color: var(--color-text, #f3f6f8);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.mission-context-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mission-context-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mission-context-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text, #f3f6f8);
+  letter-spacing: 0.3px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.mission-context-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.mission-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm, 4px);
+  line-height: 1.3;
+}
+
+.badge-simulation {
+  background: #1b3248;
+  color: #79c0ff;
+  border: 1px solid #388bfd;
+}
+
+.badge-synthetic {
+  background: var(--color-warning, #f4c76b);
+  color: #101820;
+}
+
+.badge-outpost {
+  background: #243546;
+  color: #e0e8f0;
+  border: 1px solid #526477;
+}
+
+/* Primary Next Action Card */
+.mission-next-step-card {
+  background: #132231;
+  border: 2px solid var(--color-accent, #73d0c1);
+  border-radius: var(--radius-md, 6px);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mission-next-step-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-accent, #73d0c1);
+  letter-spacing: 0.5px;
+}
+
+.mission-next-step-badge .step-number {
+  background: var(--color-accent, #73d0c1);
+  color: #101820;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.mission-next-step-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text, #f3f6f8);
+  margin: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.mission-next-step-desc {
+  font-size: 12px;
+  color: var(--color-text, #f3f6f8);
+  margin: 0;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Workflow Step Tracker */
+.workflow-progress-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.workflow-step-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--color-muted, #b7c3cf);
+  padding: 4px 2px;
+  border-radius: var(--radius-sm, 4px);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.workflow-step-item.active {
+  color: var(--color-accent, #73d0c1);
+  font-weight: 700;
+  background: rgba(115, 208, 193, 0.12);
+  border: 1px solid rgba(115, 208, 193, 0.3);
+}
+
+.workflow-step-item.completed {
+  color: var(--color-success, #2ecc71);
+}
+
+.workflow-step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border, #526477);
+}
+
+.workflow-step-item.active .workflow-step-dot {
+  background: var(--color-accent, #73d0c1);
+  box-shadow: 0 0 6px var(--color-accent, #73d0c1);
+}
+
+.workflow-step-item.completed .workflow-step-dot {
+  background: var(--color-success, #2ecc71);
+}
+
+/* Disclaimers & Notices */
+.mission-context-notice {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.disclaimer-box {
+  background: #11202e;
+  border-left: 3px solid #388bfd;
+  color: #c9d1d9;
+}
+
+.synthetic-box {
+  background: #2e2413;
+  border-left: 3px solid var(--color-warning, #f4c76b);
+  color: #f7e0a3;
+}
+
+.outpost-box {
+  background: #182533;
+  border: 1px solid var(--color-border, #526477);
+  color: var(--color-text, #f3f6f8);
+}
+
+.production-synthetic-alert {
+  background: var(--color-error-bg, #4a1515);
+  border: 2px solid var(--color-error, #ff9b9b);
+  color: var(--color-error, #ff9b9b);
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+/* Accordion Region Context */
+.mission-region-details {
+  background: #141f2a;
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-sm, 4px);
+  padding: 6px 10px;
+}
+
+.mission-region-details summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent, #73d0c1);
+  user-select: none;
+  padding: 2px 0;
+}
+
+.mission-region-details summary:focus-visible {
+  outline: 2px solid var(--color-focus, #73d0c1);
+  outline-offset: 2px;
+}
+
+.region-specs-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.region-specs-table th {
+  text-align: left;
+  color: var(--color-muted, #b7c3cf);
+  font-weight: 500;
+  padding: 3px 6px 3px 0;
+  width: 35%;
+  vertical-align: top;
+}
+
+.region-specs-table td {
+  color: var(--color-text, #f3f6f8);
+  padding: 3px 0;
+  font-family: var(--font-mono, monospace);
+  vertical-align: top;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.mission-limitations-list {
+  margin: 6px 0 0 16px;
+  padding: 0;
+  font-size: 11px;
+  color: var(--color-muted, #b7c3cf);
+}
+
+.mission-context-empty {
+  padding: 12px;
+  color: var(--color-muted, #b7c3cf);
+  font-style: italic;
+}
