@@ -90,6 +90,7 @@ const RULES = [
   ['private key block', /-----BEGIN [A-Z ]*PRIVATE KEY-----/],
   ['secret-looking env var', /\bVITE_[A-Z0-9_]*(SECRET|TOKEN|PASSWORD|PRIVATE)[A-Z0-9_]*/],
   ['Bearer token literal', /Bearer\s+[A-Za-z0-9._-]{20,}/],
+  ['simulation suite code (src/sim) shipped', /mars-pathfinder\/sim@1/],
 ];
 let scanned = 0;
 for (const f of files) {

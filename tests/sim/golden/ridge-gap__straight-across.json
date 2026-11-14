@@ -1,0 +1,301 @@
+{
+  "candidates": [
+    {
+      "candidateId": "c0",
+      "explanation": [
+        "Same cell path produced by: shortest-feasible, terrain-aware, uncertainty-aware.",
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "one-way",
+      "outbound": {
+        "metrics": {
+          "ascent_m": 6.5999755859375,
+          "cellCount": 34,
+          "descent_m": 0,
+          "horizontalDistance_m": 330,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 1.1461823171446666,
+          "maxTerrainSlope_deg": 1.1458327770233154,
+          "surfaceDistance_m": 330.06599291900363,
+          "unknownQualityLength_m": 0,
+          "unknownQualityPct": 0
+        },
+        "path": [
+          {
+            "east_m": 35,
+            "elevation_m": -1999.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 45,
+            "elevation_m": -1999.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 55,
+            "elevation_m": -1999,
+            "north_m": 155
+          },
+          {
+            "east_m": 65,
+            "elevation_m": -1998.800048828125,
+            "north_m": 155
+          },
+          {
+            "east_m": 75,
+            "elevation_m": -1998.5999755859375,
+            "north_m": 155
+          },
+          {
+            "east_m": 85,
+            "elevation_m": -1998.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 95,
+            "elevation_m": -1998.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 105,
+            "elevation_m": -1998,
+            "north_m": 155
+          },
+          {
+            "east_m": 115,
+            "elevation_m": -1997.800048828125,
+            "north_m": 155
+          },
+          {
+            "east_m": 125,
+            "elevation_m": -1997.5999755859375,
+            "north_m": 155
+          },
+          {
+            "east_m": 135,
+            "elevation_m": -1997.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 145,
+            "elevation_m": -1997.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 155,
+            "elevation_m": -1997,
+            "north_m": 155
+          },
+          {
+            "east_m": 165,
+            "elevation_m": -1996.800048828125,
+            "north_m": 155
+          },
+          {
+            "east_m": 175,
+            "elevation_m": -1996.5999755859375,
+            "north_m": 155
+          },
+          {
+            "east_m": 185,
+            "elevation_m": -1996.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 195,
+            "elevation_m": -1996.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 205,
+            "elevation_m": -1996,
+            "north_m": 155
+          },
+          {
+            "east_m": 215,
+            "elevation_m": -1995.800048828125,
+            "north_m": 155
+          },
+          {
+            "east_m": 225,
+            "elevation_m": -1995.5999755859375,
+            "north_m": 155
+          },
+          {
+            "east_m": 235,
+            "elevation_m": -1995.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 245,
+            "elevation_m": -1995.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 255,
+            "elevation_m": -1995,
+            "north_m": 155
+          },
+          {
+            "east_m": 265,
+            "elevation_m": -1994.800048828125,
+            "north_m": 155
+          },
+          {
+            "east_m": 275,
+            "elevation_m": -1994.5999755859375,
+            "north_m": 155
+          },
+          {
+            "east_m": 285,
+            "elevation_m": -1994.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 295,
+            "elevation_m": -1994.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 305,
+            "elevation_m": -1994,
+            "north_m": 155
+          },
+          {
+            "east_m": 315,
+            "elevation_m": -1993.800048828125,
+            "north_m": 155
+          },
+          {
+            "east_m": 325,
+            "elevation_m": -1993.5999755859375,
+            "north_m": 155
+          },
+          {
+            "east_m": 335,
+            "elevation_m": -1993.4000244140625,
+            "north_m": 155
+          },
+          {
+            "east_m": 345,
+            "elevation_m": -1993.199951171875,
+            "north_m": 155
+          },
+          {
+            "east_m": 355,
+            "elevation_m": -1993,
+            "north_m": 155
+          },
+          {
+            "east_m": 365,
+            "elevation_m": -1992.800048828125,
+            "north_m": 155
+          }
+        ],
+        "qualityIntervals": [
+          {
+            "fromDistance_m": 0,
+            "quality": 1,
+            "toDistance_m": 330
+          }
+        ],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 330
+        }
+      },
+      "policies": [
+        "shortest-feasible",
+        "terrain-aware",
+        "uncertainty-aware"
+      ],
+      "returnLeg": null
+    }
+  ],
+  "endpoints": {
+    "destination": {
+      "accepted": {
+        "east_m": 365,
+        "north_m": 155
+      },
+      "cell": {
+        "col": 36,
+        "index": 596,
+        "row": 14
+      },
+      "requested": {
+        "east_m": 365,
+        "north_m": 155
+      }
+    },
+    "start": {
+      "accepted": {
+        "east_m": 35,
+        "north_m": 155
+      },
+      "cell": {
+        "col": 3,
+        "index": 563,
+        "row": 14
+      },
+      "requested": {
+        "east_m": 35,
+        "north_m": 155
+      }
+    }
+  },
+  "format": "mars-pathfinder/route-export@1",
+  "limitations": [
+    "SIMULATION: generated terrain, not derived from any NASA observation.",
+    "Educational simulation: not a validated EVA or rover safety assessment."
+  ],
+  "region": {
+    "bundleId": "sim-ridge-gap",
+    "bundleVersion": "sim-ridge-gap-s1",
+    "cellSize_m": {
+      "east": 10,
+      "north": 10
+    },
+    "crs": "Synthetic local planar frame (simulation)",
+    "datasetVersion": "mars-pathfinder/sim@1:ridge-gap:1",
+    "sources": [
+      {
+        "id": "sim-generator",
+        "instrument": "none",
+        "mission": "none",
+        "title": "src/sim",
+        "version": "1"
+      }
+    ],
+    "synthetic": true,
+    "title": "SIMULATION ridge with gap - not Mars data",
+    "verticalReference": "synthetic datum"
+  },
+  "release": {
+    "appVersion": "0.0.0-sim",
+    "bundleVersion": "sim-ridge-gap-s1",
+    "modelVersion": "placeholder-astar-0.2.0"
+  },
+  "request": {
+    "destinationPoiId": null,
+    "policies": [
+      "shortest-feasible",
+      "terrain-aware",
+      "uncertainty-aware"
+    ],
+    "roundTrip": false,
+    "startPoiId": null,
+    "strictQuality": false,
+    "weightOverrides": {}
+  },
+  "selectedCandidateId": "c0",
+  "units": {
+    "distance": "m",
+    "elevation": "m",
+    "exposurePct": "% of horizontalDistance_m",
+    "grade": "deg",
+    "slope": "deg",
+    "weightedCost": "dimensionless weighted cost (not comparable across policies)"
+  }
+}

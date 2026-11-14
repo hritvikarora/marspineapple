@@ -1,0 +1,157 @@
+{
+  "candidates": [
+    {
+      "candidateId": "c0",
+      "explanation": [
+        "Same cell path produced by: shortest-feasible, terrain-aware, uncertainty-aware.",
+        "Start and destination are in the same grid cell (zero-length route).",
+        "Placeholder solver: limits and weights are unvalidated demo values."
+      ],
+      "missionStatus": "round-trip-complete",
+      "outbound": {
+        "metrics": {
+          "ascent_m": 0,
+          "cellCount": 1,
+          "descent_m": 0,
+          "horizontalDistance_m": 0,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 0,
+          "maxTerrainSlope_deg": 0,
+          "surfaceDistance_m": 0,
+          "unknownQualityLength_m": 0,
+          "unknownQualityPct": 0
+        },
+        "path": [
+          {
+            "east_m": 35,
+            "elevation_m": -1800,
+            "north_m": 65
+          }
+        ],
+        "qualityIntervals": [],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 0
+        }
+      },
+      "policies": [
+        "shortest-feasible",
+        "terrain-aware",
+        "uncertainty-aware"
+      ],
+      "returnLeg": {
+        "metrics": {
+          "ascent_m": 0,
+          "cellCount": 1,
+          "descent_m": 0,
+          "horizontalDistance_m": 0,
+          "lowQualityLength_m": 0,
+          "lowQualityPct": 0,
+          "maxAbsEdgeGrade_deg": 0,
+          "maxTerrainSlope_deg": 0,
+          "surfaceDistance_m": 0,
+          "unknownQualityLength_m": 0,
+          "unknownQualityPct": 0
+        },
+        "path": [
+          {
+            "east_m": 35,
+            "elevation_m": -1800,
+            "north_m": 65
+          }
+        ],
+        "qualityIntervals": [],
+        "weightedCost": {
+          "units": "weighted-cost",
+          "value": 0
+        }
+      }
+    }
+  ],
+  "endpoints": {
+    "destination": {
+      "accepted": {
+        "east_m": 35,
+        "north_m": 65
+      },
+      "cell": {
+        "col": 3,
+        "index": 33,
+        "row": 3
+      },
+      "requested": {
+        "east_m": 35,
+        "north_m": 65
+      }
+    },
+    "start": {
+      "accepted": {
+        "east_m": 35,
+        "north_m": 65
+      },
+      "cell": {
+        "col": 3,
+        "index": 33,
+        "row": 3
+      },
+      "requested": {
+        "east_m": 35,
+        "north_m": 65
+      }
+    }
+  },
+  "format": "mars-pathfinder/route-export@1",
+  "limitations": [
+    "SIMULATION: generated terrain, not derived from any NASA observation.",
+    "Educational simulation: not a validated EVA or rover safety assessment."
+  ],
+  "region": {
+    "bundleId": "sim-degenerate-endpoints",
+    "bundleVersion": "sim-degenerate-endpoints-s1",
+    "cellSize_m": {
+      "east": 10,
+      "north": 10
+    },
+    "crs": "Synthetic local planar frame (simulation)",
+    "datasetVersion": "mars-pathfinder/sim@1:degenerate-endpoints:1",
+    "sources": [
+      {
+        "id": "sim-generator",
+        "instrument": "none",
+        "mission": "none",
+        "title": "src/sim",
+        "version": "1"
+      }
+    ],
+    "synthetic": true,
+    "title": "SIMULATION degenerate endpoints - not Mars data",
+    "verticalReference": "synthetic datum"
+  },
+  "release": {
+    "appVersion": "0.0.0-sim",
+    "bundleVersion": "sim-degenerate-endpoints-s1",
+    "modelVersion": "placeholder-astar-0.2.0"
+  },
+  "request": {
+    "destinationPoiId": null,
+    "policies": [
+      "shortest-feasible",
+      "terrain-aware",
+      "uncertainty-aware"
+    ],
+    "roundTrip": true,
+    "startPoiId": null,
+    "strictQuality": false,
+    "weightOverrides": {}
+  },
+  "selectedCandidateId": "c0",
+  "units": {
+    "distance": "m",
+    "elevation": "m",
+    "exposurePct": "% of horizontalDistance_m",
+    "grade": "deg",
+    "slope": "deg",
+    "weightedCost": "dimensionless weighted cost (not comparable across policies)"
+  }
+}
