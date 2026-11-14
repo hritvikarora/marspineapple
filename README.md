@@ -32,6 +32,13 @@ npm run validate-bundle -- public/bundles/<bundle-dir>
 any sub-path. Don't open `index.html` via `file://` (module workers are blocked); serve it instead:
 `npx vite preview` or `cd dist && python3 -m http.server 8080`.
 
+## CI and deployment
+
+`.github/workflows/deploy.yml`: every push/PR runs typecheck, lint, test, build, `npm run audit` and the
+headless smoke against `dist/` served under `/marspineapple/`. Pushes to `main` (and manual
+`workflow_dispatch`) then deploy `dist/` to GitHub Pages: https://hritvikarora.github.io/marspineapple/
+(requires Pages enabled with source "GitHub Actions"). The relative `base: './'` build works under that sub-path.
+
 ## Architecture
 
 ```mermaid
