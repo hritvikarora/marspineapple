@@ -1,36 +1,54 @@
 /**
  * Feature Module Discovery and Registry. OWNER: Dhani.
  * Discovers feature entries matching `src/ui/features/<slug>/entry.tsx`.
+ * Validates modules and rejects duplicate slot registrations.
  */
-import type { FeatureModule, FeatureSlot } from './types';
+import type { AnyFeatureModule, FeatureRegistryMap, FeatureSlot } from './types';
 
-export function discoverFeatures(): Partial<Record<FeatureSlot, FeatureModule>> {
-  const discovered: Partial<Record<FeatureSlot, FeatureModule>> = {};
+export function validateFeatureList(
+  modules: readonly AnyFeatureModule[],
+): FeatureRegistryMap {
+  const map: FeatureRegistryMap = {};
+  for (const mod of modules) {
+    if (mod && mod.slot && mod.Component) {
+      const slot = mod.slot as FeatureSlot;
+      if (map[slot]) {
+        throw new Error(
+          `[FeatureRegistry] Duplicate slot assignment detected: both "${map[slot]?.id}" and "${mod.id}" target slot "${slot}". Duplicate slots are forbidden.`,
+        );
+      }
+      (map as Record<FeatureSlot, unknown>)[slot] = mod;
+    }
+  }
+  return map;
+}
 
+export function discoverFeatures(): FeatureRegistryMap {
   try {
-    const modules = import.meta.glob<{ default: FeatureModule }>('../features/*/entry.tsx', {
+    const modules = import.meta.glob<{ default: AnyFeatureModule }>('../features/*/entry.tsx', {
       eager: true,
     });
 
+    const list: AnyFeatureModule[] = [];
     for (const path in modules) {
       const mod = modules[path]?.default;
-      if (mod && mod.slot && mod.Component) {
-        if (discovered[mod.slot]) {
-          console.warn(`[FeatureRegistry] Duplicate slot assignment for "${mod.slot}" from ${path}. Overwriting previous entry.`);
-        }
-        discovered[mod.slot] = mod;
+      if (mod) {
+        list.push(mod);
       }
     }
-  } catch {
-    // If glob matching fails or no features exist, return empty discovered map
+    return validateFeatureList(list);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes('Duplicate slot assignment')) {
+      throw err;
+    }
+    // If glob matching fails or no features exist, return empty map
+    return {};
   }
-
-  return discovered;
 }
 
-let cachedFeatures: Partial<Record<FeatureSlot, FeatureModule>> | null = null;
+let cachedFeatures: FeatureRegistryMap | null = null;
 
-export function getDiscoveredFeatures(): Partial<Record<FeatureSlot, FeatureModule>> {
+export function getDiscoveredFeatures(): FeatureRegistryMap {
   if (!cachedFeatures) {
     cachedFeatures = discoverFeatures();
   }

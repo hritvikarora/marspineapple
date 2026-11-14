@@ -21,7 +21,7 @@ import { Briefing } from './Briefing';
 import { ElevationProfile } from './ElevationProfile';
 import { MapCanvas } from './MapCanvas';
 import { Slot } from './shared/Slot';
-import type { FeatureModule, FeatureSlot } from './shared/types';
+import type { CustomCanvasLayer, FeatureRegistryMap } from './shared/types';
 import './shared/tokens.css';
 
 /** Injection points for tests/integration; production uses the defaults. */
@@ -33,7 +33,13 @@ export interface AppDeps {
   tileConfig?: TileConfig;
   tileFetch?: typeof fetch;
   production?: boolean;
-  features?: Partial<Record<FeatureSlot, FeatureModule>>;
+  features?: FeatureRegistryMap;
+  skipRegionLoader?: boolean;
+}
+
+function RegionLoaderBridge({ opts }: { opts?: SelectOptions }) {
+  useRegionLoader(opts);
+  return null;
 }
 
 const fmt = (n: number, d = 0) => n.toFixed(d);
@@ -41,9 +47,46 @@ const fmt = (n: number, d = 0) => n.toFixed(d);
 export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   const { state, dispatch } = useAppState();
   const { requestRoute, cancelRoute } = useRouteRunner(deps.workerOptions);
-  useRegionLoader(deps.bundleSelection);
   const [pickMode, setPickMode] = useState<'start' | 'destination'>('destination');
   const selection = selectSelection(state);
+
+  const [customLayers, setCustomLayers] = useState<{
+    rasters?: CustomCanvasLayer;
+    routes?: CustomCanvasLayer;
+    markers?: CustomCanvasLayer;
+    chrome?: CustomCanvasLayer;
+  }>({});
+
+  const registerCanvasLayer = useCallback(
+    (type: 'rasters' | 'routes' | 'markers' | 'chrome', draw: CustomCanvasLayer) => {
+      setCustomLayers((prev) => ({ ...prev, [type]: draw }));
+      return () => {
+        setCustomLayers((prev) => {
+          const next = { ...prev };
+          delete next[type];
+          return next;
+        });
+      };
+    },
+    [],
+  );
+
+  const registerRasters = useCallback(
+    (draw: CustomCanvasLayer) => registerCanvasLayer('rasters', draw),
+    [registerCanvasLayer],
+  );
+  const registerRoutes = useCallback(
+    (draw: CustomCanvasLayer) => registerCanvasLayer('routes', draw),
+    [registerCanvasLayer],
+  );
+  const registerMarkers = useCallback(
+    (draw: CustomCanvasLayer) => registerCanvasLayer('markers', draw),
+    [registerCanvasLayer],
+  );
+  const registerChrome = useCallback(
+    (draw: CustomCanvasLayer) => registerCanvasLayer('chrome', draw),
+    [registerCanvasLayer],
+  );
 
   const onHover = useCallback(
     (pathIndex: number | null) =>
@@ -96,21 +139,69 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   };
 
   const mapEl = bundle ? (
-    <MapCanvas
-      bundle={bundle}
-      candidates={state.routeCandidates}
-      selectedCandidateId={selection.candidateId}
-      start={m.start?.point ?? null}
-      destination={m.destination?.point ?? null}
-      layers={state.display.layers}
-      stale={state.isStale}
-      hover={selection.hover}
-      onPick={(p) => setEndpoint(pickMode, p, null)}
-    />
+    <div className="map-canvas-container" style={{ position: 'relative' }}>
+      <MapCanvas
+        bundle={bundle}
+        candidates={state.routeCandidates}
+        selectedCandidateId={selection.candidateId}
+        start={m.start?.point ?? null}
+        destination={m.destination?.point ?? null}
+        layers={state.display.layers}
+        stale={state.isStale}
+        hover={selection.hover}
+        onPick={(p) => setEndpoint(pickMode, p, null)}
+        customLayers={customLayers}
+      />
+      <div className="map-slots" style={{ display: 'none' }} aria-hidden="true">
+        <Slot
+          name="map-rasters"
+          features={deps.features}
+          props={{
+            bundle,
+            layers: state.display.layers,
+            registerLayer: registerRasters,
+          }}
+        />
+        <Slot
+          name="map-routes"
+          features={deps.features}
+          props={{
+            candidates: state.routeCandidates,
+            selectedCandidateId: selection.candidateId,
+            stale: state.isStale,
+            hover: selection.hover,
+            routeLayerVisible: state.display.layers.route.visible,
+            registerLayer: registerRoutes,
+          }}
+        />
+        <Slot
+          name="map-markers"
+          features={deps.features}
+          props={{
+            pois,
+            start: m.start?.point ?? null,
+            destination: m.destination?.point ?? null,
+            poiLayerVisible: state.display.layers.poi.visible,
+            onPick: (p) => setEndpoint(pickMode, p, null),
+            registerLayer: registerMarkers,
+          }}
+        />
+        <Slot
+          name="map-chrome"
+          features={deps.features}
+          props={{
+            grid: bundle.manifest.grid,
+            crs: bundle.manifest.crs,
+            registerLayer: registerChrome,
+          }}
+        />
+      </div>
+    </div>
   ) : null;
 
   return (
     <div className="app">
+      {!deps.skipRegionLoader && <RegionLoaderBridge opts={deps.bundleSelection} />}
       <header>
         <h1>MARS PATHFINDER</h1>
         {bundle?.manifest.synthetic && (
@@ -144,7 +235,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             <Slot
               name="mission-context"
               features={deps.features}
-              props={{ manifest: bundle.manifest }}
+              props={{ manifest: bundle.manifest, release, production }}
               fallback={
                 <p className="muted">
                   {bundle.manifest.title}. Educational simulation, not a safety assessment.
@@ -187,7 +278,14 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             <Slot
               name="endpoints"
               features={deps.features}
-              props={{ pickMode, setPickMode }}
+              props={{
+                pickMode,
+                setPickMode,
+                start: m.start,
+                destination: m.destination,
+                grid: bundle.manifest.grid,
+                setEndpoint,
+              }}
               fallback={
                 <fieldset>
                   <legend>Map click sets</legend>
@@ -212,8 +310,8 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               features={deps.features}
               props={{
                 mission: m,
-                dispatch,
                 strictQualitySupported: bundle.manifest.strictQualitySupported,
+                dispatch,
               }}
               fallback={
                 <>
@@ -329,9 +427,17 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             </div>
 
             {/* Slot: sources */}
-            <Slot name="sources" features={deps.features} props={{ sources: bundle.manifest.sources }} />
+            <Slot
+              name="sources"
+              features={deps.features}
+              props={{ sources: bundle.manifest.sources, limitations: bundle.manifest.limitations }}
+            />
             {/* Slot: point-inspector */}
-            <Slot name="point-inspector" features={deps.features} props={{ bundle }} />
+            <Slot
+              name="point-inspector"
+              features={deps.features}
+              props={{ bundle, layers: state.display.layers }}
+            />
           </section>
 
           <section className="view">
@@ -339,6 +445,18 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             <Slot
               name="terrain-host"
               features={deps.features}
+              props={{
+                viewMode: state.viewMode,
+                bundle,
+                candidates: state.routeCandidates,
+                selection,
+                camera: state.display.camera,
+                terrain3dStatus: state.display.terrain3d,
+                onCameraChange: (camera) => dispatch({ type: 'view/setCamera', camera }),
+                onSelectCandidate: (candidateId) => dispatch({ type: 'route/select', candidateId }),
+                onStatusChange: on3dStatus,
+                fallback: mapEl,
+              }}
               fallback={
                 state.viewMode === '2d' ? (
                   mapEl
@@ -373,7 +491,11 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             />
 
             {/* Slot: media */}
-            <Slot name="media" features={deps.features} props={{ displayAssets: bundle.manifest.displayAssets }} />
+            <Slot
+              name="media"
+              features={deps.features}
+              props={{ displayAssets: bundle.manifest.displayAssets }}
+            />
 
             <ContextImageryStatus config={deps.tileConfig ?? TILE_CONFIG} fetchImpl={deps.tileFetch} />
           </section>
@@ -445,7 +567,11 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             />
 
             {/* Slot: mission-evidence */}
-            <Slot name="mission-evidence" features={deps.features} props={{ selection }} />
+            <Slot
+              name="mission-evidence"
+              features={deps.features}
+              props={{ selection, manifest: bundle.manifest }}
+            />
 
             {/* Slot: json-export */}
             <Slot

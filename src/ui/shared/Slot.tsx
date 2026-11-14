@@ -2,7 +2,7 @@
  * Modular Slot renderer with per-slot error boundary. OWNER: Dhani.
  */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import type { FeatureModule, FeatureSlot } from './types';
+import type { FeatureModule, FeatureRegistryMap, FeatureSlot, SlotPropsMap } from './types';
 import { getDiscoveredFeatures } from './registry';
 
 interface SlotErrorBoundaryProps {
@@ -41,31 +41,32 @@ export class SlotErrorBoundary extends Component<SlotErrorBoundaryProps, SlotErr
   }
 }
 
-export interface SlotProps<P extends Record<string, unknown> = Record<string, unknown>> {
-  name: FeatureSlot;
+export interface SlotProps<S extends FeatureSlot> {
+  name: S;
+  props?: SlotPropsMap[S];
   fallback?: ReactNode;
-  props?: P;
-  features?: Partial<Record<FeatureSlot, FeatureModule>>;
+  features?: FeatureRegistryMap;
 }
 
-export function Slot<P extends Record<string, unknown> = Record<string, unknown>>({
+export function Slot<S extends FeatureSlot>({
   name,
-  fallback = null,
   props,
+  fallback = null,
   features,
-}: SlotProps<P>) {
+}: SlotProps<S>) {
   const activeFeatures = features ?? getDiscoveredFeatures();
-  const feature = activeFeatures[name];
+  const feature = activeFeatures[name] as FeatureModule<S> | undefined;
 
   if (!feature) {
     return <>{fallback}</>;
   }
 
   const FeatureComponent = feature.Component;
+  const featureProps = (props ?? {}) as SlotPropsMap[S];
 
   return (
     <SlotErrorBoundary slot={name} fallback={fallback}>
-      <FeatureComponent {...(props as P)} />
+      <FeatureComponent {...featureProps} />
     </SlotErrorBoundary>
   );
 }

@@ -1,24 +1,15 @@
 /**
  * 2D MAP CANVAS — OWNER: Dhani. Plain canvas, local-metre frame only.
  * Uses the shared adapter (cellCenter / pointToCell) so map, routing and 3D agree.
- * Supports modular layer hooks while maintaining full baseline rendering when features are absent.
+ * Supports independently registering canvas layers to replace corresponding baseline rendering,
+ * while preserving full baseline rendering when custom layers are absent.
  */
 import { useEffect, useRef } from 'react';
 import { EXCLUSION, QUALITY, type GridBundle, type LocalPoint, type RouteCandidate } from '../contracts';
 import type { DisplayState } from '../state/store';
+import type { CanvasDrawHelpers, CustomCanvasLayer } from './shared/types';
 
-export interface CanvasDrawHelpers {
-  ctx: CanvasRenderingContext2D;
-  width: number;
-  height: number;
-  pxPerCell: number;
-  scaleX: number;
-  scaleY: number;
-  toPx: (p: LocalPoint) => [number, number];
-  fromPx: (px: number, py: number) => LocalPoint;
-}
-
-export type CustomCanvasLayer = (helpers: CanvasDrawHelpers) => void;
+export type { CanvasDrawHelpers, CustomCanvasLayer };
 
 export interface MapCanvasProps {
   bundle: GridBundle;
@@ -32,12 +23,9 @@ export interface MapCanvasProps {
   hover: { pathIndex: number; point: LocalPoint } | null;
   onPick: (p: LocalPoint) => void;
   customLayers?: {
-    beforeRasters?: CustomCanvasLayer;
-    afterRasters?: CustomCanvasLayer;
-    beforeRoutes?: CustomCanvasLayer;
-    afterRoutes?: CustomCanvasLayer;
-    beforeMarkers?: CustomCanvasLayer;
-    afterMarkers?: CustomCanvasLayer;
+    rasters?: CustomCanvasLayer;
+    routes?: CustomCanvasLayer;
+    markers?: CustomCanvasLayer;
     chrome?: CustomCanvasLayer;
   };
 }
@@ -89,70 +77,73 @@ export function MapCanvas({
       fromPx,
     };
 
-    customLayers?.beforeRasters?.(helpers);
-
-    let lo = Infinity,
-      hi = -Infinity;
-    for (const z of bundle.elevation) {
-      if (Number.isFinite(z)) {
-        lo = Math.min(lo, z);
-        hi = Math.max(hi, z);
-      }
-    }
-
-    for (let r = 0; r < grid.height; r++) {
-      for (let c = 0; c < grid.width; c++) {
-        const i = r * grid.width + c;
-        const x = c * PX_PER_CELL,
-          y = r * PX_PER_CELL;
-        const z = bundle.elevation[i]!;
-
-        if (layers.elevation.visible) {
-          if (Number.isFinite(z)) {
-            const t = hi > lo ? (z - lo) / (hi - lo) : 0.5;
-            const v = Math.round(60 + 170 * t);
-            ctx.fillStyle = `rgb(${v},${Math.round(v * 0.75)},${Math.round(v * 0.6)})`;
-          } else {
-            ctx.fillStyle = '#000';
-          }
-          ctx.fillRect(x, y, PX_PER_CELL, PX_PER_CELL);
+    // 1. Rasters Layer: Custom or Baseline
+    if (customLayers?.rasters) {
+      customLayers.rasters(helpers);
+    } else {
+      let lo = Infinity,
+        hi = -Infinity;
+      for (const z of bundle.elevation) {
+        if (Number.isFinite(z)) {
+          lo = Math.min(lo, z);
+          hi = Math.max(hi, z);
         }
+      }
 
-        if (layers.quality.visible) {
-          const q = bundle.quality[i];
-          const col =
-            q === QUALITY.UNKNOWN
-              ? '140,80,220'
-              : q === QUALITY.LOW
-                ? '255,170,0'
-                : q === QUALITY.NO_ELEVATION
-                  ? '0,0,0'
-                  : null;
-          if (col) {
-            ctx.fillStyle = `rgba(${col},${layers.quality.opacity})`;
+      for (let r = 0; r < grid.height; r++) {
+        for (let c = 0; c < grid.width; c++) {
+          const i = r * grid.width + c;
+          const x = c * PX_PER_CELL,
+            y = r * PX_PER_CELL;
+          const z = bundle.elevation[i]!;
+
+          if (layers.elevation.visible) {
+            if (Number.isFinite(z)) {
+              const t = hi > lo ? (z - lo) / (hi - lo) : 0.5;
+              const v = Math.round(60 + 170 * t);
+              ctx.fillStyle = `rgb(${v},${Math.round(v * 0.75)},${Math.round(v * 0.6)})`;
+            } else {
+              ctx.fillStyle = '#000';
+            }
             ctx.fillRect(x, y, PX_PER_CELL, PX_PER_CELL);
           }
-        }
 
-        if (layers.exclusion.visible && bundle.exclusion[i] !== EXCLUSION.NONE) {
-          ctx.fillStyle = `rgba(220,30,30,${layers.exclusion.opacity})`;
-          ctx.fillRect(x + 3, y + 3, PX_PER_CELL - 6, PX_PER_CELL - 6);
-        }
+          if (layers.quality.visible) {
+            const q = bundle.quality[i];
+            const col =
+              q === QUALITY.UNKNOWN
+                ? '140,80,220'
+                : q === QUALITY.LOW
+                  ? '255,170,0'
+                  : q === QUALITY.NO_ELEVATION
+                    ? '0,0,0'
+                    : null;
+            if (col) {
+              ctx.fillStyle = `rgba(${col},${layers.quality.opacity})`;
+              ctx.fillRect(x, y, PX_PER_CELL, PX_PER_CELL);
+            }
+          }
 
-        if (layers.slope.visible && bundle.slope[i]! > 25) {
-          ctx.strokeStyle = `rgba(255,255,255,${layers.slope.opacity})`;
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x + PX_PER_CELL, y + PX_PER_CELL);
-          ctx.stroke();
+          if (layers.exclusion.visible && bundle.exclusion[i] !== EXCLUSION.NONE) {
+            ctx.fillStyle = `rgba(220,30,30,${layers.exclusion.opacity})`;
+            ctx.fillRect(x + 3, y + 3, PX_PER_CELL - 6, PX_PER_CELL - 6);
+          }
+
+          if (layers.slope.visible && bundle.slope[i]! > 25) {
+            ctx.strokeStyle = `rgba(255,255,255,${layers.slope.opacity})`;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + PX_PER_CELL, y + PX_PER_CELL);
+            ctx.stroke();
+          }
         }
       }
     }
 
-    customLayers?.afterRasters?.(helpers);
-    customLayers?.beforeRoutes?.(helpers);
-
-    if (layers.route.visible) {
+    // 2. Routes Layer: Custom or Baseline
+    if (customLayers?.routes) {
+      customLayers.routes(helpers);
+    } else if (layers.route.visible) {
       const ordered = [...candidates].sort(
         (a, b) => Number(a.candidateId === selectedCandidateId) - Number(b.candidateId === selectedCandidateId),
       );
@@ -172,48 +163,48 @@ export function MapCanvas({
       ctx.setLineDash([]);
     }
 
-    customLayers?.afterRoutes?.(helpers);
-    customLayers?.beforeMarkers?.(helpers);
+    // 3. Markers Layer: Custom or Baseline
+    if (customLayers?.markers) {
+      customLayers.markers(helpers);
+    } else {
+      const marker = (p: LocalPoint | null, color: string, label: string) => {
+        if (!p) return;
+        const [px, py] = toPx(p);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(px, py, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(label, px + 9, py - 6);
+      };
 
-    const marker = (p: LocalPoint | null, color: string, label: string) => {
-      if (!p) return;
-      const [px, py] = toPx(p);
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(px, py, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 11px sans-serif';
-      ctx.fillText(label, px + 9, py - 6);
-    };
-
-    if (layers.poi.visible) {
-      for (const poi of bundle.manifest.pointsOfInterest) {
-        const [px, py] = toPx(poi.position);
-        ctx.strokeStyle = '#ffd400';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(px - 5, py - 5, 10, 10);
+      if (layers.poi.visible) {
+        for (const poi of bundle.manifest.pointsOfInterest) {
+          const [px, py] = toPx(poi.position);
+          ctx.strokeStyle = '#ffd400';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(px - 5, py - 5, 10, 10);
+        }
       }
+
+      if (hover) {
+        const [hx, hy] = toPx(hover.point);
+        ctx.strokeStyle = '#ffd400';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 9, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      marker(start, '#2ecc71', 'S');
+      marker(destination, '#e74c3c', 'D');
     }
 
-    if (hover) {
-      const [hx, hy] = toPx(hover.point);
-      ctx.strokeStyle = '#ffd400';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(hx, hy, 9, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    marker(start, '#2ecc71', 'S');
-    marker(destination, '#e74c3c', 'D');
-
-    customLayers?.afterMarkers?.(helpers);
-
+    // 4. Chrome Layer (North Arrow & Scale): Custom or Baseline
     if (customLayers?.chrome) {
       customLayers.chrome(helpers);
     } else {
-      // Default north arrow + 50 m scale bar (local metres)
       ctx.fillStyle = '#fff';
       ctx.font = '12px sans-serif';
       ctx.fillText('N ↑', W - 34, 16);

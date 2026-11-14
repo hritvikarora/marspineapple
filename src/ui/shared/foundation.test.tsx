@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 /**
  * UI Foundation test suite. OWNER: Dhani.
- * Tests slot discovery, fallback rendering, error boundary isolation, primitives, and map canvas.
+ * Tests slot discovery, fallback rendering, error boundary isolation, primitives,
+ * drawer accessibility, registry slot validation, real App integration, and map canvas replacement.
  */
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useEffect } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Button } from './primitives/Button';
 import { Field } from './primitives/Field';
@@ -14,7 +16,8 @@ import { ModalDrawer } from './primitives/ModalDrawer';
 import { VisuallyHidden } from './primitives/VisuallyHidden';
 import { Slot } from './Slot';
 import { FeatureHarness } from './FeatureHarness';
-import type { FeatureModule } from './types';
+import { validateFeatureList } from './registry';
+import { ALL_FEATURE_SLOTS, type FeatureModule } from './types';
 import { MapCanvas, type CanvasDrawHelpers } from '../MapCanvas';
 import type { GridBundle, RasterLayerDescriptor, RasterLayerId } from '../../contracts';
 
@@ -36,7 +39,7 @@ describe('Slot component and Error Boundary', () => {
   });
 
   it('renders injected feature when slot is populated', () => {
-    const TestFeature: FeatureModule = {
+    const TestFeature: FeatureModule<'mission-context'> = {
       id: 'test-feature',
       slot: 'mission-context',
       Component: () => <div data-testid="custom-feature">Custom Module</div>,
@@ -54,7 +57,7 @@ describe('Slot component and Error Boundary', () => {
 
   it('catches render errors in a feature and renders slot fallback or error banner', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    const CrashingFeature: FeatureModule = {
+    const CrashingFeature: FeatureModule<'mission-context'> = {
       id: 'crash-feature',
       slot: 'mission-context',
       Component: () => {
@@ -138,6 +141,40 @@ describe('UI Primitives', () => {
     document.body.removeChild(triggerBtn);
   });
 
+  it('ModalDrawer traps focus and blocks background clicks', () => {
+    const onClose = vi.fn();
+    render(
+      <ModalDrawer isOpen={true} onClose={onClose} title="Drawer Title">
+        <button type="button">Inside Button 1</button>
+        <button type="button">Inside Button 2</button>
+      </ModalDrawer>,
+    );
+
+    const closeBtn = screen.getByRole('button', { name: 'Close dialog' });
+    const btn1 = screen.getByRole('button', { name: 'Inside Button 1' });
+    const btn2 = screen.getByRole('button', { name: 'Inside Button 2' });
+
+    // Focus last element and Tab -> cycles to first element
+    btn2.focus();
+    expect(document.activeElement).toBe(btn2);
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(document.activeElement).toBe(closeBtn);
+
+    // Shift+Tab at first element -> cycles to last element
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(btn2);
+
+    // Clicking inside drawer does NOT trigger backdrop close
+    fireEvent.click(btn1);
+    expect(onClose).not.toHaveBeenCalled();
+
+    // Clicking the backdrop overlay calls onClose
+    const overlay = document.querySelector('.drawer-overlay');
+    expect(overlay).toBeTruthy();
+    if (overlay) fireEvent.click(overlay);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('VisuallyHidden hides content visually while keeping it in the DOM', () => {
     render(<VisuallyHidden>Screen reader announcement</VisuallyHidden>);
     const hidden = screen.getByText('Screen reader announcement');
@@ -157,9 +194,115 @@ describe('UI Primitives', () => {
   });
 });
 
-describe('FeatureHarness', () => {
+describe('Feature Registry and Slot Integrity', () => {
+  it('defines exactly 20 distinct slot names in ALL_FEATURE_SLOTS', () => {
+    expect(ALL_FEATURE_SLOTS).toHaveLength(20);
+    const unique = new Set(ALL_FEATURE_SLOTS);
+    expect(unique.size).toBe(20);
+  });
+
+  it('registers distinct feature modules without error', () => {
+    const f1: FeatureModule<'mission-context'> = {
+      id: 'test-context',
+      slot: 'mission-context',
+      Component: () => null,
+    };
+    const f2: FeatureModule<'destinations'> = {
+      id: 'test-destinations',
+      slot: 'destinations',
+      Component: () => null,
+    };
+    const registered = validateFeatureList([f1, f2]);
+    expect(registered['mission-context']).toBe(f1);
+    expect(registered['destinations']).toBe(f2);
+  });
+
+  it('rejects duplicate slot assignments with a descriptive error', () => {
+    const f1: FeatureModule<'mission-context'> = {
+      id: 'feature-one',
+      slot: 'mission-context',
+      Component: () => null,
+    };
+    const f2: FeatureModule<'mission-context'> = {
+      id: 'feature-two',
+      slot: 'mission-context',
+      Component: () => null,
+    };
+    expect(() => validateFeatureList([f1, f2])).toThrowError(
+      /Duplicate slot assignment detected: both "feature-one" and "feature-two" target slot "mission-context"/,
+    );
+  });
+});
+
+const fakeBundle: GridBundle = {
+  bundleVersion: 'test-v1',
+  width: 4,
+  height: 4,
+  hashesVerified: true,
+  manifest: {
+    schema: 'mars-pathfinder/region-bundle',
+    schemaVersion: '1.0',
+    bundleId: 'test-bundle',
+    bundleVersion: 'test-v1',
+    datasetVersion: 'v1',
+    synthetic: true,
+    title: 'Test Bundle',
+    description: 'Test',
+    createdDate: '2026-11-14',
+    crs: {
+      description: 'synthetic-local',
+      body: 'synthetic',
+      sourceCrs: null,
+      localOriginInSource: null,
+      verticalReference: 'datum',
+      horizontalUnits: 'm',
+      verticalUnits: 'm',
+    },
+    grid: {
+      width: 4,
+      height: 4,
+      cellSizeEast_m: 10,
+      cellSizeNorth_m: 10,
+      extent: { west_m: 0, east_m: 40, south_m: 0, north_m: 40 },
+      orientation: 'north-up',
+      order: 'row-major',
+      sampleConvention: 'cell-center',
+    },
+    layers: {} as unknown as Record<RasterLayerId, RasterLayerDescriptor>,
+    qualityClasses: [],
+    strictQualitySupported: true,
+    pointsOfInterest: [],
+    displayAssets: [],
+    sources: [],
+    limitations: [],
+    processing: { script: 'test', parameters: {} },
+  },
+  elevation: new Float32Array(16).fill(10),
+  slope: new Float32Array(16).fill(2),
+  roughness: new Float32Array(16).fill(0.1),
+  quality: new Uint8Array(16).fill(1),
+  exclusion: new Uint8Array(16).fill(0),
+};
+
+describe('FeatureHarness and real App integration', () => {
+  beforeEach(() => {
+    HTMLCanvasElement.prototype.getContext = (() => ({
+      clearRect: vi.fn(),
+      fillRect: vi.fn(),
+      strokeRect: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+      arc: vi.fn(),
+      fill: vi.fn(),
+      fillText: vi.fn(),
+      setLineDash: vi.fn(),
+    })) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+  });
+
   it('mounts an isolated feature with default store', () => {
-    const CustomPlugin: FeatureModule = {
+    const CustomPlugin: FeatureModule<'mission-context'> = {
       id: 'test-plugin',
       slot: 'mission-context',
       Component: () => <div data-testid="isolated-plugin">Isolated Test Module</div>,
@@ -167,58 +310,46 @@ describe('FeatureHarness', () => {
     render(<FeatureHarness feature={CustomPlugin} />);
     expect(screen.getByTestId('isolated-plugin').textContent).toBe('Isolated Test Module');
   });
+
+  it('mounts feature inside real App shell and connects to reducer lifecycle via mountInApp', async () => {
+    const CustomPlugin: FeatureModule<'mission-context'> = {
+      id: 'in-app-plugin',
+      slot: 'mission-context',
+      Component: ({ manifest, release }) => (
+        <div data-testid="in-app-feature">Bundle: {manifest.bundleId}, Release: {release.bundleVersion}</div>
+      ),
+    };
+    render(<FeatureHarness feature={CustomPlugin} mountInApp initialBundle={fakeBundle} />);
+    const el = await screen.findByTestId('in-app-feature');
+    expect(el.textContent).toContain('test-bundle');
+    expect(screen.getByTestId('release-id')).toBeTruthy();
+  });
+
+  it('allows a map feature in real App to register a custom layer and clean it up', async () => {
+    const customDraw = vi.fn();
+    const MarkersPlugin: FeatureModule<'map-markers'> = {
+      id: 'custom-markers',
+      slot: 'map-markers',
+      Component: ({ registerLayer }) => {
+        useEffect(() => {
+          return registerLayer(customDraw);
+        }, [registerLayer]);
+        return <div data-testid="marker-feature-mounted" />;
+      },
+    };
+
+    const { unmount } = render(
+      <FeatureHarness feature={MarkersPlugin} mountInApp initialBundle={fakeBundle} />,
+    );
+    expect(await screen.findByTestId('marker-feature-mounted')).toBeTruthy();
+    expect(screen.getByTestId('map-canvas')).toBeTruthy();
+    await waitFor(() => expect(customDraw).toHaveBeenCalled());
+
+    unmount();
+  });
 });
 
-describe('MapCanvas extensibility', () => {
-  const fakeBundle: GridBundle = {
-    bundleVersion: 'test-v1',
-    width: 4,
-    height: 4,
-    hashesVerified: true,
-    manifest: {
-      schema: 'mars-pathfinder/region-bundle',
-      schemaVersion: '1.0',
-      bundleId: 'test-bundle',
-      bundleVersion: 'test-v1',
-      datasetVersion: 'v1',
-      synthetic: true,
-      title: 'Test Bundle',
-      description: 'Test',
-      createdDate: '2026-11-14',
-      crs: {
-        description: 'synthetic-local',
-        body: 'synthetic',
-        sourceCrs: null,
-        localOriginInSource: null,
-        verticalReference: 'datum',
-        horizontalUnits: 'm',
-        verticalUnits: 'm',
-      },
-      grid: {
-        width: 4,
-        height: 4,
-        cellSizeEast_m: 10,
-        cellSizeNorth_m: 10,
-        extent: { west_m: 0, east_m: 40, south_m: 0, north_m: 40 },
-        orientation: 'north-up',
-        order: 'row-major',
-        sampleConvention: 'cell-center',
-      },
-      layers: {} as unknown as Record<RasterLayerId, RasterLayerDescriptor>,
-      qualityClasses: [],
-      strictQualitySupported: true,
-      pointsOfInterest: [],
-      displayAssets: [],
-      sources: [],
-      limitations: [],
-      processing: { script: 'test', parameters: {} },
-    },
-    elevation: new Float32Array(16).fill(10),
-    slope: new Float32Array(16).fill(2),
-    roughness: new Float32Array(16).fill(0.1),
-    quality: new Uint8Array(16).fill(1),
-    exclusion: new Uint8Array(16).fill(0),
-  };
+describe('MapCanvas extensibility and layer replacement', () => {
 
   const fakeLayers = {
     elevation: { visible: true, opacity: 1 },
@@ -234,6 +365,7 @@ describe('MapCanvas extensibility', () => {
     HTMLCanvasElement.prototype.getContext = (() => ({
       clearRect: vi.fn(),
       fillRect: vi.fn(),
+      strokeRect: vi.fn(),
       beginPath: vi.fn(),
       moveTo: vi.fn(),
       lineTo: vi.fn(),
@@ -263,7 +395,6 @@ describe('MapCanvas extensibility', () => {
     const canvas = screen.getByTestId('map-canvas');
     expect(canvas).toBeTruthy();
 
-    // Trigger click on canvas
     fireEvent.click(canvas, { clientX: 10, clientY: 10 });
     expect(onPick).toHaveBeenCalledTimes(1);
     const clickedPoint = onPick.mock.calls[0]![0];
@@ -271,10 +402,20 @@ describe('MapCanvas extensibility', () => {
     expect(typeof clickedPoint.north_m).toBe('number');
   });
 
-  it('executes customLayer chrome hook when supplied', () => {
+  it('executes customLayer replacement hooks for rasters, routes, markers, and chrome', () => {
+    const customRasters = vi.fn((helpers: CanvasDrawHelpers) => {
+      helpers.ctx.fillRect(0, 0, 10, 10);
+    });
+    const customRoutes = vi.fn((helpers: CanvasDrawHelpers) => {
+      helpers.ctx.stroke();
+    });
+    const customMarkers = vi.fn((helpers: CanvasDrawHelpers) => {
+      helpers.ctx.arc(5, 5, 2, 0, Math.PI * 2);
+    });
     const customChrome = vi.fn((helpers: CanvasDrawHelpers) => {
       helpers.ctx.fillText('Custom Scale', 0, 0);
     });
+
     render(
       <MapCanvas
         bundle={fakeBundle}
@@ -286,9 +427,70 @@ describe('MapCanvas extensibility', () => {
         stale={false}
         hover={null}
         onPick={vi.fn()}
-        customLayers={{ chrome: customChrome }}
+        customLayers={{
+          rasters: customRasters,
+          routes: customRoutes,
+          markers: customMarkers,
+          chrome: customChrome,
+        }}
       />,
     );
+
+    expect(customRasters).toHaveBeenCalledTimes(1);
+    expect(customRoutes).toHaveBeenCalledTimes(1);
+    expect(customMarkers).toHaveBeenCalledTimes(1);
     expect(customChrome).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to baseline drawing when custom layers are absent', () => {
+    const { rerender } = render(
+      <MapCanvas
+        bundle={fakeBundle}
+        candidates={[]}
+        selectedCandidateId={null}
+        start={null}
+        destination={null}
+        layers={fakeLayers}
+        stale={false}
+        hover={null}
+        onPick={vi.fn()}
+      />,
+    );
+    const canvas = screen.getByTestId('map-canvas');
+    expect(canvas).toBeTruthy();
+
+    // Rerender with custom layers, then remove them to verify fallback
+    const customMarkers = vi.fn();
+    rerender(
+      <MapCanvas
+        bundle={fakeBundle}
+        candidates={[]}
+        selectedCandidateId={null}
+        start={null}
+        destination={null}
+        layers={fakeLayers}
+        stale={false}
+        hover={null}
+        onPick={vi.fn()}
+        customLayers={{ markers: customMarkers }}
+      />,
+    );
+    expect(customMarkers).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <MapCanvas
+        bundle={fakeBundle}
+        candidates={[]}
+        selectedCandidateId={null}
+        start={null}
+        destination={null}
+        layers={fakeLayers}
+        stale={false}
+        hover={null}
+        onPick={vi.fn()}
+        customLayers={{}}
+      />,
+    );
+    expect(customMarkers).toHaveBeenCalledTimes(1); // not called again
   });
 });
