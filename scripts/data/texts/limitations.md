@@ -18,6 +18,7 @@ Fonti dei numeri: `package/v0.1.0/validation/validation_report.json`, `processin
 | 10 | **Nomi informali** | Skinner Ridge, Wildcat Ridge, Three Forks ecc. sono nomi informali del team Mars 2020, non nomi IAU. | Va bene usarli; eventualmente una nota nei crediti. |
 | 11 | **Area limitata** | Solo P3, P4, P5 sono dentro l'area da 1 km². P1, P2, P6–P9 sono fuori: solo panorama + testo. | Mostrarle come "solo contesto — fuori dall'area mappata", senza percorsi. |
 | 12 | **Immagine (texture)** | Ortomosaico HiRISE in scala di grigi, 4000 → 2048 px (~0,49 m/px). Allineato alla griglia del DTM (stessa origine del produttore). | È contesto visivo, non colore reale; non derivarne misure. |
+| 13 | **Licenze e crediti** | Verificato il 14/11/2026 (`licences.json`): prodotti USGS HiRISE/CTX = CC0 1.0 ("citare gli autori"); immagini HiRISE di pubblico dominio (UA); MEDA = CC0 1.0. Panorami Mastcam-Z: uso libero "senza permesso esplicito" ma **nessuna licenza formale**. Waypoint JPL: **nessuna licenza specifica**, vale solo la linea guida generale NASA. HRSC-MOLA: HRSC in CC BY-SA 3.0 IGO, ma usato solo per un controllo, non è nei bundle. | Mostrare sempre la riga crediti di `ui_captions`; non usare loghi NASA/JPL/USGS; non suggerire un'approvazione NASA. Se un giorno si mostra HRSC, servono attribuzione ESA/DLR/FU Berlin e stessa licenza (share-alike). |
 
 ## English
 
@@ -35,3 +36,4 @@ Fonti dei numeri: `package/v0.1.0/validation/validation_report.json`, `processin
 | 10 | **Informal names** | Feature names are informal Mars 2020 team names, not IAU. | Fine to use; note in credits. |
 | 11 | **Limited area** | Only P3–P5 are inside the 1 km² area; P1, P2, P6–P9 are outside. | Show as "context only — outside mapped area", no routes. |
 | 12 | **Texture** | Grayscale HiRISE orthomosaic, 4000 → 2048 px (~0.49 m/px), on the DTM producer grid. | Visual context only; not true colour; not for measurement. |
+| 13 | **Licences and credits** | Checked 2026-11-14 (`licences.json`): USGS HiRISE/CTX products CC0 1.0 ("please cite authors"); HiRISE images public domain (UA); MEDA CC0 1.0. Mastcam-Z panoramas: free use "without the need for explicit permission" but **no formal licence**. JPL waypoints: **no dataset-specific licence**, only the general NASA guidelines. HRSC-MOLA: HRSC part CC BY-SA 3.0 IGO, used only for a check, not shipped. | Always show the `ui_captions` credits line; no NASA/JPL/USGS logos; no implied NASA endorsement. If HRSC is ever displayed: ESA/DLR/FU Berlin attribution + share-alike. |

@@ -132,7 +132,8 @@
       "officialName": false,
       "positionalUncertainty_m": null,
       "sourceIds": [
-        "jpl-m20-waypoints"
+        "jpl-m20-waypoints",
+        "mastcam-z-360"
       ],
       "synthetic": false
     },
@@ -148,7 +149,8 @@
       "officialName": false,
       "positionalUncertainty_m": null,
       "sourceIds": [
-        "jpl-m20-waypoints"
+        "jpl-m20-waypoints",
+        "mastcam-z-360"
       ],
       "synthetic": false
     },
@@ -164,7 +166,8 @@
       "officialName": false,
       "positionalUncertainty_m": null,
       "sourceIds": [
-        "jpl-m20-waypoints"
+        "jpl-m20-waypoints",
+        "mastcam-z-360"
       ],
       "synthetic": false
     }
@@ -193,22 +196,22 @@
       "id": "usgs-m2020-ctx-dtm",
       "mission": "Mars Reconnaissance Orbiter",
       "instrument": "CTX",
-      "title": "Context Camera Digital Terrain Model Mosaic for Mars 2020 Terrain Relative Navigation (JEZ_ctx_B_soc_008, 20 m)",
-      "creator": "Fergason et al. - USGS Astrogeology Science Center",
+      "title": "Mars 2020 Terrain Relative Navigation CTX DTM Mosaic (JEZ_ctx_B_soc_008, 20 m)",
+      "creator": "Fergason, Galuszka, Hare, Mayer, Redding - USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS",
       "url": "https://doi.org/10.5066/P906QQT8",
       "version": "soc_008 (published 2020-07-24)",
-      "rights": "USGS public data; please cite authors",
+      "rights": "CC0 1.0 Universal (USGS data release page, Rights field); Astropedia: Access constraints None, Use constraints 'Please cite authors'. Credit: USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS. [verified 2026-11-14: https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-ctx-dtm-mosaic]",
       "usedFor": "Coarse fallback elevation; consistency check of HiRISE"
     },
     {
       "id": "usgs-m2020-ctx-ortho",
       "mission": "Mars Reconnaissance Orbiter",
       "instrument": "CTX",
-      "title": "Context Camera Orthorectified image Mosaic for Mars 2020 TRN (6 m)",
-      "creator": "USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS",
+      "title": "Mars 2020 Terrain Relative Navigation Context Camera Orthorectified Image Mosaic (6 m)",
+      "creator": "Fergason, Galuszka, Hare, Mayer, Redding - USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS",
       "url": "https://doi.org/10.5066/P9GV1ND3",
       "version": "soc_008",
-      "rights": "USGS public data; please cite authors",
+      "rights": "CC0 1.0 Universal (USGS data release page, Rights field); CTX images public domain, MSSS: 'While the images are in the Public Domain, NASA/JPL-Caltech/MSSS requests that you credit the source'. Credit: USGS Astrogeology Science Center; CTX: NASA/JPL-Caltech/MSSS. [verified 2026-11-14: https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-context-camera-orthorectified-image-mosaic]",
       "usedFor": "Optional display texture of the coarse fallback"
     },
     {
@@ -219,8 +222,19 @@
       "creator": "NASA/JPL-Caltech",
       "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
       "version": "M20_waypoints_sol2022_all",
-      "rights": "NASA public data",
+      "rights": "No dataset-specific licence found on the file or MMGIS. General NASA Images and Media Usage Guidelines: NASA content 'generally [is] not subject to copyright in the United States' and may be used for educational/informational purposes; 'NASA should be acknowledged as the source of the material'; no implied endorsement. Credit: NASA/JPL-Caltech. [partially verified (general policy only) 2026-11-14: https://www.nasa.gov/nasa-brand-center/images-and-media/]",
       "usedFor": "Positions of science stops (rover positions where Mastcam-Z 360° panoramas were taken)"
+    },
+    {
+      "id": "mastcam-z-360",
+      "mission": "Mars 2020",
+      "instrument": "Mastcam-Z",
+      "title": "Mastcam-Z 360° Panorama Collection (Mastcam-Z team, ASU)",
+      "creator": "NASA/JPL-Caltech/ASU/MSSS; Bell III, J.F. et al. & the Mastcam-Z Science and Operations Team (2025). Landscape Mosaics Acquired in Jezero Crater by the Mastcam-Z Investigation on the NASA Mars 2020 Mission's Perseverance Rover. 56th LPSC, Abstract #1719.",
+      "url": "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/",
+      "version": "list as of sol 1889 (2026-06-13)",
+      "rights": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. [verified 2026-11-14: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/]",
+      "usedFor": "Panorama IDs and credit named in the science-stop purpose text (images are not bundled)"
     }
   ],
   "limitations": [
