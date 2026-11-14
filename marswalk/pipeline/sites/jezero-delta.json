@@ -1,0 +1,278 @@
+{
+ "id": "jezero-delta",
+ "name": "Jezero — fronte del delta (Three Forks / Hawksbill Gap)",
+ "body": "Mars",
+ "radius_m": 3396190,
+ "lon0": 77.4055,
+ "lat0": 18.4555,
+ "rings": [
+  {
+   "name": "inner",
+   "half": 800,
+   "res": 1,
+   "tile": 100,
+   "lods": [
+    1,
+    2,
+    4,
+    8
+   ],
+   "lodDist": [
+    50,
+    150,
+    400
+   ],
+   "dtm": "hirise_dtm",
+   "ortho": "hirise_ortho",
+   "orthoTiles": 4,
+   "orthoPx": 1600
+  },
+  {
+   "name": "mid",
+   "half": 3600,
+   "res": 8,
+   "tile": 800,
+   "lods": [
+    1,
+    2,
+    4
+   ],
+   "lodDist": [
+    900,
+    2200
+   ],
+   "dtm": "hirise_dtm",
+   "ortho": "hirise_ortho",
+   "orthoTiles": 1,
+   "orthoPx": 4096
+  },
+  {
+   "name": "outer",
+   "half": 14400,
+   "res": 40,
+   "tile": 3600,
+   "lods": [
+    1,
+    2
+   ],
+   "lodDist": [
+    8000
+   ],
+   "dtm": "ctx_dtm",
+   "ortho": "ctx_ortho",
+   "orthoTiles": 1,
+   "orthoPx": 4096
+  }
+ ],
+ "start": {
+  "sol": 409,
+  "yawDeg": 250
+ },
+ "mission": {
+  "title": "EVA-1 «Three Forks»: dal deposito dei campioni al fronte del delta",
+  "objective": "Recuperare le provette lasciate da Perseverance e campionare i sedimenti del delta dove un lago antico può aver conservato tracce di vita.",
+  "startLMST": "10:00",
+  "walk": {
+   "flatSpeed": 0.7,
+   "toblerK": 3.5,
+   "toblerOffset": 0.05,
+   "note": "Funzione di Tobler riscalata: 0,7 m/s in piano (ordine di grandezza delle camminate Apollo)."
+  },
+  "slopeLimitsDeg": [
+   10,
+   20,
+   30
+  ],
+  "metabolic": {
+   "baseW": 150,
+   "walkJperM": 200,
+   "massKg": 260,
+   "efficiency": 0.25,
+   "note": "150 W a riposo in tuta + 200 J per metro in piano + lavoro contro la gravità marziana (3,71 m/s²) con rendimento 25%."
+  },
+  "oxygen": {
+   "tankKg": 0.6,
+   "kJperLitre": 20.1,
+   "gPerLitre": 1.429,
+   "reserveFraction": 0.2
+  },
+  "radiation": {
+   "mSvPerDay": 0.64,
+   "source": "Curiosity RAD, cratere Gale (Hassler et al. 2014): valore di riferimento, non misurato a Jezero."
+  },
+  "gravity": 3.71
+ },
+ "pois": [
+  {
+   "id": "base",
+   "name": "Base",
+   "sol": 409,
+   "kind": "base",
+   "title": "EVA-1: dal deposito dei campioni al fronte del delta",
+   "text": "Obiettivo: recuperare le provette lasciate da Perseverance e campionare i sedimenti del delta, dove un lago antico può aver conservato tracce di vita. Segui la linea azzurra sul terreno: 5 tappe e rientro, 2,2 km. Tieni d'occhio ossigeno, pendenza e ora del tramonto. La posizione della base è una scelta del nostro scenario, non un dato NASA.",
+   "photo": null
+  },
+  {
+   "id": "threeforks",
+   "name": "Three Forks",
+   "sol": 663,
+   "kind": "science",
+   "title": "Three Forks: il deposito dei campioni",
+   "text": "Tra dicembre 2022 e gennaio 2023 Perseverance ha posato qui 10 provette sigillate: il primo deposito di campioni su un altro pianeta. Obiettivo: recuperarle.",
+   "photo": {
+    "file": "photos/threeforks.jpg",
+    "imageid": "ZL0_0663_0725801909_928EBY_N0320378ZCAM08657_1100LMJ",
+    "sol": 663,
+    "camera": "Mastcam-Z",
+    "w": 1024,
+    "h": 746,
+    "credit": "NASA/JPL-Caltech/ASU"
+   },
+   "meda": {
+    "sol": 690,
+    "min": -84.4,
+    "max": -16.8,
+    "source": "MEDA CAL_ATS, PDS Atmospheres Node; minimi e massimi estratti dal gruppo Mars Pathfinder (github.com/hritvikarora/marspineapple)"
+   }
+  },
+  {
+   "id": "nukshak",
+   "name": "Cape Nukshak",
+   "sol": 565,
+   "kind": "science",
+   "title": "Cape Nukshak: la base del delta",
+   "text": "Strati sedimentari a grana fine, depositati quando il cratere ospitava un lago. Il rover ha prelevato qui le carote Shuyak e Mageik dall'affioramento Amalik. Obiettivo: campionare gli strati più bassi e antichi.",
+   "photo": {
+    "file": "photos/nukshak.jpg",
+    "imageid": "ZL0_0565_0717090427_303EBY_N0280000ZCAM08586_0340LMJ",
+    "sol": 565,
+    "camera": "Mastcam-Z",
+    "w": 1024,
+    "h": 746,
+    "credit": "NASA/JPL-Caltech/ASU"
+   },
+   "meda": {
+    "sol": 565,
+    "min": -87.3,
+    "max": -23.6,
+    "source": "MEDA CAL_ATS, PDS Atmospheres Node; minimi e massimi estratti dal gruppo Mars Pathfinder (github.com/hritvikarora/marspineapple)"
+   }
+  },
+  {
+   "id": "yori",
+   "name": "Yori Pass",
+   "sol": 609,
+   "kind": "science",
+   "title": "Yori Pass: arenaria ai piedi del delta",
+   "text": "Affioramento di arenaria fine studiato dal rover a fine 2022. Rocce così, deposte in acqua calma, sono tra le migliori per conservare molecole organiche.",
+   "photo": {
+    "file": "photos/yori.jpg",
+    "imageid": "NLF_0609_0721019534_476ECM_N0301172NCAM12609_01_195J",
+    "sol": 609,
+    "camera": "Navcam",
+    "w": 1024,
+    "h": 770,
+    "credit": "NASA/JPL-Caltech"
+   }
+  },
+  {
+   "id": "wildcat",
+   "name": "Wildcat Ridge",
+   "sol": 502,
+   "kind": "science",
+   "title": "Hawksbill Gap: Wildcat Ridge e Skinner Ridge",
+   "text": "Wildcat Ridge è una roccia fangosa in cui lo strumento SHERLOC ha rilevato segnali di molecole organiche e solfati: non è una prova di vita. Carote Hazeltop e Bearwallow qui, Swift Run e Skyland nell'arenaria di Skinner Ridge.",
+   "photo": {
+    "file": "photos/wildcat.jpg",
+    "imageid": "ZL0_0464_0708123617_639EBY_N0260630ZCAM08484_1100LMJ",
+    "sol": 464,
+    "camera": "Mastcam-Z",
+    "w": 1024,
+    "h": 746,
+    "credit": "NASA/JPL-Caltech/ASU"
+   },
+   "meda": {
+    "sol": 484,
+    "min": -71.8,
+    "max": -20.5,
+    "source": "MEDA CAL_ATS, PDS Atmospheres Node; minimi e massimi estratti dal gruppo Mars Pathfinder (github.com/hritvikarora/marspineapple)"
+   }
+  },
+  {
+   "id": "rockytop",
+   "name": "Rocky Top",
+   "sol": 709,
+   "kind": "science",
+   "title": "Rocky Top: la salita verso la sommità del delta",
+   "text": "Il punto più alto dell'uscita, 50 m sopra la base. Da qui il rover ha iniziato la campagna sulla sommità del delta. Obiettivo: fotografare gli strati dall'alto e rientrare.",
+   "photo": {
+    "file": "photos/rockytop.jpg",
+    "imageid": "NLF_0709_0729889968_787ECM_N0332864NCAM03709_01_195J",
+    "sol": 709,
+    "camera": "Navcam",
+    "w": 1024,
+    "h": 770,
+    "credit": "NASA/JPL-Caltech"
+   }
+  }
+ ],
+ "route": [
+  "base",
+  "threeforks",
+  "nukshak",
+  "yori",
+  "wildcat",
+  "rockytop",
+  "base"
+ ],
+ "overlays": {
+  "minerals": {
+   "kind": "crism",
+   "file": "crism_mid.npz",
+   "half": 3600,
+   "res": 12,
+   "shiftM": [
+    -180,
+    204
+   ],
+   "product": "CRISM MTRDR FRT00005C5E (18 m/pixel), parametri spettrali di Viviano-Beck et al. 2014",
+   "channels": [
+    {
+     "band": "OLINDEX3",
+     "label": "olivina",
+     "color": [
+      255,
+      70,
+      50
+     ]
+    },
+    {
+     "band": "D2300",
+     "label": "argille di ferro e magnesio",
+     "color": [
+      70,
+      230,
+      90
+     ]
+    },
+    {
+     "band": "MIN2295_2480",
+     "label": "carbonati",
+     "color": [
+      70,
+      140,
+      255
+     ],
+     "lo": 0.002,
+     "hi": 0.008
+    }
+   ]
+  },
+  "thermal": {
+   "kind": "themis",
+   "file": "themis_night.npy",
+   "half": 14400,
+   "product": "Mars Odyssey THEMIS, mosaico infrarosso notturno 100 m/pixel"
+  }
+ }
+}

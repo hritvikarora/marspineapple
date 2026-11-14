@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marswalk — prova generale di un'uscita su Marte</title>
+<style>
+  html,body{margin:0;height:100%;background:#1a0f0a;color:#f4e3d3;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+  canvas{display:block}
+  #boot{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 60%,#5a2f1c 0%,#1a0f0a 70%);z-index:10;text-align:center;padding:24px;transition:opacity .6s}
+  #boot h1{font-size:clamp(28px,5vw,54px);margin:0;letter-spacing:.04em;font-weight:700}
+  #boot p{margin:0;max-width:640px;line-height:1.45;opacity:.85}
+  #bar{width:min(420px,70vw);height:6px;background:#ffffff22;border-radius:3px;overflow:hidden}
+  #bar i{display:block;height:100%;width:0;background:#ff9a52;transition:width .2s}
+  #msg{font-size:13px;opacity:.7;min-height:1.2em}
+  #help{position:fixed;left:12px;bottom:12px;font-size:12px;line-height:1.5;background:#0008;padding:8px 10px;border-radius:8px;max-width:340px;pointer-events:none}
+  #help b{color:#ffb37a}
+  #legend{position:fixed;right:12px;top:12px;font-size:13px;line-height:1.5;background:#0009;padding:10px 12px;border-radius:8px;max-width:260px;pointer-events:none;display:flex;flex-direction:column}
+  #legend:empty{display:none}
+  #legend b{font-size:15px}
+  #legend small{opacity:.7;margin-bottom:4px}
+  #legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:8px}
+</style>
+</head>
+<body>
+<div id="boot">
+  <h1>MARSWALK</h1>
+  <p>Prova generale di un'uscita a piedi su Marte: terreno e immagini reali delle missioni NASA, cratere Jezero.</p>
+  <div id="bar"><i></i></div>
+  <div id="msg">Caricamento dei dati orbitali…</div>
+</div>
+<div id="help"></div>
+<div id="legend"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
