@@ -11,6 +11,57 @@
   "10.1126/science.abl4051": "Mangold et al. 2021, Science – Perseverance rover reveals an ancient delta-lake system and flood deposits at Jezero crater, Mars",
   "10.1038/s41586-025-09413-0": "Hurowitz et al. 2025, Nature – Redox-driven mineral and organic associations in Jezero Crater, Mars"
  },
+ "licences": {
+  "jpl_m20_waypoints": {
+   "licence": "No dataset-specific licence found on the file or MMGIS. General NASA Images and Media Usage Guidelines: NASA content 'generally [is] not subject to copyright in the United States' and may be used for educational/informational purposes; 'NASA should be acknowledged as the source of the material'; no implied endorsement.",
+   "credit_line": "NASA/JPL-Caltech",
+   "citation": "NASA/JPL-Caltech, Mars 2020 rover waypoints (MMGIS), M20_waypoints.json, https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+   "urls": [
+    "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "https://www.jpl.nasa.gov/jpl-image-use-policy"
+   ],
+   "verified": "partial",
+   "note": "Credit line 'NASA/JPL-Caltech' follows JPL practice ('Courtesy NASA/JPL-Caltech' per JPL Image Use Policy, which formally covers jpl.nasa.gov sites; mars.nasa.gov is not a jpl.nasa.gov address)."
+  },
+  "mastcam_z_360_panoramas": {
+   "licence": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated.",
+   "credit_line": "NASA/JPL-Caltech/ASU/MSSS",
+   "citation": "Bell III, J.F. et al. & the Mastcam-Z Science and Operations Team (2025). Landscape Mosaics Acquired in Jezero Crater by the Mastcam-Z Investigation on the NASA Mars 2020 Mission's Perseverance Rover. 56th LPSC, Abstract #1719.",
+   "urls": [
+    "https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/"
+   ],
+   "verified": true,
+   "note": "The team 'would be grateful' for the abstract reference and the photo credit for any public or commercial use."
+  },
+  "meda_pds": {
+   "licence": "CC0 1.0 Universal and 'a work of the U.S. Government ... not subject to copyright protection in the United States. Foreign copyrights may apply.' (DataCite rights for DOI 10.17189/1522849)",
+   "credit_line": "MEDA: NASA PDS Atmospheres Node (Rodriguez-Manfredi & de la Torre Juarez 2021, doi:10.17189/1522849)",
+   "citation": "Rodriguez-Manfredi, J.A., de la Torre Juarez, M. (2021). Mars 2020 MEDA Bundle (v6.0). NASA Planetary Data System. https://doi.org/10.17189/1522849",
+   "urls": [
+    "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/bundle.xml",
+    "https://api.datacite.org/dois/10.17189/1522849"
+   ],
+   "verified": true,
+   "note": "Licence and citation verified via DataCite and the PDS4 bundle label. No mission-specific photo-style credit line was found; the credit uses the verified PDS citation."
+  },
+  "papers": {
+   "licence": "Cited only (short paraphrase of findings, no text/figures reproduced). Science papers (Farley 2022, Liu 2022, Mangold 2021): no licence in Crossref metadata - publisher copyright, not verified. Hurowitz et al. 2025 (Nature): CC BY-NC-ND 4.0 per Crossref metadata.",
+   "credit_line": "Cite as reference (author, year, journal, DOI)",
+   "urls": [
+    "https://api.crossref.org/works/10.1038/s41586-025-09413-0",
+    "https://doi.org/10.1126/science.abo2196",
+    "https://doi.org/10.1126/science.abo2756",
+    "https://doi.org/10.1126/science.abl4051"
+   ],
+   "verified": "partial"
+  },
+  "nasa_press_and_abstracts": {
+   "licence": "NASA/JPL press release (SHERLOC organics, Sept 2022) and conference abstracts (EPSC2022-1098, LPSC 2023 #2716): cited only; licence not checked.",
+   "credit_line": "Cite as reference",
+   "urls": [],
+   "verified": false
+  }
+ },
  "removed_unverified": "Previous third-party landmark CSV (rab-software.de) no longer used for coordinates.",
  "pois": [
   {
@@ -53,7 +104,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0012XRAS_0030000_CYL_S_AUTOGENJ01.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -120,7 +171,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0286_RAS_0090000_CYL_S_AUTOGENJ05.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -192,7 +243,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0502_RAS_0261222_CYL_S_AUTOGENJ01.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -284,7 +335,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0565_RAS_0290000_CYL_S_AUTOGENJ01.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -371,7 +422,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0686_RZS_0321184_CYL_L_AUTOGENJ03.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -423,7 +474,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0784_RZS_0390926_CYL_L_AUTOGENJ02.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -485,7 +536,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1068_RZS_0501618_CYL_L_AUTOGENJ04.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -554,7 +605,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1177_RZS_0540000_CYL_L_AUTOGENJ02.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"
@@ -631,7 +682,7 @@
     }
    ],
    "panorama_credit": "NASA/JPL-Caltech/ASU/MSSS",
-   "panorama_terms": "Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+   "panorama_terms": "Mastcam-Z team: 'These mosaics are available for public or scientific community use without the need for explicit permission.' No formal licence (e.g. CC) stated. Credit: NASA/JPL-Caltech/ASU/MSSS. Source: https://mastcamz.asu.edu/mastcam-zs-360-panorama-collection/ (checked 2026-11-14)",
    "navcam_autopano": {
     "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1438XRZS_0692124_CYL_L_AUTOGENJ02.jpg",
     "status": "listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"

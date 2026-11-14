@@ -1,5 +1,6 @@
 """Build pois.json from NASA/JPL rover waypoints (M20_waypoints.json), MEDA ATS summaries and curated metadata."""
 import json, math
+LICDOC=json.load(open("licences.json")); LIC=LICDOC["entries"]  # licence register (checked online)
 W=[x['properties'] for x in json.load(open('poi_sources/M20_waypoints.json'))['features']]
 M={**json.load(open('poi_sources/meda/meda_ats_summary.json')), **json.load(open('poi_sources/meda/meda_ats_summary_pano_sols.json'))}
 D=math.pi/180*3396190; core=[4587569,1093474,4588569,1094474]
@@ -63,7 +64,7 @@ for p in P:
       in_aoi_core=ins, role="inside AOI: terrain + routes + VR" if ins else "outside AOI: context-only VR stop (no 1 m terrain package yet)",
       sample_or_event=p['sample_or_event'],observation=p['observation'],interpretation=p['interpretation'],
       panoramas=p['panoramas'],panorama_credit="NASA/JPL-Caltech/ASU/MSSS",
-      panorama_terms="Mastcam-Z team: 'available for public or scientific community use without the need for explicit permission'; credit NASA/JPL-Caltech/ASU/MSSS requested (mastcamz.asu.edu 360 collection page)",
+      panorama_terms=LIC['mastcam_z_360_panoramas']['licence']+" Credit: "+LIC['mastcam_z_360_panoramas']['credit_line']+". Source: "+LIC['mastcam_z_360_panoramas']['urls'][0]+" (checked "+LICDOC['checked']+")",
       navcam_autopano=dict(url=MMGIS+[i['url'] for i in w['images']][0] if w.get('images') else None,status="listed in JPL waypoint file; HTTP 403 from our server – accessibility unverified"),
       temperature=[meda(s) for s in p['meda_sols']],
       caveat=p.get('caveat'))
@@ -72,6 +73,7 @@ doc=dict(version="0.1.0",created="2026-11-14",crs_note="lon/lat planetocentric, 
   vertical_check="JPL elev_geoid vs HiRISE DTM at 62 waypoints: median difference -0.006 m (p05 -4.3, p95 +0.09) -> HiRISE DTM heights are in the same areoid-referenced system as JPL 'elev_geoid' (note: JPL localization itself uses these maps, so this is consistency, not independent proof).",
   temperature_caveat="MEDA air temperature (ATS) is measured ~1 m-scale near the rover mast/body and is season- and time-of-day dependent; it describes that sol, not a permanent property of the site. Sensor positions for ATS1..5 not yet verified in MEDA docs. Ground temperature (TIRS) exists in MEDA products but not yet extracted.",
   references_verified={"checked":"2026-11-14 via Crossref API","10.1126/science.abo2196":"Farley et al. 2022, Science – Aqueously altered igneous rocks sampled on the floor of Jezero crater, Mars","10.1126/science.abo2756":"Liu et al. 2022, Science – An olivine cumulate outcrop on the floor of Jezero crater, Mars","10.1126/science.abl4051":"Mangold et al. 2021, Science – Perseverance rover reveals an ancient delta-lake system and flood deposits at Jezero crater, Mars","10.1038/s41586-025-09413-0":"Hurowitz et al. 2025, Nature – Redox-driven mineral and organic associations in Jezero Crater, Mars"},
+  licences={k:LIC[k] for k in ("jpl_m20_waypoints","mastcam_z_360_panoramas","meda_pds","papers","nasa_press_and_abstracts")},
   removed_unverified="Previous third-party landmark CSV (rab-software.de) no longer used for coordinates.",
   pois=out)
 json.dump(doc,open("pois.json","w"),indent=1,ensure_ascii=False)
