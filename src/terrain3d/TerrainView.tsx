@@ -21,12 +21,20 @@ export interface TerrainViewProps {
   onError?: (e: { kind: 'webgl-unavailable' | 'context-lost' | 'terrain-data' | 'texture'; message: string }) => void;
 }
 
-export default function TerrainView({ bundle, candidates, selectedCandidateId }: TerrainViewProps) {
+export default function TerrainView({ bundle, candidates, selectedCandidateId, highlightPathIndex }: TerrainViewProps) {
   return (
-    <div className="placeholder3d" role="region" aria-label="3D terrain view (placeholder)">
+    <div
+      className="placeholder3d"
+      role="region"
+      aria-label="3D terrain view (placeholder)"
+      data-testid="terrain-view"
+      data-selected-candidate={selectedCandidateId ?? ''}
+      data-hover-index={highlightPathIndex ?? ''}
+    >
       <p>
         <strong>3D terrain placeholder</strong> (Role B). Bundle {bundle.bundleVersion}, {bundle.width}×{bundle.height} cells,{' '}
-        {candidates.length} candidate(s), selected: {selectedCandidateId ?? 'none'}.
+        {candidates.length} candidate(s), selected: {selectedCandidateId ?? 'none'}, highlighted path index:{' '}
+        {highlightPathIndex ?? 'none'}.
       </p>
     </div>
   );
