@@ -1,0 +1,396 @@
+/**
+ * Scoped styles for TASK-004 Endpoints Feature. OWNER: Dhani (UI Role).
+ * Conforms to shared design tokens, WCAG AA contrast, and minimum 44px touch targets.
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+  width: 100%;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-1, 4px);
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text, #f3f6f8);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Pick mode toggle fieldset */
+.pickFieldset {
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-sm, 4px);
+  background: var(--color-panel, #18242f);
+  padding: 8px 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pickLegend {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent, #73d0c1);
+  padding: 0 4px;
+}
+
+.pickOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pickOptionLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--min-touch-target, 44px);
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.pickOptionLabel:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.pickMarkerBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.badgeStart {
+  background-color: var(--color-success, #2ecc71);
+}
+
+.badgeDestination {
+  background-color: #e74c3c;
+}
+
+.pickHint {
+  font-size: 11px;
+  color: var(--color-muted, #b7c3cf);
+  margin: 0;
+}
+
+/* Swap Endpoints Button */
+.swapContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.swapBtn {
+  min-height: var(--min-touch-target, 44px);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--color-panel-header, #1f2f3d);
+  color: var(--color-text, #f3f6f8);
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.swapBtn:hover:not(:disabled) {
+  background: #273b4d;
+  border-color: var(--color-accent, #73d0c1);
+}
+
+.swapBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Endpoint Card */
+.card {
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-md, 6px);
+  background: var(--color-panel, #18242f);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cardActiveTarget {
+  border-color: var(--color-accent, #73d0c1);
+  box-shadow: 0 0 0 1px var(--color-accent, #73d0c1);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cardTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.badgePreset {
+  background: rgba(115, 208, 193, 0.15);
+  color: var(--color-accent, #73d0c1);
+  border: 1px solid var(--color-accent, #73d0c1);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.activeTargetBadge {
+  background: rgba(115, 208, 193, 0.2);
+  color: var(--color-accent, #73d0c1);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.setTargetBtn {
+  min-height: 32px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: transparent;
+  color: var(--color-muted, #b7c3cf);
+  border: 1px dashed var(--color-border, #526477);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+}
+
+.setTargetBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text, #f3f6f8);
+  border-color: var(--color-muted, #b7c3cf);
+}
+
+/* Coordinate Input Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .inputGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inputLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text, #f3f6f8);
+}
+
+.inputHint {
+  font-size: 11px;
+  color: var(--color-muted, #b7c3cf);
+  margin-top: 2px;
+}
+
+.coordInput {
+  min-height: var(--min-touch-target, 44px);
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: var(--font-mono, monospace);
+  background: var(--color-surface, #101820);
+  color: var(--color-text, #f3f6f8);
+  border: 1px solid var(--color-border, #526477);
+  border-radius: var(--radius-sm, 4px);
+  width: 100%;
+}
+
+.coordInput:focus-visible {
+  border-color: var(--color-focus, #73d0c1);
+}
+
+.inputHasError {
+  border-color: var(--color-error, #ff9b9b);
+  background: rgba(255, 155, 155, 0.05);
+}
+
+.errorMessage {
+  background: var(--color-error-bg, #4a1515);
+  color: var(--color-error, #ff9b9b);
+  border: 1px solid var(--color-error, #ff9b9b);
+  border-radius: var(--radius-sm, 4px);
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.buttonRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.actionBtn {
+  min-height: var(--min-touch-target, 44px);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease;
+}
+
+.primaryAction {
+  background: var(--color-accent, #73d0c1);
+  color: #101820;
+  font-weight: 600;
+}
+
+.primaryAction:hover:not(:disabled) {
+  background: var(--color-accent-hover, #5abdae);
+}
+
+.secondaryAction {
+  background: var(--color-panel-header, #1f2f3d);
+  color: var(--color-text, #f3f6f8);
+  border-color: var(--color-border, #526477);
+}
+
+.secondaryAction:hover:not(:disabled) {
+  background: #273b4d;
+}
+
+.clearAction {
+  background: transparent;
+  color: var(--color-muted, #b7c3cf);
+  border-color: transparent;
+}
+
+.clearAction:hover:not(:disabled) {
+  color: var(--color-error, #ff9b9b);
+  background: rgba(255, 155, 155, 0.1);
+}
+
+/* Cell Center Resolution Feedback Box */
+.cellFeedback {
+  background: var(--color-surface, #101820);
+  border: 1px solid rgba(115, 208, 193, 0.3);
+  border-radius: var(--radius-sm, 4px);
+  padding: 10px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedbackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--color-accent, #73d0c1);
+}
+
+.feedbackRow {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-muted, #b7c3cf);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+
+.feedbackVal {
+  color: var(--color-text, #f3f6f8);
+  font-weight: 500;
+}
+
+.feedbackNote {
+  font-size: 11px;
+  color: var(--color-muted, #b7c3cf);
+  line-height: 1.4;
+  margin: 2px 0 0 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 4px;
+}
+
+.emptyState {
+  color: var(--color-muted, #b7c3cf);
+  font-size: 12px;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Regional Grid Spec Info Card */
+.gridInfoCard {
+  border: 1px solid rgba(82, 100, 119, 0.4);
+  border-radius: var(--radius-sm, 4px);
+  background: rgba(16, 24, 32, 0.6);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--color-muted, #b7c3cf);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gridInfoTitle {
+  font-weight: 600;
+  color: var(--color-text, #f3f6f8);
+  font-size: 12px;
+  margin: 0;
+}
+
+.gridInfoDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--font-mono, monospace);
+}
