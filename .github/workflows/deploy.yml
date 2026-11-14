@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   ci:
-    name: Typecheck, lint, test, build, audit, smoke, e2e
+    name: Typecheck, lint, test, sim, build, audit, smoke, e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -23,6 +23,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - name: Simulation summary (all scenarios through the engine)
+        run: npm run sim
       - run: npm run build
       - name: Asset budget + content audit
         run: npm run audit

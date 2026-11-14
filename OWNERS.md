@@ -19,5 +19,6 @@ only through Role C (see INTERFACE.md §9).
 | `scripts/make-fixture.mjs`, `scripts/validate-bundle.mjs`, `scripts/smoke-preview.mjs`, `scripts/audit.mjs` | **Role C** | |
 | `public/bundles/index.json` | **Role A** edits `release`; Role C reviews | Which bundle production serves. |
 | `e2e/`, `playwright.config.ts`, `scripts/serve-static.mjs` | **Role C** | Browser e2e suite + golden export. Keep the `data-testid`s listed in README → Testing. |
+| `src/sim/`, `tests/sim/`, `scripts/sim/`, `scripts/make-examples.ts` | **Role C** | Simulation suite (dev/test only). Ayush: see docs/SIMULATION-FOR-AYUSH.md. |
 | `tests/` | **Role C** (integration) | Specialist tests live next to their code (e.g. `src/routing/*.test.ts`). |
 | `src/config.ts`, `vite.config.ts`, `package.json`, `README.md`, `INTERFACE.md`, deploy | **Role C** | |

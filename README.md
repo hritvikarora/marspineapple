@@ -71,10 +71,45 @@ for that test (`consoleGuard.allow(...)` in `e2e/fixtures.ts`) and asserts user-
 | `export-json` | JSON export button |
 | `imagery-status`, `optional-assets-status` (+ `data-status`) | Context tiles status, optional display assets status |
 
+## Simulation suite
+
+Deterministic, seeded synthetic terrains that exercise the whole pipeline
+(bundle validation → worker/route engine → state → export). Code lives in `src/sim/` (generators,
+oracles, invariants; dev/test only, never imported by the app; `npm run audit` fails if it ever ships),
+tests in `tests/sim/`, the CLI in `scripts/sim/`.
+
+| Command | What |
+|---|---|
+| `npm run sim` | Runs every scenario case through the engine and prints a summary table (status, candidates, distances, unknown-quality metres, solve time, invariant check). Exit 1 on any invariant violation. `-- --json out.json` writes details. |
+| `npm run sim:test` | Only the simulation tests (they also run in `npm test`/CI). |
+| `SIM_FUZZ_TERRAINS=1500 npm run sim:test` | Bigger fuzz run (default 30 terrains × 7 requests = 210). A failure prints `FAILING SEED n`; reproduce with `SIM_FUZZ_SEED=n`. |
+| `SIM_ENGINE=path/to/engine.ts npm run sim:test` | Run the same invariants against another solver module (exports `solveRoute(grid, request, hooks?)` + `MODEL_VERSION`). |
+| `npm run sim:update-golden` | Rewrite `tests/sim/golden/` after an intentional solver/export change (review the diff). |
+| `npm run examples` | Regenerate `docs/examples/*.json` from the fixture with the current engine. |
+
+**Scenarios** (`src/sim/scenarios.ts`): `flat-plain` (64², octile-distance check), `slope-plane` (analytic 12° plane),
+`ridge-gap` (wall with one gap), `maze` (serpentine corridors), `crater-basin` (unreachable floor → no-path),
+`noisy-rough` (seeded fractal noise), `quality-patchwork` / `quality-wall` (good vs unknown quality, strict mode),
+`missing-holes` (NaN holes + derivative halos), `excluded-cells` (28 % random manual exclusions),
+`large-512` (262k cells, perf budget), `strip-row` / `strip-column` (1×N, N×1, anisotropic cells),
+`degenerate-endpoints` (start == goal, every border, outside, NaN, excluded, strict-unknown, no policies),
+`no-quality-classes` (strict refused). Plus three random-terrain families for fuzzing.
+
+**What is checked** (`src/sim/invariants.ts`, `tests/sim/expectations.ts`, solver-independent):
+8-neighbour continuity, no revisits, only valid cells (never excluded/missing/NaN-derivative), no corner cutting past
+invalid cells, endpoints = containing cell's centre, path points = cell centres + raster elevation, metrics recomputed
+from the path (distance, ascent/descent, exposure, intervals, profile), weighted cost ≥ straight line, strict mode never
+uses unknown quality, round-trip legs reversed, no duplicate candidates, correct invalid-input reasons/fields, and
+reference oracles: on flat terrain success ⇔ connected and shortest-feasible = the 8-neighbour optimum; on any terrain
+data-level disconnected ⇒ never success; uncertainty-aware never crosses more unknown metres than shortest-feasible
+(flat good/unknown terrain); identical output across 20 runs. Worker sims: bursts, cancel, timeout (client and
+solver-side), crash, region switch, random interleavings — only the last request reaches state.
+Golden exports (`tests/sim/golden/`) pin the placeholder; they are skipped when `SIM_ENGINE` is set.
+
 ## CI and deployment
 
 `.github/workflows/deploy.yml`: every push/PR runs typecheck, lint, test, build, `npm run audit`, the
-headless smoke and the Playwright e2e suite against `dist/` served under `/marspineapple/` (only `dist/` is deployed). Pushes to `main` (and manual
+headless smoke, the simulation summary (`npm run sim`) and the Playwright e2e suite against `dist/` served under `/marspineapple/` (only `dist/` is deployed). Pushes to `main` (and manual
 `workflow_dispatch`) then deploy `dist/` to GitHub Pages: https://hritvikarora.github.io/marspineapple/
 (requires Pages enabled with source "GitHub Actions"). The relative `base: './'` build works under that sub-path.
 
