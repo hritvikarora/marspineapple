@@ -4,8 +4,11 @@ Static, offline-capable Mars route planner (NASA Space Apps 2026 hackathon proto
 React + TypeScript + Vite. No backend, no API keys, no accounts. Routes are computed by a
 deterministic solver in a Web Worker over a versioned, pre-processed terrain bundle.
 
-> **Status:** integration foundation (Role C, Phases 1–2). Default data is the **SYNTHETIC** fixture
-> `public/bundles/synthetic-v0`. The routing engine, map UI and 3D view are clearly-marked
+> **Status:** production (GitHub Pages) serves **real Mars data**: Role A's
+> `public/bundles/jezero-west-hirise-v0.1.0` (USGS Mars 2020 TRN HiRISE 1 m DTM, western Jezero delta front,
+> 1000×1000 cells of 0.94857 m E × 1 m N; quality uniformly *unknown*, so strict mode is unavailable).
+> A CTX 20 m fallback (`jezero-west-ctx20m-v0.1.0`) ships too. The dev server and unit tests use the
+> **SYNTHETIC** fixture `public/bundles/synthetic-v0`. The routing engine, map UI and 3D view are clearly-marked
 > placeholders for their owners. Educational simulation, not a safety assessment.
 
 ## Setup
@@ -37,17 +40,21 @@ any sub-path. Don't open `index.html` via `file://` (module workers are blocked)
 | Command | What |
 |---|---|
 | `npm test` | Vitest unit/integration tests (node + jsdom). |
-| `npm run build && npm run build:e2e && npm run e2e` | Playwright browser e2e against the **built** app served under `/marspineapple/` (synthetic fixture). |
+| `npm run build && npm run build:e2e && npm run e2e` | Playwright browser e2e against the **built** apps served under `/marspineapple/` (real release + synthetic builds). |
 | `npm run e2e:update-golden` | Rewrite `e2e/golden/export-outpost-eastbench-c2.json` after an intentional export change (review the diff!). |
 
 The e2e suite uses the installed Google Chrome (`channel: 'chrome'`, override with `PW_CHANNEL`), which is
-preinstalled on GitHub's ubuntu runners — no browser download. Two builds are served by `scripts/serve-static.mjs`:
+preinstalled on GitHub's ubuntu runners — no browser download. Three builds are served by `scripts/serve-static.mjs`:
 
-* **`release`** project → `dist/` (exactly what Pages deploys) on :4280 — `e2e/journey.spec.ts`: happy journey
+* **`release`** project → `dist/` (exactly what Pages deploys: real HiRISE bundle) on :4280 — `e2e/release.spec.ts`:
+  release id, no synthetic badge/banner, strict mode disabled, texture available, routes P3↔P4, P4↔P5, P3↔P5 each
+  under 8 s with "100 % unknown quality" in the briefing, real-data export, no external requests.
+* **`synthetic`** project → `dist-e2e-syn/` (production build with `VITE_BUNDLE=synthetic-v0`) on :4282 —
+  `e2e/journey.spec.ts`: happy journey
   (preset → calculate → select c0/c1/c2 → map/profile/briefing/3D sync → hover → print preview → JSON export
   byte-identical to the golden file, no local paths/URLs), no-path (sealed basin), rapid destination switching
   (stale responses discarded), release id / synthetic badge / no external requests.
-* **`variant`** project → `dist-e2e/` (`VITE_TILES=trek VITE_ROUTE_TIMEOUT_MS=1500`, public env only) on :4281 —
+* **`variant`** project → `dist-e2e/` (synthetic + `VITE_TILES=trek VITE_ROUTE_TIMEOUT_MS=1500`, public env only) on :4281 —
   `e2e/failures.spec.ts`: invalid manifest (schema + version), raster byte-length mismatch, missing raster,
   worker timeout, worker crash, missing optional texture, 3D chunk load failure, no WebGL, tile probe ok / offline / hanging.
 
@@ -171,8 +178,8 @@ flowchart LR
 | All JS incl. lazy chunks + worker | 450 KB | ~84 KB |
 | Routing worker | 50 KB | ~4 KB |
 | CSS | 30 KB | ~0.5 KB |
-| Each region bundle | 15 MB | synthetic 3.5 KB |
-| Total `dist/` raw | 60 MB | ~0.3 MB |
+| Each region bundle | 15 MB | HiRISE 10.3 MB gz (14.2 MB raw), CTX 51 KB, synthetic 5 KB |
+| Total `dist/` raw | 60 MB | ~14.5 MB |
 
 three.js and Role B code must stay in the lazy `src/terrain3d` chunk; large textures/panoramas should be
 `displayAssets` loaded on demand.
@@ -188,6 +195,7 @@ src/
   ui/          App shell, MapCanvas, ElevationProfile, Briefing — minimal STUBS (Dhani)
   terrain3d/   TerrainView — STUB with agreed props              (Role B)
   export/      deterministic serializer                          (Role C)
+public/bundles/jezero-west-*/  REAL HiRISE 1 m + CTX 20 m bundles (Role A, scripts/data/)
 public/bundles/synthetic-v0/   synthetic fixture + INSPECT.txt   (generated)
 scripts/       make-fixture, validate-bundle, smoke-preview
 tests/         integration tests (loader, store, worker client, export, engine sanity, app smoke)
@@ -233,7 +241,8 @@ instead of keeping your own copies. On `webglcontextlost`, a missing texture or 
 `onError({ kind, message })` — the app degrades to 2D. Keep `data-testid="terrain-view"` with
 `data-selected-candidate` / `data-hover-index` (used by tests and smoke).
 
-**Role C (integration).** Remaining: point `release` at Role A's bundle, integrate Dhani's and Role B's
+**Role C (integration).** Done: `release` points at Role A's HiRISE bundle (real-data checks in
+`tests/realdata.test.ts` and `e2e/release.spec.ts`). Remaining: integrate Dhani's and Role B's
 real components, full e2e journey incl. failure modes, release checklist, deploy, demo, submission.
 
 ## Limitations (current)
