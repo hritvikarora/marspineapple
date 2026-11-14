@@ -19,50 +19,69 @@ interface Props {
   onPick: (p: LocalPoint) => void;
 }
 
-const PX_PER_CELL = 28;
+/** Max on-screen size of the longer map side (px). Real bundles (1000x1000 cells) must not create a 28000 px canvas. */
+const MAX_MAP_PX = 900;
+/** Max pixels per cell for small grids (keeps the synthetic 20x12 fixture readable). */
+const MAX_PX_PER_CELL = 28;
+
+/** Raster layers as one cell-per-pixel RGBA image (cached per bundle + layer settings). */
+function rasterImage(bundle: GridBundle, layers: DisplayState['layers']): HTMLCanvasElement | null {
+  const { width, height } = bundle.manifest.grid;
+  const off = document.createElement('canvas');
+  off.width = width;
+  off.height = height;
+  const octx = off.getContext('2d');
+  if (!octx) return null;
+  const img = octx.createImageData(width, height);
+  const d = img.data;
+  let lo = Infinity, hi = -Infinity;
+  for (const z of bundle.elevation) if (Number.isFinite(z)) { lo = Math.min(lo, z); hi = Math.max(hi, z); }
+  const blend = (o: number, rgb: [number, number, number], a: number) => {
+    d[o] = d[o]! * (1 - a) + rgb[0] * a; d[o + 1] = d[o + 1]! * (1 - a) + rgb[1] * a; d[o + 2] = d[o + 2]! * (1 - a) + rgb[2] * a;
+  };
+  for (let i = 0; i < width * height; i++) {
+    const o = i * 4;
+    const z = bundle.elevation[i]!;
+    d[o + 3] = 255;
+    if (layers.elevation.visible && Number.isFinite(z)) {
+      const t = hi > lo ? (z - lo) / (hi - lo) : 0.5;
+      const v = 60 + 170 * t;
+      d[o] = v; d[o + 1] = v * 0.75; d[o + 2] = v * 0.6;
+    } else { d[o] = 0; d[o + 1] = 0; d[o + 2] = 0; }
+    if (layers.quality.visible) {
+      const q = bundle.quality[i];
+      if (q === QUALITY.UNKNOWN) blend(o, [140, 80, 220], layers.quality.opacity);
+      else if (q === QUALITY.LOW) blend(o, [255, 170, 0], layers.quality.opacity);
+      else if (q === QUALITY.NO_ELEVATION) blend(o, [0, 0, 0], layers.quality.opacity);
+    }
+    if (layers.exclusion.visible && bundle.exclusion[i] !== EXCLUSION.NONE) blend(o, [220, 30, 30], layers.exclusion.opacity);
+    if (layers.slope.visible && bundle.slope[i]! > 25) blend(o, [255, 255, 255], 0.6 * layers.slope.opacity);
+  }
+  octx.putImageData(img, 0, 0);
+  return off;
+}
 
 export function MapCanvas({ bundle, candidates, selectedCandidateId, start, destination, layers, stale, hover, onPick }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const raster = useRef<{ key: unknown[]; img: HTMLCanvasElement | null } | null>(null);
   const { grid } = bundle.manifest;
-  const sx = PX_PER_CELL / grid.cellSizeEast_m;
-  const sy = PX_PER_CELL / grid.cellSizeNorth_m;
-  const W = grid.width * PX_PER_CELL;
-  const H = grid.height * PX_PER_CELL;
+  // One uniform scale in px per METRE (not per cell), so anisotropic cells keep true ground proportions.
+  const widthM = grid.extent.east_m - grid.extent.west_m, heightM = grid.extent.north_m - grid.extent.south_m;
+  const scale = Math.min(MAX_MAP_PX / widthM, MAX_MAP_PX / heightM, MAX_PX_PER_CELL / grid.cellSizeEast_m, MAX_PX_PER_CELL / grid.cellSizeNorth_m);
+  const sx = scale, sy = scale;
+  const W = Math.max(1, Math.round(widthM * scale));
+  const H = Math.max(1, Math.round(heightM * scale));
   const toPx = (p: LocalPoint): [number, number] => [(p.east_m - grid.extent.west_m) * sx, (grid.extent.north_m - p.north_m) * sy];
 
   useEffect(() => {
     const ctx = ref.current?.getContext('2d');
     if (!ctx) return;
     ctx.clearRect(0, 0, W, H);
-    let lo = Infinity, hi = -Infinity;
-    for (const z of bundle.elevation) if (Number.isFinite(z)) { lo = Math.min(lo, z); hi = Math.max(hi, z); }
-    for (let r = 0; r < grid.height; r++) {
-      for (let c = 0; c < grid.width; c++) {
-        const i = r * grid.width + c;
-        const x = c * PX_PER_CELL, y = r * PX_PER_CELL;
-        const z = bundle.elevation[i]!;
-        if (layers.elevation.visible) {
-          if (Number.isFinite(z)) {
-            const t = hi > lo ? (z - lo) / (hi - lo) : 0.5;
-            const v = Math.round(60 + 170 * t);
-            ctx.fillStyle = `rgb(${v},${Math.round(v * 0.75)},${Math.round(v * 0.6)})`;
-          } else ctx.fillStyle = '#000';
-          ctx.fillRect(x, y, PX_PER_CELL, PX_PER_CELL);
-        }
-        if (layers.quality.visible) {
-          const q = bundle.quality[i];
-          const col = q === QUALITY.UNKNOWN ? '140,80,220' : q === QUALITY.LOW ? '255,170,0' : q === QUALITY.NO_ELEVATION ? '0,0,0' : null;
-          if (col) { ctx.fillStyle = `rgba(${col},${layers.quality.opacity})`; ctx.fillRect(x, y, PX_PER_CELL, PX_PER_CELL); }
-        }
-        if (layers.exclusion.visible && bundle.exclusion[i] !== EXCLUSION.NONE) {
-          ctx.fillStyle = `rgba(220,30,30,${layers.exclusion.opacity})`;
-          ctx.fillRect(x + 3, y + 3, PX_PER_CELL - 6, PX_PER_CELL - 6);
-        }
-        if (layers.slope.visible && bundle.slope[i]! > 25) {
-          ctx.strokeStyle = `rgba(255,255,255,${layers.slope.opacity})`;
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + PX_PER_CELL, y + PX_PER_CELL); ctx.stroke();
-        }
-      }
+    const key = [bundle, layers.elevation, layers.quality, layers.exclusion, layers.slope];
+    if (!raster.current || raster.current.key.some((k, i) => k !== key[i])) raster.current = { key, img: rasterImage(bundle, layers) };
+    if (raster.current.img) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(raster.current.img, 0, 0, W, H);
     }
     if (layers.route.visible) {
       const ordered = [...candidates].sort((a, b) => Number(a.candidateId === selectedCandidateId) - Number(b.candidateId === selectedCandidateId));
