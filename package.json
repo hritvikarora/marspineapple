@@ -17,7 +17,10 @@
     "test:watch": "vitest",
     "fixture": "node scripts/make-fixture.mjs",
     "validate-bundle": "node scripts/validate-bundle.mjs",
-    "smoke": "node scripts/smoke-preview.mjs"
+    "smoke": "node scripts/smoke-preview.mjs",
+    "audit": "node scripts/audit.mjs",
+    "audit:release": "node scripts/audit.mjs dist --release",
+    "smoke:no-webgl": "node scripts/smoke-preview.mjs --no-webgl"
   },
   "dependencies": {
     "react": "^19.3.1",
