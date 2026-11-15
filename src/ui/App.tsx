@@ -5,6 +5,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { ContextImageryStatus } from '../app/ContextImageryStatus';
+import { OptionalAssetsStatus } from '../app/OptionalAssetsStatus';
 import type { SelectOptions } from '../app/bundleSelection';
 import { TerrainSlot } from '../app/TerrainSlot';
 import type { TerrainLoader } from '../app/terrainLoader';
@@ -22,6 +23,8 @@ import { Briefing } from './Briefing';
 import { ElevationProfile } from './ElevationProfile';
 import { MapCanvas, type RejectedPathOverlay } from './MapCanvas';
 import { StartMenuModal } from './StartMenuModal';
+import { MarswalkLaunch } from './MarswalkLaunch';
+import { Landing } from './Landing';
 import type { SearchTraceFrame } from '../contracts';
 import { Slot } from './shared/Slot';
 import type { CustomCanvasLayer, FeatureRegistryMap } from './shared/types';
@@ -53,6 +56,16 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   const [pickMode, setPickMode] = useState<'start' | 'destination'>('destination');
   const [menuMode, setMenuMode] = useState<'docked' | 'expanded'>('docked');
   const [soundEnabled, setSoundEnabled] = useState(true);
+  // Landing choice on the published site only (not in tests, not for automated browsers such as the e2e suite).
+  const [showLanding, setShowLanding] = useState(
+    () =>
+      (typeof location !== 'undefined' && /[?&]landing(=|&|$)/.test(location.search)) ||
+      ((deps.production ?? IS_PRODUCTION_BUILD) &&
+      typeof navigator !== 'undefined' &&
+      !navigator.webdriver &&
+      typeof location !== 'undefined' &&
+      !/[?&]plan(=|&|$)/.test(location.search)),
+  );
   const [traceFrame, setTraceFrame] = useState<SearchTraceFrame | null>(null);
   const [rejectedPaths, setRejectedPaths] = useState<readonly RejectedPathOverlay[]>([]);
   const selection = selectSelection(state);
@@ -260,6 +273,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   return (
     <div className="app">
       {!deps.skipRegionLoader && <RegionLoaderBridge opts={deps.bundleSelection} />}
+      {showLanding && <Landing onPlan={() => setShowLanding(false)} />}
       <header>
         <h1>MARS PATHFINDER</h1>
         {bundle?.manifest.synthetic && (
@@ -267,6 +281,9 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             SYNTHETIC DATA
           </span>
         )}
+        <a className="header-link" href="marswalk-vr/index.html" target="_blank" rel="noopener">
+          Marswalk VR
+        </a>
         <span className="release" data-testid="release-id">
           {formatReleaseId(release)}
         </span>
@@ -506,6 +523,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                   <input
                     type="radio"
                     name="view"
+                    data-testid={`view-${v}`}
                     checked={state.viewMode === v}
                     onChange={() => dispatch({ type: 'view/setMode', mode: v })}
                   />{' '}
@@ -586,6 +604,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             />
 
             <ContextImageryStatus config={deps.tileConfig ?? TILE_CONFIG} fetchImpl={deps.tileFetch} />
+            <OptionalAssetsStatus bundle={bundle} />
           </section>
 
           <section className="results" aria-live="polite">
@@ -597,7 +616,10 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               features={deps.features}
               fallback={
                 <>
-                  <p data-testid="route-status">
+                  <p
+                    data-testid="route-status"
+                    data-status={run.kind === 'finished' ? run.response.status : run.kind}
+                  >
                     {run.kind === 'idle' && 'No route calculated yet.'}
                     {run.kind === 'running' && `Calculating… (${run.exploredNodes} cells explored)`}
                     {run.kind === 'finished' && (
@@ -612,7 +634,11 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                   </p>
                   {run.kind === 'finished' &&
                     run.response.status !== 'success' &&
-                    'message' in run.response && <p className="error">{run.response.message}</p>}
+                    'message' in run.response && (
+                      <p className="error" data-testid="route-message">
+                        {run.response.message}
+                      </p>
+                    )}
                 </>
               }
               props={{ run, isStale: state.isStale }}
@@ -632,6 +658,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                           <input
                             type="radio"
                             name="candidate"
+                            data-testid={`candidate-${c.candidateId}`}
                             checked={selection.candidateId === c.candidateId}
                             onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })}
                           />{' '}
@@ -654,6 +681,14 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               }}
             />
 
+            <MarswalkLaunch
+              bundle={bundle}
+              candidate={selection.candidate}
+              mission={m}
+              modelVersion={EXPECTED_MODEL_VERSION}
+              isStale={state.isStale}
+            />
+
             {/* Slot: mission-evidence */}
             <Slot
               name="mission-evidence"
@@ -669,6 +704,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                 <button
                   type="button"
                   onClick={onExport}
+                  data-testid="export-json"
                   disabled={!(run.kind === 'finished' && run.response.status === 'success')}
                 >
                   Export JSON

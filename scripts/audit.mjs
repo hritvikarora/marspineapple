@@ -17,10 +17,11 @@ const KB = 1024, MB = 1024 * KB;
 export const BUDGETS = {
   entryJsGz: 150 * KB,
   totalJsGz: 450 * KB, // leaves ~300 KB gz for lazy three.js + Role B code
+  marswalkVrJsGz: 400 * KB, // dist/marswalk-vr: the WebXR walk (own three.js copy), loaded only when opened
   workerJsGz: 50 * KB,
   cssGz: 30 * KB,
   bundleDirGz: 15 * MB, // per region bundle (analytical rasters + display assets)
-  totalDistRaw: 60 * MB,
+  totalDistRaw: 60 * MB, // planner + region bundles + Marswalk VR (site data shared via dist/sites)
 };
 
 const args = process.argv.slice(2);
@@ -47,16 +48,19 @@ const sum = (xs, k) => xs.reduce((s, f) => s + f[k], 0);
 // ---- sizes ---------------------------------------------------------------
 const html = readFileSync(join(dist, 'index.html'), 'utf8');
 const entryNames = [...html.matchAll(/src="\.?\/?(assets\/[^"]+\.js)"/g)].map((m) => m[1]);
-const js = files.filter((f) => f.path.endsWith('.js'));
+const VR = 'marswalk-vr/';
+const vrJs = files.filter((f) => f.path.startsWith(VR) && f.path.endsWith('.js'));
+const js = files.filter((f) => f.path.endsWith('.js') && !f.path.startsWith(VR));
 const worker = js.filter((f) => /worker/i.test(f.path));
 const entry = js.filter((f) => entryNames.includes(f.path));
-const css = files.filter((f) => f.path.endsWith('.css'));
+const css = files.filter((f) => f.path.endsWith('.css') && !f.path.startsWith(VR));
 const rows = [
   ['entry JS (initial)', sum(entry, 'raw'), sum(entry, 'gz'), BUDGETS.entryJsGz],
   ['all JS (incl. lazy + worker)', sum(js, 'raw'), sum(js, 'gz'), BUDGETS.totalJsGz],
   ['routing worker', sum(worker, 'raw'), sum(worker, 'gz'), BUDGETS.workerJsGz],
   ['CSS', sum(css, 'raw'), sum(css, 'gz'), BUDGETS.cssGz],
 ];
+if (vrJs.length) rows.push(['Marswalk VR JS', sum(vrJs, 'raw'), sum(vrJs, 'gz'), BUDGETS.marswalkVrJsGz]);
 const bundleDirs = existsSync(join(dist, 'bundles'))
   ? readdirSync(join(dist, 'bundles')).filter((n) => statSync(join(dist, 'bundles', n)).isDirectory())
   : [];
@@ -100,10 +104,13 @@ for (const f of files) {
   scanned++;
   const text = f.buf.toString('utf8');
   for (const [label, re] of RULES) {
-    const m = text.match(re);
-    if (m) {
+    const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
+    for (const m of text.matchAll(g)) {
       const i = m.index ?? 0;
+      // three.js ships its own logger (`THREE.log(...)` -> console.log); that vendor call is not app debug output.
+      if (label.startsWith('console.') && /THREE\.`?\+?/.test(text.slice(Math.max(0, i - 80), i))) continue;
       failures.push(`${label} in ${f.path}: …${text.slice(Math.max(0, i - 30), i + 50).replace(/\s+/g, ' ')}…`);
+      break;
     }
   }
 }

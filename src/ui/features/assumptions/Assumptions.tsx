@@ -127,7 +127,7 @@ export const Assumptions: FC<AssumptionsSlotProps> = ({
         </fieldset>
 
         <fieldset className="assumptions-fieldset">
-          <legend className="assumptions-legend">Round trip</legend>
+          <legend className="assumptions-legend">Return leg</legend>
           <div className="assumptions-switch-list">
             <label className="assumptions-row">
               <input
@@ -139,8 +139,9 @@ export const Assumptions: FC<AssumptionsSlotProps> = ({
                   dispatch({ type: 'mission/setRoundTrip', value: event.target.checked });
                 }}
               />
-              <span className="assumptions-policy-title">{ROUND_TRIP_COPY}</span>
+              <span className="assumptions-policy-title">Round trip</span>
             </label>
+            <p className="assumptions-note">{ROUND_TRIP_COPY}</p>
           </div>
         </fieldset>
       </div>

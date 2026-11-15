@@ -147,7 +147,7 @@ weather=None
 try:
     ws=json.load(open(RAW+'weather.json'))['sols']; weather=ws[-1]; weather['source']='Perseverance MEDA, bollettino NASA Mars 2020 (ultimo sol disponibile)'
 except Exception as e: print('no weather',e)
-site=dict(id=cfg['id'],name=cfg['name'],lon0=lon0,lat0=lat0,radius=R,rings=rings,waypoints=wp,traverse=trav,pois=pois,route=route,legs=legs,overlays=overlays,mission=cfg.get('mission'),weather=weather,start=cfg.get('start'),
+site=dict(id=cfg['id'],name=cfg['name'],name_en=cfg.get('name_en'),lon0=lon0,lat0=lat0,radius=R,rings=rings,waypoints=wp,traverse=trav,pois=pois,route=route,legs=legs,overlays=overlays,mission=cfg.get('mission'),weather=weather,start=cfg.get('start'),
           georefCheck=dict(n=len(dz),meanDz=float(dz.mean()),stdDz=float(dz.std())))
 json.dump(site,open(OUT+'site.json','w'),separators=(',',':'))
 print('waypoints',len(wp),'traverse segs',len(trav),'pts',sum(map(len,trav)))

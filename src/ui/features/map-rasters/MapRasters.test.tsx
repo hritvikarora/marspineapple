@@ -20,6 +20,7 @@ afterEach(() => {
 });
 
 const mockBundle: GridBundle = {
+  manifestUrl: '/bundles/test/manifest.json',
   bundleVersion: '1.0.0',
   width: 4,
   height: 3,
@@ -257,7 +258,7 @@ describe('TASK-008: Map Rasters', () => {
     if (!capturedDraw) {
       throw new Error('raster layer was not registered');
     }
-    capturedDraw(helpers);
+    (capturedDraw as (h: CanvasDrawHelpers) => void)(helpers);
     expect(fillRectMock).toHaveBeenCalled();
   });
 

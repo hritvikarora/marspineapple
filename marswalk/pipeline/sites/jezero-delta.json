@@ -109,8 +109,10 @@
    "sol": 409,
    "kind": "base",
    "title": "EVA-1: dal deposito dei campioni al fronte del delta",
-   "text": "Obiettivo: recuperare le provette lasciate da Perseverance e campionare i sedimenti del delta, dove un lago antico può aver conservato tracce di vita. Segui la linea azzurra sul terreno: 5 tappe e rientro, 2,2 km. Tieni d'occhio ossigeno, pendenza e ora del tramonto. La posizione della base è una scelta del nostro scenario, non un dato NASA.",
-   "photo": null
+   "text": "Obiettivo: recuperare le provette lasciate da Perseverance e campionare i sedimenti del delta, dove un lago antico può aver conservato tracce di vita. Segui la linea azzurra sul terreno: 5 tappe e rientro, 2,2 km. Tieni d'occhio ossigeno, pendenza e ora del tramonto.",
+   "photo": null,
+   "title_en": "EVA-1: from the sample depot to the delta front",
+   "text_en": "Goal: recover the tubes left by Perseverance and sample the delta sediments, where an ancient lake may have preserved traces of life. Follow the cyan line on the ground: 5 stops and back, 2.2 km. Keep an eye on oxygen, slope and sunset time."
   },
   {
    "id": "threeforks",
@@ -133,7 +135,47 @@
     "min": -84.4,
     "max": -16.8,
     "source": "MEDA CAL_ATS, PDS Atmospheres Node; minimi e massimi estratti dal gruppo Mars Pathfinder (github.com/hritvikarora/marspineapple)"
-   }
+   },
+   "photos": [
+    {
+     "file": "photos/threeforks.jpg",
+     "imageid": "ZL0_0663_0725801909_928EBY_N0320378ZCAM08657_1100LMJ",
+     "sol": 663,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/threeforks_2.jpg",
+     "imageid": "ZL0_0663_0725800695_159EBY_N0320378ZCAM03510_1100LMJ",
+     "sol": 663,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/threeforks_3.jpg",
+     "imageid": "NLF_0663_0725814430_645ECM_N0320482NCAM02663_01_195J",
+     "sol": 663,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/threeforks_4.jpg",
+     "imageid": "NLF_0663_0725809341_284ECM_N0320402NCAM08111_06_095J",
+     "sol": 663,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 771,
+     "credit": "NASA/JPL-Caltech"
+    }
+   ],
+   "title_en": "Three Forks: the sample depot",
+   "text_en": "Between December 2022 and January 2023 Perseverance laid down 10 sealed tubes here: the first sample depot on another planet. Goal: recover them."
   },
   {
    "id": "nukshak",
@@ -156,7 +198,47 @@
     "min": -87.3,
     "max": -23.6,
     "source": "MEDA CAL_ATS, PDS Atmospheres Node; minimi e massimi estratti dal gruppo Mars Pathfinder (github.com/hritvikarora/marspineapple)"
-   }
+   },
+   "photos": [
+    {
+     "file": "photos/nukshak.jpg",
+     "imageid": "ZL0_0565_0717090427_303EBY_N0280000ZCAM08586_0340LMJ",
+     "sol": 565,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/nukshak_2.jpg",
+     "imageid": "ZL0_0565_0717090342_303EBY_N0280000ZCAM08586_0340LMJ",
+     "sol": 565,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/nukshak_3.jpg",
+     "imageid": "NLF_0565_0717111091_992ECM_N0290000NCAM02565_01_195J",
+     "sol": 565,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/nukshak_4.jpg",
+     "imageid": "NLF_0565_0717111332_551ECM_N0290000NCAM02565_01_195J",
+     "sol": 565,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    }
+   ],
+   "title_en": "Cape Nukshak: the base of the delta",
+   "text_en": "Fine-grained sedimentary layers, laid down when the crater held a lake. Here the rover drilled the Shuyak and Mageik cores from the Amalik outcrop. Goal: sample the lowest and oldest layers."
   },
   {
    "id": "yori",
@@ -173,7 +255,47 @@
     "w": 1024,
     "h": 770,
     "credit": "NASA/JPL-Caltech"
-   }
+   },
+   "photos": [
+    {
+     "file": "photos/yori.jpg",
+     "imageid": "NLF_0609_0721019534_476ECM_N0301172NCAM12609_01_195J",
+     "sol": 609,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/yori_2.jpg",
+     "imageid": "ZL0_0609_0721008552_410EBY_N0301096ZCAM03478_1100LMJ",
+     "sol": 609,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/yori_3.jpg",
+     "imageid": "NLF_0609_0721016684_725ECM_N0301172NCAM02609_01_195J",
+     "sol": 609,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/yori_4.jpg",
+     "imageid": "NLF_0609_0721016186_051ECM_N0301172NCAM03609_01_195J",
+     "sol": 609,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    }
+   ],
+   "title_en": "Yori Pass: sandstone at the foot of the delta",
+   "text_en": "A fine sandstone outcrop studied by the rover in late 2022. Rocks like this, deposited in calm water, are among the best at preserving organic molecules."
   },
   {
    "id": "wildcat",
@@ -196,7 +318,47 @@
     "min": -71.8,
     "max": -20.5,
     "source": "MEDA CAL_ATS, PDS Atmospheres Node; minimi e massimi estratti dal gruppo Mars Pathfinder (github.com/hritvikarora/marspineapple)"
-   }
+   },
+   "photos": [
+    {
+     "file": "photos/wildcat.jpg",
+     "imageid": "ZL0_0464_0708123617_639EBY_N0260630ZCAM08484_1100LMJ",
+     "sol": 464,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/wildcat_2.jpg",
+     "imageid": "ZL0_0464_0708122528_318EBY_N0260630ZCAM03377_1100LMJ",
+     "sol": 464,
+     "camera": "Mastcam-Z",
+     "w": 1024,
+     "h": 746,
+     "credit": "NASA/JPL-Caltech/ASU"
+    },
+    {
+     "file": "photos/wildcat_3.jpg",
+     "imageid": "NLF_0464_0708143725_291ECM_N0260756NCAM13464_01_195J",
+     "sol": 464,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/wildcat_4.jpg",
+     "imageid": "NLF_0502_0711508459_901ECM_N0261222NCAM04502_01_195J",
+     "sol": 502,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    }
+   ],
+   "title_en": "Hawksbill Gap: Wildcat Ridge and Skinner Ridge",
+   "text_en": "Wildcat Ridge is a mudstone where the SHERLOC instrument detected signals of organic molecules and sulfates: this is not proof of life. Hazeltop and Bearwallow cores here, Swift Run and Skyland in the Skinner Ridge sandstone."
   },
   {
    "id": "rockytop",
@@ -213,7 +375,47 @@
     "w": 1024,
     "h": 770,
     "credit": "NASA/JPL-Caltech"
-   }
+   },
+   "photos": [
+    {
+     "file": "photos/rockytop.jpg",
+     "imageid": "NLF_0709_0729889968_787ECM_N0332864NCAM03709_01_195J",
+     "sol": 709,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/rockytop_2.jpg",
+     "imageid": "FLF_0709_0729887019_543ECM_N0332864FHAZ02008_03_095J",
+     "sol": 709,
+     "camera": "Hazcam",
+     "w": 1024,
+     "h": 771,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/rockytop_3.jpg",
+     "imageid": "NLF_0709_0729893323_448ECM_N0332864NCAM02709_01_195J",
+     "sol": 709,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    },
+    {
+     "file": "photos/rockytop_4.jpg",
+     "imageid": "NLF_0709_0729893490_819ECM_N0332864NCAM02709_01_195J",
+     "sol": 709,
+     "camera": "Navcam",
+     "w": 1024,
+     "h": 770,
+     "credit": "NASA/JPL-Caltech"
+    }
+   ],
+   "title_en": "Rocky Top: the climb towards the delta top",
+   "text_en": "The highest point of the walk, 50 m above the base. From here the rover began its campaign on the delta top. Goal: photograph the layers from above and head back."
   }
  ],
  "route": [
@@ -274,5 +476,6 @@
    "half": 14400,
    "product": "Mars Odyssey THEMIS, mosaico infrarosso notturno 100 m/pixel"
   }
- }
+ },
+ "name_en": "Jezero — delta front (Three Forks / Hawksbill Gap)"
 }

@@ -3,7 +3,7 @@
     {
       "candidateId": "c0",
       "explanation": [
-        "Placeholder solver: limits and weights are unvalidated demo values."
+        "EVA A* (eva-astar-1.0.0): 175 m horizontal, max slope 8.0 deg."
       ],
       "missionStatus": "one-way",
       "outbound": {
@@ -93,8 +93,8 @@
           },
           {
             "east_m": 165,
-            "elevation_m": -2586,
-            "north_m": 75
+            "elevation_m": -2586.5,
+            "north_m": 65
           },
           {
             "east_m": 175,
@@ -132,7 +132,7 @@
     {
       "candidateId": "c1",
       "explanation": [
-        "Placeholder solver: limits and weights are unvalidated demo values."
+        "Same horizontal length as c0 (~175 m), avoiding 4 m of degraded/unknown terrain."
       ],
       "missionStatus": "one-way",
       "outbound": {
@@ -207,8 +207,8 @@
           },
           {
             "east_m": 135,
-            "elevation_m": -2588.5,
-            "north_m": 85
+            "elevation_m": -2588,
+            "north_m": 95
           },
           {
             "east_m": 145,
@@ -217,8 +217,8 @@
           },
           {
             "east_m": 155,
-            "elevation_m": -2587,
-            "north_m": 75
+            "elevation_m": -2586.5,
+            "north_m": 85
           },
           {
             "east_m": 165,
@@ -250,7 +250,7 @@
         ],
         "weightedCost": {
           "units": "weighted-cost",
-          "value": 339.4708470051694
+          "value": 326.3978968993448
         }
       },
       "policies": [
@@ -261,9 +261,8 @@
     {
       "candidateId": "c2",
       "explanation": [
-        "32 m longer than c0 but crosses 82 m less unknown-quality terrain.",
-        "32 m longer than c1 but crosses 78 m less unknown-quality terrain.",
-        "Placeholder solver: limits and weights are unvalidated demo values."
+        "+32 m longer than c0 while reducing unknown-quality exposure by 82 m.",
+        "+32 m longer than c1 while reducing unknown-quality exposure by 78 m."
       ],
       "missionStatus": "one-way",
       "outbound": {
@@ -391,7 +390,7 @@
         ],
         "weightedCost": {
           "units": "weighted-cost",
-          "value": 316.4526277403096
+          "value": 444.6630263576399
         }
       },
       "policies": [
@@ -463,7 +462,7 @@
   "release": {
     "appVersion": "0.1.0",
     "bundleVersion": "synthetic-v0.1.0",
-    "modelVersion": "placeholder-astar-0.2.0"
+    "modelVersion": "eva-astar-1.0.0"
   },
   "request": {
     "destinationPoiId": "syn-east-bench",

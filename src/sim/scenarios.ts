@@ -174,6 +174,9 @@ const DEFS: Def[] = [
       return {
         spec: { ...g, title: 'noisy rough terrain', parameters: { amplitude_m: 70, wavelength_m: 300 } },
         cases: (geo) => [
+          // Feasible under eva-astar-1.0.0's EVA slope/grade limits (the long cases below are disconnected under them).
+          { id: 'inner-diagonal', start: geo.at(10, 10), destination: geo.at(30, 30), expect: { status: 'success' } },
+          { id: 'west-east', start: geo.at(45, 10), destination: geo.at(45, 50), expect: { status: 'success' } },
           { id: 'corner-to-corner', start: geo.at(3, 3), destination: geo.at(92, 92), roundTrip: true, expect: { status: 'oracle' } },
           { id: 'mid-span', start: geo.at(80, 10), destination: geo.at(15, 70), expect: { status: 'oracle' } },
         ],

@@ -391,7 +391,7 @@ export function StartMenuModal({
           <span>Point A</span>
           <select
             id={pointAFieldId}
-            data-testid="start-preset"
+            data-testid="start-menu-preset-a"
             value={selected.pointA}
             disabled={selectsDisabled}
             aria-invalid={pairInvalid ? true : undefined}
@@ -410,7 +410,7 @@ export function StartMenuModal({
           <span>Point B</span>
           <select
             id={pointBFieldId}
-            data-testid="destination-preset"
+            data-testid="start-menu-preset-b"
             value={selected.pointB}
             disabled={selectsDisabled}
             aria-invalid={pairInvalid ? true : undefined}

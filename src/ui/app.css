@@ -764,3 +764,26 @@ legend {
     background: transparent;
   }
 }
+
+/* Marswalk VR hand-off */
+.marswalk-launch { display: grid; gap: 6px; margin: 12px 0; padding: 12px; border: 1px solid var(--color-hairline, #e5e5e5); border-radius: 12px; }
+.marswalk-launch button { min-height: 44px; background: var(--color-ink, #000); color: var(--color-paper, #fff); border: 0; border-radius: 12px; font-weight: 600; cursor: pointer; }
+.marswalk-launch button:disabled { opacity: 0.45; cursor: not-allowed; }
+.marswalk-launch p { margin: 0; font-size: 0.85rem; }
+.header-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Landing choice */
+.landing { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: var(--color-paper, #fff); overflow-y: auto; }
+.landing-card { width: min(880px, 100%); display: grid; gap: 16px; }
+.landing-kicker { margin: 0; color: var(--color-ink-secondary, #686666); font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.landing-card h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.1; }
+.landing-lead { margin: 0; font-size: 1.1rem; max-width: 60ch; }
+.landing-options { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.landing-option { display: grid; gap: 8px; align-content: start; min-height: 160px; padding: 20px; border: 1px solid var(--color-ink, #000); border-radius: 12px; background: var(--color-paper, #fff); color: var(--color-ink, #000); text-align: left; text-decoration: none; font: inherit; cursor: pointer; transition: transform 160ms ease-out; }
+.landing-option strong { font-size: 1.35rem; }
+.landing-option span { color: inherit; opacity: 0.8; }
+.landing-option:hover, .landing-option:focus-visible { transform: translateY(-2px); }
+.landing-option-dark { background: var(--color-ink, #000); color: var(--color-paper, #fff); }
+.landing-note { margin: 0; color: var(--color-ink-secondary, #686666); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) { .landing-option { transition: none; } }
+.cl-loading { background: #040208; }

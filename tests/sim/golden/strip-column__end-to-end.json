@@ -3,8 +3,8 @@
     {
       "candidateId": "c0",
       "explanation": [
-        "Same cell path produced by: shortest-feasible, terrain-aware, uncertainty-aware.",
-        "Placeholder solver: limits and weights are unvalidated demo values."
+        "Identical path produced by: shortest-feasible, terrain-aware, uncertainty-aware.",
+        "Uniform quality across admissible terrain (no uncertainty differentiation; gamma_eff = 0)."
       ],
       "missionStatus": "one-way",
       "outbound": {
@@ -855,7 +855,7 @@
   "release": {
     "appVersion": "0.0.0-sim",
     "bundleVersion": "sim-strip-column-s1",
-    "modelVersion": "placeholder-astar-0.2.0"
+    "modelVersion": "eva-astar-1.0.0"
   },
   "request": {
     "destinationPoiId": null,
