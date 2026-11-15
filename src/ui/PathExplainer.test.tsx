@@ -201,4 +201,51 @@ describe('PathExplainer', () => {
 
     expect(screen.getByText(/timeout is not proof that no path exists/i)).toBeTruthy();
   });
+
+  it('renders code expressions from trace as clean mathematical formulas', () => {
+    const codeTrace: SearchTraceResult = {
+      ...mockTrace,
+      thinkingSteps: [
+        {
+          index: 0,
+          phase: 'endpoints',
+          title: 'Place endpoints',
+          formula: 'index = row * width + col',
+          detail: 'Mapped grid index.',
+        },
+        {
+          index: 1,
+          phase: 'policy-eval',
+          title: 'Price each step',
+          formula: 'stepLen * (1 + slopeWeight * sNorm + roughnessWeight * rNorm + qualityWeight * qPen)',
+          detail: 'Weighted traverse.',
+        },
+      ],
+    };
+
+    const { container } = render(
+      <PathExplainer
+        run={{
+          kind: 'finished',
+          response: { status: 'success', requestId: 'r3', candidates: [], computeMs: 1 } as never,
+        }}
+        isStale={false}
+        selectedCandidate={null}
+        traceResult={codeTrace}
+        activeFrame={codeTrace.frames[0]!}
+        playhead={0.2}
+        isPlaying={false}
+        reducedMotion={false}
+        onPlayPause={vi.fn()}
+        onReplay={vi.fn()}
+        onScrub={vi.fn()}
+      />,
+    );
+
+    const mathNodes = Array.from(container.querySelectorAll('.pe-formula-math')).map((n) => n.textContent ?? '');
+    expect(mathNodes.join(' | ')).toContain('i = r · W + c');
+    expect(mathNodes.join(' | ')).toContain('Δg = Δs ·');
+    expect(mathNodes.join(' | ')).not.toContain('slopeWeight');
+    expect(mathNodes.join(' | ')).not.toContain('row * width');
+  });
 });

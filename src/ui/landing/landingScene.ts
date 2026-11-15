@@ -91,10 +91,10 @@ function createRadialAlphaTexture(): THREE.CanvasTexture {
   c.height = size;
   const ctx = c.getContext('2d');
   if (ctx) {
-    const g = ctx.createRadialGradient(size / 2, size / 2, size * 0.16, size / 2, size / 2, size * 0.49);
+    const g = ctx.createRadialGradient(size / 2, size / 2, size * 0.28, size / 2, size / 2, size * 0.495);
     g.addColorStop(0, '#ffffff');
-    g.addColorStop(0.55, '#dcdcdc');
-    g.addColorStop(0.82, '#555555');
+    g.addColorStop(0.58, '#efefef');
+    g.addColorStop(0.84, '#686868');
     g.addColorStop(1, '#000000');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, size, size);
@@ -135,12 +135,15 @@ export class LandingScene {
   private terrainMat: THREE.MeshStandardMaterial;
   private cells: THREE.InstancedMesh | null = null;
   private cellOrder: number[] = [];
+  private cellDisplayFrac = 0;
   private route: THREE.Mesh | null = null;
   private routeCount = 0;
+  private routeDisplayFrac = 0;
   private pins: THREE.Group[] = [];
   private routePts: THREE.Vector3[] = [];
   private progress = 0;
   private start = performance.now();
+  private lastFrameMs = performance.now();
   private introPaused = true;
   private hidden = false;
   private raf = 0;
@@ -238,14 +241,15 @@ export class LandingScene {
     // High-resolution Jezero orbital mosaic patch overlaid on the globe during zoom
     if (opts.assets.jezeroOrthoImg) {
       const patchTex = textureFromImage(opts.assets.jezeroOrthoImg, maxAniso);
+      // Cover ~215% more angular swath (~0.92 rad vs 0.29 rad) so high-res orbital terrain fills the visible globe slice.
       const patchGeo = new THREE.SphereGeometry(
         1.0015,
-        36,
-        36,
-        theta - 0.145,
-        0.29,
-        phi - 0.145,
-        0.29,
+        64,
+        64,
+        theta - 0.46,
+        0.92,
+        phi - 0.46,
+        0.92,
       );
       this.jezeroPatchMat = new THREE.MeshStandardMaterial({
         map: patchTex,
@@ -358,11 +362,6 @@ export class LandingScene {
         (0.5 - n / g.extent.north_m) * sz,
       );
     };
-    const cellXYZ = (i: number) => {
-      const r = Math.floor(i / W);
-      const c = i % W;
-      return toXYZ((c + 0.5) * g.cellSizeEast_m, (H - 1 - r + 0.5) * g.cellSizeNorth_m, 0.018);
-    };
 
     // Closed cells from real A* trace
     const seen = new Set<number>();
@@ -375,7 +374,8 @@ export class LandingScene {
       }
     }
     if (this.cellOrder.length) {
-      const cw = (sx / W) * 0.86;
+      const cw = (sx / Math.max(1, W - 1)) * 0.76;
+      const nrmAttr = geo.attributes.normal as THREE.BufferAttribute;
       const im = new THREE.InstancedMesh(
         new THREE.PlaneGeometry(cw, cw).rotateX(-Math.PI / 2),
         new THREE.MeshBasicMaterial({
@@ -383,14 +383,31 @@ export class LandingScene {
           transparent: true,
           opacity: 0.58,
           depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
         }),
         this.cellOrder.length,
       );
       const m4 = new THREE.Matrix4();
+      const q = new THREE.Quaternion();
+      const up = new THREE.Vector3(0, 1, 0);
+      const scale = new THREE.Vector3(1, 1, 1);
+      const pos = new THREE.Vector3();
+      const nrm = new THREE.Vector3();
       this.cellOrder.forEach((i, k) => {
-        m4.makeTranslation(cellXYZ(i));
+        const r = Math.min(H - 1, Math.max(0, Math.floor(i / W)));
+        const c = Math.min(W - 1, Math.max(0, i % W));
+        const vIdx = r * W + c;
+        pos.fromBufferAttribute(p, vIdx);
+        nrm.fromBufferAttribute(nrmAttr, vIdx).normalize();
+        // Hug local hillside normal cleanly so squares never hover in black space above ridges.
+        pos.addScaledVector(nrm, 0.0022);
+        q.setFromUnitVectors(up, nrm);
+        m4.compose(pos, q, scale);
         im.setMatrixAt(k, m4);
       });
+      im.instanceMatrix.needsUpdate = true;
       im.count = 0;
       im.frustumCulled = false;
       this.cells = im;
@@ -510,6 +527,10 @@ export class LandingScene {
     const dive = ease(seg(p, 0.48, 1.42));
     const inGlobe = p < 1.5;
     const walk = ease(seg(p, 4.4, 5.25));
+    const nowMs = performance.now();
+    const dt = Math.min(0.05, Math.max(0.001, (nowMs - this.lastFrameMs) / 1000));
+    this.lastFrameMs = nowMs;
+    const damp = this.reduced ? 1 : 1 - Math.exp(-9 * dt);
 
     this.applyCameraFraming(mobile, walk);
 
@@ -523,9 +544,10 @@ export class LandingScene {
         ease(seg(p, 0.18, 0.92)),
       );
       this.globe.rotation.x = THREE.MathUtils.lerp(0.22, THREE.MathUtils.degToRad(JEZERO.lat), dive);
+
       const dist = THREE.MathUtils.lerp(
         THREE.MathUtils.lerp(8.2, mobile ? 3.85 : 3.45, intro),
-        mobile ? 2.38 : 2.08,
+        mobile ? 2.12 : 1.78,
         dive,
       );
       this.camera.position.set(0, 0.06 * (1 - dive), dist);
@@ -580,11 +602,19 @@ export class LandingScene {
       });
 
       if (this.cells) {
-        this.cells.count = Math.floor(this.cellOrder.length * ease(seg(p, 2.5, 3.35)));
-        (this.cells.material as THREE.MeshBasicMaterial).opacity = 0.58 * (1 - seg(p, 3.6, 4.2) * 0.68);
+        const targetCells = ease(seg(p, 2.08, 2.98));
+        this.cellDisplayFrac += (targetCells - this.cellDisplayFrac) * damp;
+        this.cells.count = Math.floor(this.cellOrder.length * this.cellDisplayFrac);
+        const fadeEvidence = seg(p, 3.65, 4.1) * 0.35;
+        const fadeWalk = seg(p, 4.15, 4.65) * 0.65;
+        const cellOpacity = 0.58 * Math.max(0, 1 - fadeEvidence - fadeWalk);
+        (this.cells.material as THREE.MeshBasicMaterial).opacity = cellOpacity;
+        this.cells.visible = this.cells.count > 0 && cellOpacity > 0.01;
       }
       if (this.route) {
-        this.route.geometry.setDrawRange(0, Math.floor((this.routeCount * ease(seg(p, 3.25, 3.85))) / 3) * 3);
+        const targetRoute = ease(seg(p, 3.15, 3.85));
+        this.routeDisplayFrac += (targetRoute - this.routeDisplayFrac) * damp;
+        this.route.geometry.setDrawRange(0, Math.floor((this.routeCount * this.routeDisplayFrac) / 3) * 3);
       }
     }
 
