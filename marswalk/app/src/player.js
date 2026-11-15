@@ -26,7 +26,13 @@ export class Player {
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x7fe0ff, transparent: true, opacity: 0.95, depthTest: false, side: THREE.DoubleSide }));
     this.marker.visible = false; this.marker.renderOrder = 51; scene.add(this.marker);
     // desktop input
-    document.addEventListener('pointerlockchange', () => document.body.classList.toggle('locked', document.pointerLockElement === dom));
+    // centre pointer: always shown on desktop; with the mouse captured it sits in the middle (that is where menus and the map are aimed),
+    // otherwise it rides on the cursor so the aiming point is always marked
+    const ret = document.getElementById('reticle'); document.body.classList.add('scene');
+    const centre = () => { if (ret) { ret.style.left = '50%'; ret.style.top = '50%'; } };
+    document.addEventListener('pointerlockchange', () => { document.body.classList.toggle('locked', document.pointerLockElement === dom); if (document.pointerLockElement === dom) centre(); });
+    dom.addEventListener('mousemove', e => { if (ret && document.pointerLockElement !== dom) { ret.style.left = e.clientX + 'px'; ret.style.top = e.clientY + 'px'; } });
+    renderer.xr.addEventListener?.('sessionstart', () => document.body.classList.add('xr')); renderer.xr.addEventListener?.('sessionend', () => document.body.classList.remove('xr'));
     dom.addEventListener('click', () => { if (this.onClick?.()) return; if (!renderer.xr.isPresenting && document.pointerLockElement !== dom) dom.requestPointerLock?.(); });
     document.addEventListener('mousemove', e => { if (document.pointerLockElement === dom) { this.yaw -= e.movementX * 0.0022; this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch - e.movementY * 0.0022)); } });
     addEventListener('keydown', e => { this.keys[e.code] = true; }); addEventListener('keyup', e => { this.keys[e.code] = false; });
