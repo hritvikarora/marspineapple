@@ -2,6 +2,7 @@
  * Semantic Panel primitive. OWNER: Dhani.
  */
 import type { HTMLAttributes, ReactNode } from 'react';
+import styles from './Panel.module.css';
 
 export interface PanelProps extends HTMLAttributes<HTMLElement> {
   title?: string;
@@ -18,15 +19,23 @@ export function Panel({
   as: Component = 'section',
   ...rest
 }: PanelProps) {
+  const hasTitle = Boolean(title);
+  const hasHeaderAction = Boolean(headerAction);
+  const rootClassName = ['panel', styles.panel, className.trim()].filter(Boolean).join(' ');
+
   return (
-    <Component className={`panel ${className}`.trim()} {...rest}>
-      {title && (
-        <header className="panel-header">
-          <h3>{title}</h3>
-          {headerAction && <div className="panel-header-action">{headerAction}</div>}
+    <Component className={rootClassName} {...rest}>
+      {(hasTitle || hasHeaderAction) && (
+        <header className={['panel-header', styles.header].filter(Boolean).join(' ')}>
+          {hasTitle && <h3 className={styles.title}>{title}</h3>}
+          {hasHeaderAction && (
+            <div className={['panel-header-action', styles.headerAction].filter(Boolean).join(' ')}>
+              {headerAction}
+            </div>
+          )}
         </header>
       )}
-      <div className="panel-body">{children}</div>
+      <div className={['panel-body', styles.body].filter(Boolean).join(' ')}>{children}</div>
     </Component>
   );
 }
