@@ -1,9 +1,32 @@
 import type { ReactNode } from 'react';
 import type { RouteCandidate, SearchTraceFrame } from '../contracts';
-import type { SearchTraceResult } from '../routing/searchTrace';
+import type { RejectionCategory, SearchTraceResult } from '../routing/searchTrace';
 import type { RouteRunState } from '../state/store';
 import { useUiLang, type UiLang } from './i18n';
 import './path-explainer.css';
+
+const REJECTION_BADGE_LABELS: Record<UiLang, Record<RejectionCategory, string>> = {
+  en: {
+    'excess-slope': 'Steeper >20°',
+    'high-uncertainty': 'High uncertainty',
+    'rough-terrain': 'Blocked / rough',
+    'suboptimal-detour': 'Longer detour',
+    'alternative-policy': 'Alternate policy',
+  },
+  it: {
+    'excess-slope': 'Pendenza >20°',
+    'high-uncertainty': 'Incertezza alta',
+    'rough-terrain': 'Bloccato / accidentato',
+    'suboptimal-detour': 'Percorso più lungo',
+    'alternative-policy': 'Criterio alternativo',
+  },
+};
+
+function firstSentence(reason: string): string {
+  const trimmed = reason.trim();
+  const m = trimmed.match(/^.+?[.!?](?=\s+[A-Z0-9]|$)/);
+  return m ? m[0] : trimmed;
+}
 
 export interface PathExplainerProps {
   run: RouteRunState;
@@ -305,8 +328,10 @@ export function PathExplainer({
             {IDLE_PILLARS_BY_LANG[lang].map((item) => (
               <li key={item.code} className="pe-step pe-step-idle">
                 <div className="pe-step-top">
-                  <span className="pe-step-num">{item.code}</span>
-                  <span className="pe-step-name">{item.title}</span>
+                  <span className="pe-step-head">
+                    <span className="pe-step-num">{item.code}</span>
+                    <span className="pe-step-name">{item.title}</span>
+                  </span>
                   <MathFormula raw={item.formula} />
                 </div>
                 <p className="pe-step-text">{item.detail}</p>
@@ -321,16 +346,18 @@ export function PathExplainer({
           <div className="pe-scan-bar" aria-hidden="true" />
           <div className="pe-metrics">
             <div className="pe-metric">
-              <span className="pe-metric-label">Cells explored</span>
+              <span className="pe-metric-label">{lang === 'it' ? 'Celle esplorate' : 'Cells explored'}</span>
               <strong className="pe-metric-val">{run.exploredNodes.toLocaleString()}</strong>
             </div>
             <div className="pe-metric">
-              <span className="pe-metric-label">Heuristic</span>
+              <span className="pe-metric-label">{lang === 'it' ? 'Euristica' : 'Heuristic'}</span>
               <strong className="pe-metric-val">f = g + h</strong>
             </div>
           </div>
           <p className="pe-wave-note">
-            Sampling DEM elevation &amp; slope cells, expanding lowest-cost EVA corridor…
+            {lang === 'it'
+              ? 'Campionamento elevazione DEM e pendenza, espansione del corridoio EVA…'
+              : 'Sampling DEM elevation & slope cells, expanding lowest-cost EVA corridor…'}
           </p>
         </div>
       )}
@@ -339,8 +366,12 @@ export function PathExplainer({
         <div className="pe-blocked" role="status">
           <p className="pe-lead">
             {run.response.status === 'timeout'
-              ? 'Search paused at the step/time budget — a timeout is not proof that no path exists.'
-              : 'No traversable corridor met all active slope, roughness, and quality constraints.'}
+              ? lang === 'it'
+                ? 'Ricerca interrotta al limite di passi/tempo — il timeout non dimostra che non esista un percorso.'
+                : 'Search paused at the step/time budget — a timeout is not proof that no path exists.'
+              : lang === 'it'
+                ? 'Nessun corridoio attraversabile rispetta i limiti attivi di pendenza, rugosità e qualità.'
+                : 'No traversable corridor met all active slope, roughness, and quality constraints.'}
           </p>
           {'message' in run.response && run.response.message && (
             <p className="pe-step-text">{run.response.message}</p>
@@ -349,7 +380,9 @@ export function PathExplainer({
       )}
 
       {isSuccess && !traceResult && (
-        <p className="pe-lead">Computing search breakdown and Dijkstra comparison…</p>
+        <p className="pe-lead">
+          {lang === 'it' ? 'Calcolo dettagli ricerca e confronto Dijkstra…' : 'Computing search breakdown and Dijkstra comparison…'}
+        </p>
       )}
 
       {isSuccess && traceResult && (
@@ -449,12 +482,14 @@ export function PathExplainer({
                     onClick={() => onScrub(Math.min(1, (index + 0.95) / steps.length))}
                   >
                     <div className="pe-step-top">
-                      <span className="pe-step-num">{String(index + 1).padStart(2, '0')}</span>
-                      <span className="pe-step-name">
-                        {(lang === 'it' && STEP_TITLES_IT[step.phase]) ||
-                          step.title ||
-                          PHASE_LABELS[lang][step.phase] ||
-                          (lang === 'it' ? 'Passo' : 'Step')}
+                      <span className="pe-step-head">
+                        <span className="pe-step-num">{String(index + 1).padStart(2, '0')}</span>
+                        <span className="pe-step-name">
+                          {(lang === 'it' && STEP_TITLES_IT[step.phase]) ||
+                            step.title ||
+                            PHASE_LABELS[lang][step.phase] ||
+                            (lang === 'it' ? 'Passo' : 'Step')}
+                        </span>
                       </span>
                       {step.formula && <MathFormula phase={step.phase} raw={step.formula} />}
                     </div>
@@ -471,18 +506,54 @@ export function PathExplainer({
                 {lang === 'it' ? 'Perché non andare dritti?' : 'Why not go straight?'}
               </span>
               <ul className="pe-rejected-list">
-                {traceResult.rejectedPaths.slice(0, 2).map((rej) => (
-                  <li key={rej.id} className="pe-rejected-item">
-                    <span
-                      className="pe-rejected-swatch"
-                      style={{ backgroundColor: rej.colorHex }}
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <strong>{rej.label}:</strong> <span>{rej.reason}</span>
-                    </div>
-                  </li>
-                ))}
+                {traceResult.rejectedPaths.slice(0, 2).map((rej) => {
+                  const summary = firstSentence(rej.reason);
+                  const hasMore = summary.length < rej.reason.trim().length;
+                  const dDelta = rej.metricsDelta.distanceDelta_m;
+                  const peakSlope = rej.metricsDelta.maxSlope_deg;
+                  const ratio = rej.metricsDelta.costRatio;
+                  return (
+                    <li key={rej.id} className="pe-rejected-item">
+                      <div className="pe-rej-head">
+                        <span
+                          className="pe-rejected-swatch"
+                          style={{ backgroundColor: rej.colorHex }}
+                          aria-hidden="true"
+                        />
+                        <strong className="pe-rej-name">{rej.label}</strong>
+                        <span className={`pe-rej-badge pe-rej-${rej.category}`}>
+                          {REJECTION_BADGE_LABELS[lang][rej.category]}
+                        </span>
+                      </div>
+                      <div className="pe-rej-chips">
+                        {Number.isFinite(dDelta) && Math.abs(Math.round(dDelta)) > 0 && (
+                          <span className="pe-rej-chip">
+                            {lang === 'it' ? 'Δ dist' : 'Δ dist'}{' '}
+                            <strong>{`${dDelta > 0 ? '+' : ''}${Math.round(dDelta)} m`}</strong>
+                          </span>
+                        )}
+                        {Number.isFinite(peakSlope) && peakSlope > 0 && (
+                          <span className={`pe-rej-chip ${peakSlope > 20 ? 'pe-rej-chip-warn' : ''}`}>
+                            {lang === 'it' ? 'Pend. max' : 'Peak slope'}{' '}
+                            <strong>{`${peakSlope.toFixed(1)}°`}</strong>
+                          </span>
+                        )}
+                        {Number.isFinite(ratio) && ratio > 0 && ratio !== 1 && (
+                          <span className="pe-rej-chip">
+                            {lang === 'it' ? 'Rapporto' : 'Ratio'} <strong>{`${ratio.toFixed(2)}×`}</strong>
+                          </span>
+                        )}
+                      </div>
+                      <p className="pe-rej-summary">{summary}</p>
+                      {hasMore && (
+                        <details className="pe-rej-details">
+                          <summary>{lang === 'it' ? 'Nota tecnica completa' : 'Full technical note'}</summary>
+                          <p>{rej.reason}</p>
+                        </details>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

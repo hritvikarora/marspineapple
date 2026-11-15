@@ -827,6 +827,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               fallback={
                 <>
                   <p
+                    className={`result-status-pill result-status-${run.kind === 'finished' ? run.response.status : run.kind}`}
                     data-testid="route-status"
                     data-status={run.kind === 'finished' ? run.response.status : run.kind}
                   >
@@ -838,13 +839,15 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                         : `Calculating… (${run.exploredNodes} cells explored)`)}
                     {run.kind === 'finished' && (
                       <span data-status={run.response.status}>
-                        {lang === 'it' ? 'Stato' : 'Status'}: {run.response.status}
+                        {lang === 'it' ? 'Stato' : 'Status'}: <strong>{run.response.status}</strong>
                       </span>
                     )}
                     {state.isStale && (
                       <strong className="stale" data-testid="stale">
                         {' '}
-                        STALE — inputs changed, recalculate.
+                        {lang === 'it'
+                          ? 'OBSOLETO — parametri cambiati, ricalcola.'
+                          : 'STALE — inputs changed, recalculate.'}
                       </strong>
                     )}
                   </p>
@@ -879,26 +882,59 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               name="comparison"
               features={deps.features}
               fallback={
-                <ol>
+                <ol className="cand-list">
                   {state.routeCandidates.map((c) => {
                     const x = c.outbound.metrics;
+                    const isSelected = selection.candidateId === c.candidateId;
                     return (
-                      <li key={c.candidateId}>
-                        <label>
-                          <input
-                            type="radio"
-                            name="candidate"
-                            data-testid={`candidate-${c.candidateId}`}
-                            checked={selection.candidateId === c.candidateId}
-                            onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })}
-                          />{' '}
-                          <strong>{c.policies.join(' + ')}</strong>: {fmt(x.horizontalDistance_m)} m horizontal, ascent {fmt(x.ascent_m, 1)} m, max slope {fmt(x.maxTerrainSlope_deg, 1)}°, max grade {fmt(x.maxAbsEdgeGrade_deg, 1)}°, unknown quality {fmt(x.unknownQualityLength_m)} m ({fmt(x.unknownQualityPct)}% of distance), low quality {fmt(x.lowQualityLength_m)} m · {c.missionStatus}
+                      <li key={c.candidateId} className={`cand-card ${isSelected ? 'is-selected' : ''}`}>
+                        <label className="cand-label">
+                          <span className="cand-head">
+                            <span className="cand-title-row">
+                              <input
+                                type="radio"
+                                name="candidate"
+                                data-testid={`candidate-${c.candidateId}`}
+                                checked={isSelected}
+                                onChange={() => dispatch({ type: 'route/select', candidateId: c.candidateId })}
+                              />
+                              <strong>{c.policies.join(' + ')}</strong>
+                            </span>
+                            <span className="cand-badges">
+                              <span className="cand-id-badge">{c.candidateId}</span>
+                              <span className="cand-status-badge">{c.missionStatus}</span>
+                            </span>
+                          </span>
+                          <span className="cand-metrics">
+                            <span className="cand-metric">
+                              <span className="cand-metric-k">{lang === 'it' ? 'Orizzontale' : 'Horizontal'}</span>
+                              <strong className="cand-metric-v">{fmt(x.horizontalDistance_m)} m</strong>
+                            </span>
+                            <span className="cand-metric">
+                              <span className="cand-metric-k">{lang === 'it' ? 'Salita' : 'Ascent'}</span>
+                              <strong className="cand-metric-v">{fmt(x.ascent_m, 1)} m</strong>
+                            </span>
+                            <span className="cand-metric">
+                              <span className="cand-metric-k">{lang === 'it' ? 'Pend. / arco' : 'Slope / grade'}</span>
+                              <strong className="cand-metric-v">
+                                {fmt(x.maxTerrainSlope_deg, 1)}° · {fmt(x.maxAbsEdgeGrade_deg, 1)}°
+                              </strong>
+                            </span>
+                            <span className="cand-metric">
+                              <span className="cand-metric-k">{lang === 'it' ? 'Qualità nd / scarsa' : 'Unknown / low'}</span>
+                              <strong className="cand-metric-v">
+                                {fmt(x.unknownQualityLength_m)} m ({fmt(x.unknownQualityPct)}%) · {fmt(x.lowQualityLength_m)} m
+                              </strong>
+                            </span>
+                          </span>
                         </label>
-                        <ul className="muted">
-                          {c.explanation.map((e, i) => (
-                            <li key={i}>{e}</li>
-                          ))}
-                        </ul>
+                        {c.explanation.length > 0 && (
+                          <ul className="cand-notes">
+                            {c.explanation.map((e, i) => (
+                              <li key={i}>{e}</li>
+                            ))}
+                          </ul>
+                        )}
                       </li>
                     );
                   })}

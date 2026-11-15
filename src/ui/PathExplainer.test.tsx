@@ -164,6 +164,8 @@ describe('PathExplainer', () => {
     expect(screen.getByText('4.3× fewer')).toBeTruthy();
     expect(screen.getByTestId('explainer-wave-note').textContent).toContain('Expanding rim bypass frontier');
     expect(screen.getByTestId('explainer-rejected').textContent).toContain('Crosses 34° crater wall slope');
+    expect(screen.getByTestId('explainer-rejected').textContent).toContain('34.0°');
+    expect(screen.getByTestId('explainer-rejected').textContent).toContain('Blocked / rough');
 
     fireEvent.click(screen.getByTestId('explainer-play-pause'));
     expect(onPlayPause).toHaveBeenCalledTimes(1);

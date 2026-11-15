@@ -3,9 +3,12 @@
   border: 1px solid rgba(51, 230, 255, 0.22);
   border-radius: var(--radius-md);
   background: linear-gradient(160deg, rgba(16, 13, 27, 0.92), rgba(10, 7, 18, 0.96));
-  padding: 0.78rem 0.85rem;
+  padding: 0.85rem 0.9rem;
   display: grid;
-  gap: 0.65rem;
+  gap: 0.7rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   overflow: hidden;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
@@ -280,32 +283,45 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.38rem;
+  justify-content: space-between;
+  gap: 0.35rem 0.55rem;
+  min-width: 0;
+}
+
+.pe-step-head {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1 1 180px;
 }
 
 .pe-step-num {
   font: 700 0.68rem / 1 var(--font-mono);
   color: #ffb37a;
+  flex-shrink: 0;
 }
 
 .pe-step-name {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--color-ink);
+  overflow-wrap: anywhere;
 }
 
 .pe-formula {
-  margin-left: auto;
-  padding: 0.16rem 0.5rem;
+  padding: 0.18rem 0.52rem;
   border-radius: 6px;
-  font: 500 0.78rem / 1.25 Georgia, 'Times New Roman', serif;
+  font: 500 0.76rem / 1.25 Georgia, 'Times New Roman', serif;
   color: #33e6ff;
   background: linear-gradient(90deg, rgba(51, 230, 255, 0.14), rgba(255, 130, 67, 0.1));
   border: 1px solid rgba(51, 230, 255, 0.28);
   letter-spacing: 0.015em;
+  max-width: 100%;
+  overflow-x: auto;
   white-space: nowrap;
   position: relative;
-  overflow: hidden;
   transition: transform 280ms var(--cl-ease-spring, cubic-bezier(0.22, 1, 0.36, 1)), border-color 220ms ease, box-shadow 220ms ease;
 }
 
@@ -392,18 +408,19 @@
 }
 
 .pe-rejected {
-  padding: 0.45rem 0.55rem;
-  border-radius: 6px;
-  background: rgba(255, 179, 122, 0.07);
-  border: 1px solid rgba(255, 179, 122, 0.25);
+  padding: 0.6rem;
+  border-radius: 10px;
+  background: rgba(255, 179, 122, 0.06);
+  border: 1px solid rgba(255, 179, 122, 0.24);
   display: grid;
-  gap: 0.3rem;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .pe-rejected-title {
-  font: 600 0.7rem / 1.2 var(--font-mono);
+  font: 700 0.7rem / 1.2 var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: #ffb37a;
 }
 
@@ -412,26 +429,104 @@
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.45rem;
 }
 
 .pe-rejected-item {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
   gap: 0.4rem;
-  font-size: 0.73rem;
-  line-height: 1.38;
-  color: var(--color-ink-muted);
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(246, 241, 234, 0.1);
+  background: rgba(8, 6, 16, 0.66);
+  font-size: 0.77rem;
+  line-height: 1.48;
+  color: rgba(246, 241, 234, 0.82);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
-.pe-rejected-item strong {
+.pe-rej-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.pe-rej-name {
   color: var(--color-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex: 1 1 130px;
+  min-width: 0;
+}
+
+.pe-rej-badge {
+  font: 600 0.66rem / 1.1 var(--font-mono);
+  padding: 0.2rem 0.48rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 179, 122, 0.4);
+  background: rgba(255, 179, 122, 0.12);
+  color: #ffc59e;
+  white-space: nowrap;
+}
+
+.pe-rej-excess-slope,
+.pe-rej-rough-terrain {
+  border-color: rgba(255, 122, 107, 0.45);
+  background: rgba(255, 122, 107, 0.14);
+  color: #ffb3aa;
+}
+
+.pe-rej-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.pe-rej-chip {
+  font-size: 0.7rem;
+  padding: 0.16rem 0.46rem;
+  border-radius: 6px;
+  background: rgba(246, 241, 234, 0.06);
+  border: 1px solid rgba(246, 241, 234, 0.12);
+  color: var(--color-ink-secondary);
+}
+
+.pe-rej-chip strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.pe-rej-chip-warn strong {
+  color: #ff9c8e;
+}
+
+.pe-rej-summary {
+  margin: 0;
+  color: rgba(246, 241, 234, 0.88);
+  font-size: 0.76rem;
+  line-height: 1.48;
+}
+
+.pe-rej-details summary {
+  cursor: pointer;
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: #33e6ff;
+  user-select: none;
+}
+
+.pe-rej-details p {
+  margin: 0.35rem 0 0;
+  font-size: 0.73rem;
+  line-height: 1.48;
+  color: rgba(246, 241, 234, 0.72);
 }
 
 .pe-rejected-swatch {
-  width: 10px;
+  width: 12px;
   height: 3px;
-  margin-top: 0.46rem;
   border-radius: 999px;
   flex-shrink: 0;
 }
