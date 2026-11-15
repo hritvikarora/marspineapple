@@ -10,25 +10,31 @@ export interface MeasurementProps extends HTMLAttributes<HTMLSpanElement> {
   decimals?: number;
 }
 
+function formatSeconds(seconds: number | null | undefined, decimals: number): string {
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds)) return '—';
+  return `${seconds.toFixed(decimals)} s`;
+}
+
+const UNIT_FORMATTERS: Record<
+  MeasurementProps['unit'],
+  (value: number | null | undefined, decimals: number) => string
+> = {
+  m: formatMeters,
+  deg: formatDegrees,
+  '%': formatPercent,
+  s: formatSeconds,
+};
+
+/** Presentational span displaying a formatted measurement with its unit and tabular numerals. */
 export function Measurement({ value, unit, decimals, className = '', ...rest }: MeasurementProps) {
-  let formatted: string;
   const dec = decimals ?? (unit === 'deg' ? 1 : 0);
-  switch (unit) {
-    case 'm':
-      formatted = formatMeters(value, dec);
-      break;
-    case 'deg':
-      formatted = formatDegrees(value, dec);
-      break;
-    case '%':
-      formatted = formatPercent(value, dec);
-      break;
-    case 's':
-      formatted = value !== null && value !== undefined && Number.isFinite(value) ? `${value.toFixed(dec)} s` : '—';
-      break;
-  }
+  const formatted = UNIT_FORMATTERS[unit](value, dec);
+  const classes = ['measurement', `measurement-${unit}`, 'tabular-nums', className.trim()]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <span className={`measurement measurement-${unit} ${className}`.trim()} {...rest}>
+    <span className={classes} {...rest}>
       {formatted}
     </span>
   );
