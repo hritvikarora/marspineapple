@@ -786,3 +786,4 @@ legend {
 .landing-option-dark { background: var(--color-ink, #000); color: var(--color-paper, #fff); }
 .landing-note { margin: 0; color: var(--color-ink-secondary, #686666); font-size: 0.85rem; }
 @media (prefers-reduced-motion: reduce) { .landing-option { transition: none; } }
+.cl-loading { background: #040208; }

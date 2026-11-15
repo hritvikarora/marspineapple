@@ -59,11 +59,12 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   // Landing choice on the published site only (not in tests, not for automated browsers such as the e2e suite).
   const [showLanding, setShowLanding] = useState(
     () =>
-      (deps.production ?? IS_PRODUCTION_BUILD) &&
+      (typeof location !== 'undefined' && /[?&]landing(=|&|$)/.test(location.search)) ||
+      ((deps.production ?? IS_PRODUCTION_BUILD) &&
       typeof navigator !== 'undefined' &&
       !navigator.webdriver &&
       typeof location !== 'undefined' &&
-      !/[?&]plan(=|&|$)/.test(location.search),
+      !/[?&]plan(=|&|$)/.test(location.search)),
   );
   const [traceFrame, setTraceFrame] = useState<SearchTraceFrame | null>(null);
   const [rejectedPaths, setRejectedPaths] = useState<readonly RejectedPathOverlay[]>([]);
