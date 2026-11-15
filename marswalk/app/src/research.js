@@ -7,6 +7,19 @@ import { Panel, rrect, text, wrap } from './ui.js';
 import { lang, P } from './i18n.js';
 import { R, H, DOOR_W, DOOR_H, TUN2, R2, XC } from './habitat.js';
 import { Calendar, Plastico, toolBoards } from './research-tools.js';
+// Martian weather slide: NASA Mars fact sheet + Perseverance MEDA results at Jezero (values rounded)
+const WEATHER = {
+  title: { it: 'Che tempo fa a Jezero?', en: 'What is the weather like at Jezero?' },
+  lines: [
+    { it: 'Aria sottilissima: circa 6 mbar in superficie, meno dell\'1% della pressione sulla Terra. Il 95% è CO₂.', en: 'Very thin air: about 6 mbar at the surface, under 1% of Earth\'s pressure. 95% is CO₂.' },
+    { it: 'Temperatura media del pianeta circa −60 °C. A Jezero l\'aria a 2 m passa da circa −80 °C di notte a circa −10/0 °C a mezzogiorno: decine di gradi in un sol.', en: 'Planet-wide mean about −60 °C. At Jezero the air at 2 m swings from about −80 °C at night to about −10/0 °C at noon: tens of degrees in one sol.' },
+    { it: 'La pressione cambia con le stagioni (circa ±10-15%): d\'inverno parte della CO₂ gela sulle calotte polari.', en: 'Pressure changes with the seasons (roughly ±10-15%): in winter part of the CO₂ freezes onto the polar caps.' },
+    { it: 'Diavoli di polvere frequenti a Jezero nelle ore calde; raffiche e vortici sollevano polvere che riduce la luce per i pannelli solari.', en: 'Dust devils are frequent at Jezero in the warm hours; gusts and vortices lift dust that dims sunlight for solar panels.' },
+    { it: 'Il suono viaggia più piano (circa 240 m/s) e i suoni acuti si spengono presto: SuperCam ha misurato due velocità diverse.', en: 'Sound travels slower (about 240 m/s) and high pitches fade fast: SuperCam measured two different speeds.' },
+    { it: 'Per un\'EVA: niente acqua liquida, radiazioni UV forti, escursione termica enorme. La tuta deve scaldare, pressurizzare e proteggere dalla polvere.', en: 'For an EVA: no liquid water, strong UV, huge temperature swings. The suit must heat, pressurise and keep dust out.' },
+  ],
+  src: 'Fonti / Sources: NASA NSSDC Mars Fact Sheet; NASA Science Mars Facts; Rodríguez-Manfredi et al. 2023 (Nat. Geosci.); Munguira et al. 2023 (JGR Planets); Sánchez-Lavega et al. 2023; Newman et al. 2022 (Sci. Adv.); Zorzano et al. 2024 (Sci. Rep.); Maurice et al. 2022 (Nature); Mars Climate Database; MEDA, NASA PDS Atmospheres.',
+};
 const L = o => (typeof o === 'string' ? o : o[lang.cur] ?? o.it);
 const TOPIC = {
   shape: { c: '#ffb37a', t: { it: 'FORMA DEL PIANETA', en: 'SHAPE OF THE PLANET' } },
@@ -103,7 +116,7 @@ export class ResearchRoom {
     this.cal = new Calendar(this, `${root}research/`); items.push({ kind: 'cal', slots: 2, pnl: this.cal.pnl });
     const tools = toolBoards(this, mk); items.push(...tools);
     items.push(...photoStops.map(p => ({ kind: 'photo', topic: 'photo', p })));
-    items.push({ kind: 'docs', topic: 'docs' }, { kind: 'links', topic: 'docs' });
+    items.push({ kind: 'weather', topic: 'docs' }, { kind: 'docs', topic: 'docs' }, { kind: 'links', topic: 'docs' });
     const slots = items.reduce((n, it) => n + (it.slots || 1), 0), span = 2 * Math.PI - 0.5; let k = 0;
     for (const it of items) { const w = it.slots || 1, phi = Math.PI + 0.25 + span * (k + w / 2) / slots, rr = R2 - (w > 1 ? 0.32 : 0.12); k += w;
       const pnl = it.pnl || mk(); pnl.mesh.position.set(Math.sin(phi) * rr, 1.55, Math.cos(phi) * rr); pnl.mesh.rotation.y = phi + Math.PI; rg.add(pnl.mesh);
@@ -160,6 +173,9 @@ export class ResearchRoom {
     if (b.render) { b.pnl.draw((c, W, Hh) => b.render(c, W, Hh)); return; }
     if (b.kind === 'docs') { b.pnl.draw((c, W, Hh) => { this.frame(c, W, Hh, '#ffb37a'); this.band(c, W, '#ffb37a', L({ it: 'DOCUMENTAZIONE', en: 'DOCUMENTATION' })); text(c, L(DOCS.title), 30, 90, 32, '#fff', 700); let y = 140;
       for (const l of DOCS.lines) { c.fillStyle = '#ffb37a'; c.fillRect(30, y - 15, 10, 10); y = wrap(c, L(l), 54, y, W - 84, 22, 29, '#fff') + 12; } }); return; }
+    if (b.kind === 'weather') { b.pnl.draw((c, W, Hh) => { this.frame(c, W, Hh, '#7fe0ff'); this.band(c, W, '#7fe0ff', L({ it: 'METEO MARZIANO', en: 'MARTIAN WEATHER' })); text(c, L(WEATHER.title), 30, 90, 32, '#fff', 700); let y = 136;
+      for (const l of WEATHER.lines) { c.fillStyle = '#7fe0ff'; c.fillRect(30, y - 15, 10, 10); y = wrap(c, L(l), 54, y, W - 84, 20, 26, '#fff') + 9; }
+      wrap(c, WEATHER.src, 30, Math.max(y + 6, Hh - 92), W - 60, 15, 20, '#d9c4b2'); }); return; }
     if (b.kind === 'links') { b.pnl.draw((c, W, Hh) => { this.frame(c, W, Hh, '#ffb37a'); this.band(c, W, '#ffb37a', L({ it: 'DOCUMENTAZIONE', en: 'DOCUMENTATION' })); text(c, L(LINKS.title), 30, 90, 32, '#fff', 700); let y = 142;
       for (const [u, d] of LINKS.rows) { text(c, u, 30, y, 24, '#7fe0ff', 700); text(c, L(d), 30, y + 30, 21, '#d9c4b2'); y += 78; } wrap(c, L(LINKS.note), 30, Hh - 60, W - 60, 21, 27, '#ffb37a', 600); }); return; }
     const tp = TOPIC[b.topic];
