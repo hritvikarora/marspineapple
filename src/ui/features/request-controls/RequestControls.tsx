@@ -51,7 +51,7 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
             variant="danger"
             size="md"
             className="request-controls-cancel-btn"
-            data-testid="cancel-request"
+            data-testid="cancel-route"
             onClick={cancelRoute}
             children="Cancel"
           />

@@ -38,7 +38,7 @@ describe('TASK-006: Request Controls', () => {
     expect((button as HTMLButtonElement).disabled).toBe(false);
     expect(button.getAttribute('aria-busy')).toBe('false');
 
-    expect(screen.queryByTestId('cancel-request')).toBeNull();
+    expect(screen.queryByTestId('cancel-route')).toBeNull();
     expect(screen.queryByTestId('solving-progress')).toBeNull();
     expect(screen.queryByTestId('cannot-request-reason')).toBeNull();
   });
@@ -85,7 +85,7 @@ describe('TASK-006: Request Controls', () => {
 
     const reason = screen.getByTestId('cannot-request-reason');
     expect(reason.textContent).toBe(engineReason);
-    expect(screen.queryByTestId('cancel-request')).toBeNull();
+    expect(screen.queryByTestId('cancel-route')).toBeNull();
   });
 
   it('omits cannot-request-reason when canRequest is false without a reason', () => {
@@ -125,7 +125,7 @@ describe('TASK-006: Request Controls', () => {
     fireEvent.click(calcButton);
     expect(requestRoute).not.toHaveBeenCalled();
 
-    const cancelButton = screen.getByTestId('cancel-request');
+    const cancelButton = screen.getByTestId('cancel-route');
     expect(cancelButton).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBe(cancelButton);
 
@@ -152,7 +152,7 @@ describe('TASK-006: Request Controls', () => {
       />,
     );
 
-    const cancelButton = screen.getByTestId('cancel-request');
+    const cancelButton = screen.getByTestId('cancel-route');
     fireEvent.click(cancelButton);
     expect(cancelRoute).toHaveBeenCalledTimes(1);
   });
@@ -173,6 +173,6 @@ describe('TASK-006: Request Controls', () => {
 
     const button = screen.getByTestId('calculate');
     expect(button.textContent).toBe('Recalculate');
-    expect(screen.queryByTestId('cancel-request')).toBeNull();
+    expect(screen.queryByTestId('cancel-route')).toBeNull();
   });
 });

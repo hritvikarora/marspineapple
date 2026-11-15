@@ -10,7 +10,7 @@ const ROUTE_BUDGET_MS = 8000;
 
 test.beforeEach(async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByTestId(ids.release)).toHaveText(`app 0.1.0 · bundle ${BUNDLE} · model placeholder-astar-0.2.0`, { timeout: 20000 });
+  await expect(page.getByTestId(ids.release)).toHaveText(`app 0.1.0 · bundle ${BUNDLE} · model eva-astar-1.0.0`, { timeout: 20000 });
 });
 
 test('real bundle: no synthetic badge or production warning, strict mode disabled, texture available, no external requests', async ({ page }) => {
@@ -50,7 +50,7 @@ test('export on real data: file name and content carry the real bundle, no local
   await page.getByTestId(ids.calculate).click();
   await expect(page.getByTestId(ids.status)).toHaveAttribute('data-status', 'success', { timeout: 20000 });
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByTestId(ids.exportJson).click()]);
-  expect(download.suggestedFilename()).toBe(`mars-pathfinder_${BUNDLE}_placeholder-astar-0.2.0_c0.json`);
+  expect(download.suggestedFilename()).toBe(`mars-pathfinder_${BUNDLE}_eva-astar-1.0.0_c0.json`);
   const text = await readFile((await download.path())!, 'utf8');
   const parsed = JSON.parse(text);
   expect(parsed.region).toMatchObject({ bundleVersion: BUNDLE, synthetic: false });
