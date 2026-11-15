@@ -716,20 +716,6 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                 <span className="view-site-dot" aria-hidden="true" />
                 {bundle.manifest.title || 'Jezero West'}
               </span>
-              <div className="view-mode-switch" role="radiogroup" aria-label="View mode">
-                {(['2d', '3d'] as const).map((v) => (
-                  <label key={v} className={state.viewMode === v ? 'view-pill-active' : undefined}>
-                    <input
-                      type="radio"
-                      name="view"
-                      data-testid={`view-${v}`}
-                      checked={state.viewMode === v}
-                      onChange={() => dispatch({ type: 'view/setMode', mode: v })}
-                    />
-                    <span>{v.toUpperCase()}</span>
-                  </label>
-                ))}
-              </div>
             </div>
 
             {/* Slot: terrain-host */}
