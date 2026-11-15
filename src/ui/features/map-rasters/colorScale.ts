@@ -1,8 +1,29 @@
 /**
- * Color mapping utilities for registered terrain rasters (TASK-008).
+ * Color mapping and legend metadata utilities for registered terrain rasters (TASK-008 / UI-018).
  * Complies with frozen contracts: QUALITY (0..3) and EXCLUSION (0..4).
  */
-import { EXCLUSION, QUALITY } from '../../../contracts';
+import { EXCLUSION, QUALITY, type ExclusionCode, type QualityCode } from '../../../contracts';
+
+export type QualityLegendWord = 'Good' | 'Low' | 'Unknown' | 'No elevation';
+export type ExclusionLegendWord =
+  | 'Missing elevation'
+  | 'Unsupported derivative'
+  | 'Outside extent'
+  | 'Manual';
+export type ExclusionPattern = 'crosshatch' | 'diagonal' | 'horizontal' | 'frame';
+
+export interface QualityLegendItem {
+  readonly code: QualityCode;
+  readonly label: QualityLegendWord;
+  readonly color: string | null;
+}
+
+export interface ExclusionLegendItem {
+  readonly code: Exclude<ExclusionCode, typeof EXCLUSION.NONE>;
+  readonly label: ExclusionLegendWord;
+  readonly color: string;
+  readonly pattern: ExclusionPattern;
+}
 
 export function getElevationColor(z: number, minZ: number, maxZ: number, opacity = 1.0): string {
   if (!Number.isFinite(z)) return `rgba(0,0,0,${opacity})`;
