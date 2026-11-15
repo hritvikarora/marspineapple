@@ -20,7 +20,7 @@ export class RoutePlanner {
     this.app = app; this.hover = null; this.mouse = new THREE.Vector2(); this.ray = new THREE.Raycaster();
     this.mode = 'start'; this.start = null; this.dest = null; this.roundTrip = false; this.result = null; this.status = 'idle'; this.msg = '';
     this.panel = new Panel(1.6, 1.3, 1200 / 1.6, { depthTest: true }); const m = this.panel.mesh; m.renderOrder = 120;
-    const [px, pz] = hab.world(hab.side * -1.9, -1.2); m.position.set(px, hab.floorY + 1.5, pz); m.rotation.y = hab.yaw + hab.side * 0.9; app.scene.add(m);
+    const ang = Math.atan2(-0.9, 1.55), rw = 3.8, lx = hab.side * Math.cos(ang) * rw, lz = Math.sin(ang) * rw, [px, pz] = hab.world(lx, lz); m.position.set(px, hab.floorY + 1.6, pz); m.rotation.y = hab.yaw + Math.atan2(-lx, -lz); app.scene.add(m);   // flush on the wall of the main room, right behind the Mars globe, facing the room's centre
     this.dot = new THREE.Mesh(new THREE.CircleGeometry(0.012, 16), new THREE.MeshBasicMaterial({ color: 0x7fe0ff, depthTest: false })); this.dot.renderOrder = 121; this.dot.visible = false; m.add(this.dot);
     const bx = 820, bw = 350;
     this.buttons = [
