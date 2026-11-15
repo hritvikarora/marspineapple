@@ -611,20 +611,26 @@ a:focus-visible .cl-roll-text {
 }
 
 .cl-copy {
-  width: min(410px, 34vw);
+  width: min(430px, 36vw);
   max-width: 100%;
   box-sizing: border-box;
+  padding: 20px 24px;
+  margin-left: -24px;
+  border-radius: 20px;
+  background: radial-gradient(ellipse 120% 115% at 38% 50%, rgba(4, 2, 8, 0.76) 0%, rgba(4, 2, 8, 0.38) 62%, transparent 100%);
 }
 
 .cl-copy p {
-  color: var(--cl-dim);
+  color: rgba(246, 241, 234, 0.88);
   font-size: 1.04rem;
   line-height: 1.62;
+  text-shadow: 0 1px 14px rgba(4, 2, 8, 0.9);
 }
 
 .cl-h2 {
   margin: 0 0 14px;
   font-size: clamp(1.8rem, 3.3vw, 2.9rem);
+  text-shadow: 0 2px 22px rgba(4, 2, 8, 0.9);
   line-height: 1.06;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -906,7 +912,8 @@ a:focus-visible .cl-roll-text {
   }
   .cl-copy {
     width: 100%;
-    background: rgba(6, 4, 12, 0.84);
+    margin-left: 0;
+    background: rgba(6, 4, 12, 0.86);
     border: 1px solid rgba(246, 241, 234, 0.14);
     padding: 18px;
     border-radius: 14px;
@@ -918,6 +925,27 @@ a:focus-visible .cl-roll-text {
   }
   .cl-vignette {
     background: linear-gradient(0deg, rgba(4, 2, 8, 0.9) 0%, rgba(4, 2, 8, 0.45) 45%, transparent 72%);
+  }
+}
+
+@media (max-width: 559px) {
+  .cl-nav {
+    gap: 8px;
+  }
+  .cl-actions {
+    gap: 6px;
+  }
+  .cl .cl-skip,
+  .cl .cl-menu {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 0.74rem;
+  }
+  .lang-btn {
+    min-height: 26px;
+    min-width: 28px;
+    padding: 0 7px;
+    font-size: 0.68rem;
   }
 }
 

@@ -92,11 +92,11 @@ function MathFormula({ phase, raw }: { phase?: string; raw: string }): ReactNode
       <>
         <var>f</var>(<var>n</var>) <span className="pe-op">=</span> <var>g</var>(<var>n</var>){' '}
         <span className="pe-op">+</span> <var>h</var>(<var>n</var>), &nbsp; <var>h</var>(<var>n</var>){' '}
-        <span className="pe-op">=</span> &parallel;<var>p</var>
+        <span className="pe-op">=</span> &#x2016;<var>p</var>
         <sub>
           <var>n</var>
         </sub>{' '}
-        <span className="pe-op">&minus;</span> <var>p</var>*&parallel;<sub>2</sub>
+        <span className="pe-op">&minus;</span> <var>p</var>*&#x2016;<sub>2</sub>
       </>
     );
   } else if (s.includes('Dijkstra priority')) {
