@@ -9,8 +9,7 @@ bar, notifications off. Narrate in plain language; never claim anything the app 
 > current rule on the official submission form (RELEASE-CHECKLIST §7) and use the **25–28 s cut** at the end if the
 > limit is real. The long version is still useful for a Milan live presentation or the repo.
 
-State at time of writing: route model `placeholder-astar-0.2.0`, 3D view is a placeholder. **If Ayush's solver, Dhani's
-UI or Role B's 3D view land before recording, re-check every number and label below against the live build.**
+State at time of writing: route model `eva-astar-1.0.0`, 3D terrain view and Marswalk VR integrated.
 Numbers below are from the HiRISE bundle, one-way, all three policies.
 
 ## Before you press record

@@ -13,8 +13,10 @@ const root = resolve(dir);
 const prefix = prefixArg.endsWith('/') ? prefixArg : `${prefixArg}/`;
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
-  '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.txt': 'text/plain; charset=utf-8',
-  '.f32': 'application/octet-stream', '.u8': 'application/octet-stream',
+  '.json': 'application/json', '.geojson': 'application/geo+json', '.csv': 'text/csv; charset=utf-8',
+  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp',
+  '.txt': 'text/plain; charset=utf-8', '.glb': 'model/gltf-binary', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2',
+  '.bin': 'application/octet-stream', '.f32': 'application/octet-stream', '.u8': 'application/octet-stream',
 };
 
 if (!existsSync(join(root, 'index.html'))) {
@@ -33,7 +35,14 @@ createServer((req, res) => {
     return;
   }
   const rel = decodeURIComponent(url.pathname.slice(prefix.length)) || 'index.html';
-  const file = normalize(join(root, rel));
+  let file = normalize(join(root, rel));
+  if (file.startsWith(root) && existsSync(file) && statSync(file).isDirectory()) {
+    if (!url.pathname.endsWith('/')) {
+      res.writeHead(301, { location: `${url.pathname}/${url.search}` }).end();
+      return;
+    }
+    file = join(file, 'index.html');
+  }
   if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) {
     res.writeHead(404).end('not found');
     return;

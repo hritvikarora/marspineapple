@@ -16,7 +16,7 @@
     }
   },
   "message": "Destination is not connected to the start under the current terrain limits.",
-  "modelVersion": "placeholder-astar-0.2.0",
+  "modelVersion": "eva-astar-1.0.0",
   "policies": [
     "shortest-feasible",
     "uncertainty-aware"

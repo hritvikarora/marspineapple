@@ -4,7 +4,7 @@
     "east_m": 175,
     "north_m": 65
   },
-  "modelVersion": "placeholder-astar-0.2.0",
+  "modelVersion": "eva-astar-1.0.0",
   "policies": [
     "shortest-feasible",
     "uncertainty-aware"
