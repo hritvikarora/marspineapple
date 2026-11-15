@@ -2,7 +2,7 @@
   "bundleVersion": "synthetic-v0.1.0",
   "field": "destination",
   "message": "destination cell is outside the acceptable quality set in strict mode.",
-  "modelVersion": "placeholder-astar-0.2.0",
+  "modelVersion": "eva-astar-1.0.0",
   "reason": "endpoint-quality-excluded",
   "requestId": "req-3-ghi789",
   "status": "invalid-input"

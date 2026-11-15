@@ -13,7 +13,16 @@ const args = process.argv.slice(2);
 const url = args.find((a) => /^https?:/.test(a)) ?? 'http://localhost:4173/';
 const shotIdx = args.indexOf('--screenshot');
 const shot = shotIdx >= 0 ? args[shotIdx + 1] : null;
-const candidates = [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean);
+const candidates = [
+  process.env.CHROME_PATH,
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/usr/bin/chromium-browser',
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+].filter(Boolean);
 const executablePath = candidates.find((p) => existsSync(p));
 if (!executablePath) {
   console.error('No Chrome/Chromium found; set CHROME_PATH.');
