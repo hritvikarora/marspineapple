@@ -30,6 +30,8 @@
   <div id="msg">Caricamento dei dati orbitali…</div>
 </div>
 <div id="help"></div>
+<div id="reticle" aria-hidden="true"></div>
+<style>#reticle{position:fixed;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.6),inset 0 0 0 1px rgba(0,0,0,.6);pointer-events:none;z-index:20;display:none}#reticle::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:#7fe0ff;border-radius:50%}body.locked #reticle{display:block}</style>
 <div id="legend"></div>
 <script type="module" src="/src/main.js"></script>
 </body>

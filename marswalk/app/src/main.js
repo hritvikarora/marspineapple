@@ -25,6 +25,7 @@ import { T, lang, setLang } from './i18n.js';
 import { readPlannerRoute, applyPlannerRoute, plannerNavTexture } from './planner-route.js';
 import { RoutePlanner } from './route-planner.js';
 import { Directions } from './directions.js';
+import { RouteGuide } from './route-guide.js';
 
 const Q = new URLSearchParams(location.search);
 const SITE = Q.get('site') || 'jezero-delta';
@@ -134,7 +135,7 @@ async function boot() {
   const [rx, rz] = hab.world(4.5, -9.5), rover = app.rover = new Rover(app, `${import.meta.env.BASE_URL}perseverance.glb`, rx, rz, hab.yaw + 2.4);
   const menu = app.menu = new Menu(app, hab.group), [gx, gz] = hab.world(hab.side * 1.55, -0.9), globe = app.globe = new Globe(app, `${import.meta.env.BASE_URL}mars_globe.jpg`, gx, hab.floorY + 1.2, gz);
   hud.panel.mesh.visible = false;
-  app.scene = scene; const planner = app.planner = new RoutePlanner(app, hab), dirs = app.directions = new Directions(app);
+  app.scene = scene; const planner = app.planner = new RoutePlanner(app, hab), dirs = app.directions = new Directions(app), guide = app.routeGuide = new RouteGuide(app);
   const helpText = () => { $('help').innerHTML = T('<b>PC</b>: clic sul menu per scegliere, poi clic per catturare il mouse · <b>WASD</b> cammina · <b>Shift</b> veloce · <b>L</b> livello dati · <b>I</b> display sul braccio · <b>M</b> vista dall\'alto · <b>T</b> traccia del rover · <b>C</b> fonti dei dati · <b>G</b> prendi il globo, <b>+</b>/<b>−</b> scala · <b>R</b> ricomincia<br><b>Quest</b>: stick sinistro cammina (grilletto laterale = veloce) · stick destro avanti = teletrasporto, lati = gira · <b>grilletto</b> sceglie nel menu · <b>grilletto destro</b> vista dall\'alto · <b>grilletto laterale destro</b> display sul braccio · <b>grilletti laterali</b> sul globo: prendi, con due mani ridimensiona · <b>A</b> livello dati · <b>B</b> traccia del rover · <b>X</b> fonti dei dati · <b>Y</b> ricomincia'); };
   // language switch: every panel is redrawn from the same data
   app.setLang = l => { setLang(l); app.buildLayers(); app.setLayer(app.layer); pois.redraw(); room.redraw(); museum.redraw(); heli.draw(); heli.drawTag(); groom.redraw(); deco.redraw(); quarters.redraw(); credits.draw(); debrief.shown = false; arm.drawTile(); hab.redraw(); menu.draw(); globe.label(); globe.drawNames(true); helpText(); hud.acc = 1; };
@@ -151,12 +152,13 @@ async function boot() {
   renderer.domElement.addEventListener('mousemove', e => menu.mouse.set(e.clientX / innerWidth * 2 - 1, 1 - e.clientY / innerHeight * 2));
   player.onClick = () => !renderer.xr.isPresenting && (planner.click() || (menu.open ? menu.click() : false) || game.press() || room.click() || (heli.near() && (heli.play(), true)));   // a click on a menu button is not a request to capture the mouse
   const vr = VRButton.createButton(renderer, { optionalFeatures: ['local-floor', 'bounded-floor'] }); document.body.appendChild(vr);
-  helpText(); if (Q.get('data')) app.explore(); else if (Q.get('start') || Q.get('x') || (plan && Q.get('go'))) app.start();
+  helpText(); if (Q.get('data')) app.explore(); else if (plan && Q.get('go') && guide.start) { app.start(); const st = guide.start, [nx, ny] = st.next; player.placeAt(st.x, -st.y, Math.atan2(-(nx - st.x), ny - st.y)); }   // "Start navigation": drop the astronaut on point A, facing the route
+  else if (Q.get('start') || Q.get('x') || (plan && Q.get('go'))) app.start();
   $('boot').style.opacity = 0; setTimeout(() => $('boot').remove(), 700);
   const clock = new THREE.Clock(), dir = new THREE.Vector3(), cam = new THREE.Vector3(); let fpsT = 0, fpsN = 0;
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.1); shared.uTime.value += dt;
-    menu.update(); planner.update(); dirs.update(dt); player.update(dt); if (app.started) mission.idle(dt);
+    menu.update(); planner.update(dt); dirs.update(dt); guide.update(dt); player.update(dt); if (app.started) mission.idle(dt);
     camera.updateMatrixWorld(); camera.getWorldPosition(cam); shared.uCam.value.copy(cam); sky.position.copy(cam); camera.getWorldDirection(dir);
     if (!player.lift && app.started && !game.active) mission.check(cam); pois.update(cam); hud.update(dt); debrief.update(); helmet.update(); arm.update(dt); hab.update(dt, cam); rover.update(dt, cam); globe.update(dt, cam); room.update(dt, cam); museum.update(dt, cam); heli.update(dt, cam); groom.update(dt); deco.update(dt); game.update(dt); quarters.update(dt); amb.update(dt, !hab.indoors(cam.x, cam.z));
     const tris = terrain.update(cam, dir, renderer.xr.isPresenting ? 0.2 : 0.35, app.baseRes || 1);

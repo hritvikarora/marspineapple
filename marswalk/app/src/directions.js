@@ -20,7 +20,7 @@ export class Directions {
     this.app = app; this.acc = 1; const site = app.site;
     this.on = !!site.plannerRoute;
     this.legs = site.route.map(pts => { const s = simplify(pts, 4), cum = [0]; for (let i = 1; i < s.length; i++) cum.push(cum[i - 1] + Math.hypot(s[i][0] - s[i - 1][0], s[i][1] - s[i - 1][1])); return { s, cum }; });
-    this.panel = new Panel(0.9, 0.17, 1024); const m = this.panel.mesh; m.position.set(0, 0.3, -1.25); m.rotation.x = 0.12; m.renderOrder = 200; m.visible = false; app.camera.add(m);
+    this.panel = new Panel(0.9, 0.17, 1024); const m = this.panel.mesh; m.position.set(-0.62, 0.36, -1.25); m.scale.setScalar(0.5); m.rotation.x = 0.12; m.renderOrder = 200; m.visible = false; app.camera.add(m);
   }
   // returns { text, sub, dist } for the astronaut at (x, y) (east, north) on leg index li
   guide(li, x, y) {
@@ -37,23 +37,23 @@ export class Directions {
       if (Math.abs(da) > 30) { turn = { k, da, dir: compass(cx - bx, cy - by) }; break; }
     }
     const segDir = compass(s[best.i][0] - s[best.i - 1][0], s[best.i][1] - s[best.i - 1][1]);
-    const off = best.d > 15 ? L({ it: `Fuori percorso di ${Math.round(best.d)} m: torna sulla linea`, en: `${Math.round(best.d)} m off route: get back on the line` }) : null;
+    const off = best.d > 15 ? L({ it: `Sei a ${Math.round(best.d)} m dal percorso: torna sulla linea azzurra`, en: `You are ${Math.round(best.d)} m off the route: walk back to the blue line` }) : null;
     if (turn) { const dist = cum[turn.k] - along, side = turn.da > 0 ? L({ it: 'destra', en: 'right' }) : L({ it: 'sinistra', en: 'left' }), sharp = Math.abs(turn.da) > 100 ? L({ it: ' stretta', en: ' sharply' }) : '';
-      return { dist, arrow: turn.da > 0 ? '↱' : '↰', text: L({ it: `Tra ${fmtDist(dist)} gira a ${side}${sharp}`, en: `In ${fmtDist(dist)} turn ${side}${sharp}` }) + ` · ${L({ it: 'verso', en: 'towards' })} ${turn.dir}`,
-        sub: off ?? `${L({ it: 'Ora vai verso', en: 'Now heading' })} ${segDir} · ${tgt.name} ${fmtDist(total - along)}${planned ? '' : L({ it: ' · tratto diretto, non pianificato', en: ' · direct stretch, not planned' })}`, off: !!off }; }
+      return { dist, arrow: off ? '!' : turn.da > 0 ? '↱' : '↰', text: off ?? L({ it: `Tra ${fmtDist(dist)} gira a ${side}${sharp}`, en: `In ${fmtDist(dist)}, turn ${side}${sharp}` }),
+        sub: L({ it: `Segui la linea azzurra · ${tgt.name} tra ${fmtDist(total - along)}`, en: `Follow the blue line · ${tgt.name} in ${fmtDist(total - along)}` }), off: !!off }; }
     const dist = total - along;
-    return { dist, arrow: '↑', text: L({ it: `Prosegui ${fmtDist(dist)} verso ${segDir}`, en: `Continue ${fmtDist(dist)} ${segDir}` }), sub: off ?? `${L({ it: 'Arrivo', en: 'Arrive at' })}: ${tgt.name}${planned ? '' : L({ it: ' · tratto diretto, non pianificato', en: ' · direct stretch, not planned' })}`, off: !!off };
+    return { dist, arrow: off ? '!' : '↑', text: off ?? L({ it: `Vai dritto per ${fmtDist(dist)}`, en: `Go straight for ${fmtDist(dist)}` }), sub: planned ? L({ it: `Segui la linea azzurra fino a ${tgt.name}`, en: `Follow the blue line to ${tgt.name}` }) : L({ it: `Cammina verso ${tgt.name} (${segDir}): lì inizia la linea azzurra`, en: `Walk ${segDir} to ${tgt.name}: the blue line starts there` }), off: !!off };
   }
   update(dt) {
     const { app } = this, m = this.panel.mesh, show = this.on && app.started && !app.mission.done && !app.habitat.indoors(app.player.head().x, app.player.head().z);
     m.visible = show; if (!show) return;
-    const xr = app.renderer.xr.isPresenting; if (xr !== this._xr) { this._xr = xr; if (xr) { m.scale.setScalar(0.45); m.position.set(0, 0.2, -0.95); } else { m.scale.setScalar(1); m.position.set(0, 0.3, -1.25); } }
+    const xr = app.renderer.xr.isPresenting; if (xr !== this._xr) { this._xr = xr; if (xr) { m.scale.setScalar(0.3); m.position.set(-0.3, -0.28, -0.95); m.rotation.x = -0.35; } else { m.scale.setScalar(0.5); m.position.set(-0.62, 0.36, -1.25); m.rotation.x = 0.12; } }
     this.acc += dt; if (this.acc < 0.25) return; this.acc = 0;
     const p = app.player.head(), g = this.guide(app.mission.leg - 1, p.x, -p.z); if (!g) return;
     this.panel.draw((c, W, H) => {
       rrect(c, 4, 4, W - 8, H - 8, 22); c.fillStyle = g.off ? 'rgba(90,14,10,0.85)' : 'rgba(8,40,48,0.85)'; c.fill(); c.lineWidth = 3; c.strokeStyle = g.off ? '#ff6b5b' : '#7fe0ff'; c.stroke();
       text(c, g.arrow, 70, 120, 110, '#fff', 800, 'center');
-      text(c, g.text, 140, 78, 40, '#fff', 700); text(c, g.sub, 142, 130, 26, g.off ? '#ffb3a8' : '#bfefff', 500);
+      text(c, g.text, 140, 76, g.text.length > 34 ? 32 : 42, '#fff', 700); text(c, g.sub, 142, 130, 28, g.off ? '#ffb3a8' : '#bfefff', 500);
     });
   }
 }
