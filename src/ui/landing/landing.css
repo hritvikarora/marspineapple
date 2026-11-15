@@ -219,7 +219,6 @@
 
 .cl-corridor button:focus-visible,
 .cl-skip:focus-visible,
-.cl-menu:focus-visible,
 .cl-btn:focus-visible,
 .cl-scroll:focus-visible,
 .cl-rail button:focus-visible {
@@ -241,12 +240,7 @@
   margin-left: auto;
 }
 
-.cl-menu {
-  display: none;
-}
-
-.cl .cl-skip,
-.cl .cl-menu {
+.cl .cl-skip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -304,8 +298,7 @@
   color: #040208;
 }
 
-.cl .cl-skip:hover,
-.cl .cl-menu:hover {
+.cl .cl-skip:hover {
   background: var(--cl-ink);
   color: #040208;
   border-color: var(--cl-ink);
@@ -863,34 +856,11 @@ a:focus-visible .cl-roll-text {
   .cl-brand {
     font-size: 0.7rem;
   }
-  .cl-menu {
-    display: inline-block;
-  }
   .cl-rail {
     display: none;
   }
   .cl-corridor {
-    position: fixed;
-    top: 64px;
-    left: 16px;
-    right: 16px;
-    flex-direction: column;
-    border-radius: 16px;
-    padding: 8px;
-    background: rgba(4, 2, 8, 0.94);
-    opacity: 0;
-    transform: translateY(-8px) scale(0.98);
-    pointer-events: none;
-    transition: opacity 180ms ease-out, transform 180ms ease-out;
-  }
-  .cl-corridor.open {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-  }
-  .cl .cl-corridor button {
-    width: 100%;
-    border-radius: 12px;
+    display: none;
   }
   .cl-ch {
     align-items: flex-end;
@@ -935,8 +905,7 @@ a:focus-visible .cl-roll-text {
   .cl-actions {
     gap: 6px;
   }
-  .cl .cl-skip,
-  .cl .cl-menu {
+  .cl .cl-skip {
     min-height: 34px;
     padding: 0 10px;
     font-size: 0.74rem;

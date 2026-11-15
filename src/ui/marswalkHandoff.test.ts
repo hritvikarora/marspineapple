@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GridBundle, RegionManifest } from '../contracts';
-import { marswalkFrameFor } from './marswalkHandoff';
+import { buildMarswalkLaunchUrl, marswalkFrameFor, type MarswalkPayload } from './marswalkHandoff';
 
 import manifestJson from '../../public/bundles/jezero-west-hirise-v0.1.0/manifest.json';
 import siteJson from '../../marswalk/app/public/sites/jezero-delta/site.json';
@@ -22,5 +22,25 @@ describe('marswalk hand-off frame', () => {
 
   it('is unavailable for synthetic bundles', () => {
     expect(marswalkFrameFor({ manifest: { ...manifest, synthetic: true } } as unknown as GridBundle)).toBeNull();
+  });
+
+  it('builds a valid launch URL with planner=1, go=1, and a single query string delimiter', () => {
+    const dummy: MarswalkPayload = {
+      schema: 'marswalk/planner-route@1',
+      createdAt: '2026-11-15T00:00:00.000Z',
+      bundleId: 'jezero-west-hirise-v0.1.0',
+      modelVersion: 'eva-astar-1.0.0',
+      policies: ['shortest-feasible'],
+      start: { name: 'Start', x: 0, y: 0 },
+      destination: { name: 'Dest', x: 10, y: 10 },
+      outbound: { points: [[0, 0], [10, 10]], length_m: 14, ascent_m: 1, maxSlope_deg: 5 },
+      returnLeg: null,
+    };
+    const url = buildMarswalkLaunchUrl('en', dummy, true);
+    expect(url).toBe('marswalk-vr/index.html?planner=1&go=1&lang=en');
+    expect(url.split('?').length).toBe(2);
+
+    const hashFallback = buildMarswalkLaunchUrl('it', dummy, false);
+    expect(hashFallback).toContain('marswalk-vr/index.html?planner=1&go=1&lang=it#marswalk:planner-route=');
   });
 });

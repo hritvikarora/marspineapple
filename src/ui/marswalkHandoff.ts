@@ -13,7 +13,23 @@
 import type { GridBundle, LocalPoint, RouteCandidate } from '../contracts';
 
 export const MARSWALK_STORAGE_KEY = 'marswalk:planner-route';
-export const MARSWALK_URL = 'marswalk-vr/index.html?planner=1';
+export const MARSWALK_URL = 'marswalk-vr/index.html?planner=1&go=1';
+
+/** Builds the Marswalk VR launch URL for a computed route, spawning at Start facing the path. */
+export function buildMarswalkLaunchUrl(
+  lang: 'en' | 'it',
+  payload: MarswalkPayload | null,
+  storedInLocalStorage: boolean,
+): string {
+  const params = new URLSearchParams({
+    planner: '1',
+    go: '1',
+    lang,
+  });
+  const base = `marswalk-vr/index.html?${params.toString()}`;
+  if (storedInLocalStorage || !payload) return base;
+  return `${base}#${MARSWALK_STORAGE_KEY}=${encodeURIComponent(JSON.stringify(payload))}`;
+}
 
 const R = 3396190;
 /** Marswalk site centre (site.json lon0/lat0), degrees. */

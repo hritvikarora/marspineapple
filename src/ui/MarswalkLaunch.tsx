@@ -7,7 +7,12 @@ import type { GridBundle, RouteCandidate } from '../contracts';
 import type { MissionInputs } from '../state/store';
 import { getUnifiedPoisForBundle } from '../terrain3d/coordBridge';
 import { useUiLang } from './i18n';
-import { MARSWALK_STORAGE_KEY, MARSWALK_URL, buildMarswalkPayload, marswalkFrameFor, storeMarswalkPayload } from './marswalkHandoff';
+import {
+  buildMarswalkLaunchUrl,
+  buildMarswalkPayload,
+  marswalkFrameFor,
+  storeMarswalkPayload,
+} from './marswalkHandoff';
 
 interface Props {
   bundle: GridBundle;
@@ -46,10 +51,8 @@ export function MarswalkLaunch({ bundle, candidate, mission, modelVersion, isSta
       );
       return;
     }
-    const base = `${MARSWALK_URL}?lang=${lang}`;
-    const url = storeMarswalkPayload(payload)
-      ? base
-      : `${base}#${MARSWALK_STORAGE_KEY}=${encodeURIComponent(JSON.stringify(payload))}`;
+    const stored = storeMarswalkPayload(payload);
+    const url = buildMarswalkLaunchUrl(lang, payload, stored);
     window.open(url, '_blank');
     setNote(null);
   };

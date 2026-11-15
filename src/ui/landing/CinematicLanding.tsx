@@ -152,7 +152,6 @@ export default function CinematicLanding({ onPlan }: Props) {
   const [lang] = useUiLang();
   const chapters = CHAPTERS_BY_LANG[lang];
   const [chapter, setChapter] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [facts, setFacts] = useState<Facts | null>(null);
   const [webgl, setWebgl] = useState(true);
   const [ready, setReady] = useState(false);
@@ -351,7 +350,6 @@ export default function CinematicLanding({ onPlan }: Props) {
 
   const goTo = useCallback(
     (i: number) => {
-      setMenuOpen(false);
       const clamped = Math.max(0, Math.min(chapters.length - 1, i));
       const el = scroller.current;
       if (!el) return;
@@ -410,7 +408,7 @@ export default function CinematicLanding({ onPlan }: Props) {
         <span className="cl-brand">
           MARS <b>PATHFINDER</b>
         </span>
-        <ol className={`cl-corridor ${menuOpen ? 'open' : ''}`} id="cl-corridor">
+        <ol className="cl-corridor" id="cl-corridor">
           {chapters.map((c, i) => (
             <li key={`${lang}-${i}`}>
               <button
@@ -431,15 +429,6 @@ export default function CinematicLanding({ onPlan }: Props) {
         </ol>
         <div className="cl-actions">
           <LangToggle className="cl-lang-toggle" />
-          <button
-            type="button"
-            className="cl-menu"
-            aria-expanded={menuOpen}
-            aria-controls="cl-corridor"
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            {menuOpen ? (lang === 'it' ? 'Chiudi' : 'Close') : lang === 'it' ? 'Capitoli' : 'Chapters'}
-          </button>
           <a className="cl-skip" href={plannerHref(lang)} onClick={goPlanner} data-testid="landing-plan">
             <span className="cl-roll-clip">
               <span
