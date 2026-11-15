@@ -23,84 +23,108 @@ const BAR_H = 4;
 const CHIP_MAX_W = 119;
 const MONO_ADVANCE_PX = 7.2;
 
+const COSMIC_BG = 'rgba(9, 7, 17, 0.88)';
+const COSMIC_IVORY = '#F6F1EA';
+const COSMIC_CYAN = '#33E6FF';
+const COSMIC_HAIRLINE = 'rgba(246, 241, 234, 0.18)';
+
+function monoFont(scale: number): string {
+  return scale <= 1.01
+    ? MONO_FONT
+    : `${Math.round(12 * scale)}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+}
+
 function paintInkLabel(
   ctx: CanvasRenderingContext2D,
   text: string,
   x: number,
   y: number,
+  cosmic: boolean,
+  uiScale: number,
 ): void {
-  ctx.font = MONO_FONT;
-  ctx.lineWidth = 1;
-  ctx.fillStyle = INK;
-  ctx.fillText(text, x - 1, y);
-  ctx.fillText(text, x + 1, y);
-  ctx.fillText(text, x, y - 1);
-  ctx.fillText(text, x, y + 1);
+  ctx.font = monoFont(uiScale);
+  ctx.lineWidth = Math.max(1, uiScale);
+  ctx.fillStyle = cosmic ? COSMIC_IVORY : INK;
+  if (!cosmic) {
+    ctx.fillText(text, x - 1, y);
+    ctx.fillText(text, x + 1, y);
+    ctx.fillText(text, x, y - 1);
+    ctx.fillText(text, x, y + 1);
+  }
   ctx.fillText(text, x, y);
 }
 
-function labelChipWidth(label: string): number {
-  const raw = Math.ceil(label.length * MONO_ADVANCE_PX + 16);
-  if (raw < 36) return 36;
-  if (raw > CHIP_MAX_W) return CHIP_MAX_W;
+function labelChipWidth(label: string, scale: number): number {
+  const raw = Math.ceil(label.length * MONO_ADVANCE_PX * scale + 16 * scale);
+  const minW = Math.round(36 * scale);
+  const maxW = Math.round(CHIP_MAX_W * scale);
+  if (raw < minW) return minW;
+  if (raw > maxW) return maxW;
   return raw;
 }
 
-function drawBoundary(ctx: CanvasRenderingContext2D, width: number, height: number): void {
-  ctx.strokeStyle = HAIRLINE;
-  ctx.lineWidth = 1;
+function drawBoundary(ctx: CanvasRenderingContext2D, width: number, height: number, cosmic: boolean, uiScale: number): void {
+  ctx.strokeStyle = cosmic ? COSMIC_HAIRLINE : HAIRLINE;
+  ctx.lineWidth = Math.max(1, Math.round(uiScale));
   ctx.strokeRect(0.5, 0.5, Math.max(0, width - 1), Math.max(0, height - 1));
 }
 
-function drawNorth(ctx: CanvasRenderingContext2D): void {
-  const cx = EDGE_INSET + NORTH_RADIUS;
-  const cy = EDGE_INSET + NORTH_RADIUS;
+function drawNorth(ctx: CanvasRenderingContext2D, cosmic: boolean, uiScale: number): void {
+  const inset = EDGE_INSET * uiScale;
+  const radius = NORTH_RADIUS * uiScale;
+  const cx = inset + radius;
+  const cy = inset + radius;
 
   ctx.beginPath();
-  ctx.arc(cx, cy, NORTH_RADIUS, 0, Math.PI * 2);
-  ctx.fillStyle = PAPER_CHIP;
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fillStyle = cosmic ? COSMIC_BG : PAPER_CHIP;
   ctx.fill();
-  ctx.strokeStyle = INK;
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = cosmic ? COSMIC_CYAN : INK;
+  ctx.lineWidth = Math.max(1, uiScale);
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo(cx, cy - 1);
-  ctx.lineTo(cx - 4, cy + 6);
-  ctx.lineTo(cx - 1.25, cy + 6);
-  ctx.lineTo(cx - 1.25, cy + 11);
-  ctx.lineTo(cx + 1.25, cy + 11);
-  ctx.lineTo(cx + 1.25, cy + 6);
-  ctx.lineTo(cx + 4, cy + 6);
+  ctx.moveTo(cx, cy - 1 * uiScale);
+  ctx.lineTo(cx - 4 * uiScale, cy + 6 * uiScale);
+  ctx.lineTo(cx - 1.25 * uiScale, cy + 6 * uiScale);
+  ctx.lineTo(cx - 1.25 * uiScale, cy + 11 * uiScale);
+  ctx.lineTo(cx + 1.25 * uiScale, cy + 11 * uiScale);
+  ctx.lineTo(cx + 1.25 * uiScale, cy + 6 * uiScale);
+  ctx.lineTo(cx + 4 * uiScale, cy + 6 * uiScale);
   ctx.closePath();
-  ctx.fillStyle = INK;
+  ctx.fillStyle = cosmic ? COSMIC_CYAN : INK;
   ctx.fill();
 
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  paintInkLabel(ctx, 'N', cx, cy - 8);
+  paintInkLabel(ctx, 'N', cx, cy - 8 * uiScale, cosmic, uiScale);
 }
 
 function drawScale(
   ctx: CanvasRenderingContext2D,
   height: number,
   scaleX: number,
+  cosmic: boolean,
+  uiScale: number,
 ): void {
-  const { widthPx, label } = calculateScaleBar(scaleX, 80);
-  const bandBottom = height - EDGE_INSET;
-  const bandTop = bandBottom - SCALE_BAND_H;
-  const barX = EDGE_INSET;
-  const barY = bandTop + (SCALE_BAND_H - BAR_H) / 2;
-  const tickTop = bandTop + 4;
-  const tickBottom = bandBottom - 4;
+  const { widthPx, label } = calculateScaleBar(scaleX, 80 * uiScale);
+  const inset = EDGE_INSET * uiScale;
+  const bandH = SCALE_BAND_H * uiScale;
+  const barH = BAR_H * uiScale;
+  const bandBottom = height - inset;
+  const bandTop = bandBottom - bandH;
+  const barX = inset;
+  const barY = bandTop + (bandH - barH) / 2;
+  const tickTop = bandTop + 4 * uiScale;
+  const tickBottom = bandBottom - 4 * uiScale;
 
-  ctx.fillStyle = PAPER;
-  ctx.fillRect(barX, barY, widthPx, BAR_H);
-  ctx.fillStyle = INK;
-  ctx.fillRect(barX, barY, widthPx / 2, BAR_H);
-  ctx.strokeStyle = INK;
-  ctx.lineWidth = 1;
-  ctx.strokeRect(barX, barY, widthPx, BAR_H);
+  ctx.fillStyle = cosmic ? COSMIC_BG : PAPER;
+  ctx.fillRect(barX, barY, widthPx, barH);
+  ctx.fillStyle = cosmic ? COSMIC_CYAN : INK;
+  ctx.fillRect(barX, barY, widthPx / 2, barH);
+  ctx.strokeStyle = cosmic ? COSMIC_IVORY : INK;
+  ctx.lineWidth = Math.max(1, uiScale);
+  ctx.strokeRect(barX, barY, widthPx, barH);
 
   ctx.beginPath();
   ctx.moveTo(barX, tickTop);
@@ -109,29 +133,31 @@ function drawScale(
   ctx.lineTo(barX + widthPx, tickBottom);
   ctx.stroke();
 
-  const chipW = labelChipWidth(label);
-  const chipX = barX + widthPx + 8;
+  const chipW = labelChipWidth(label, uiScale);
+  const chipX = barX + widthPx + 8 * uiScale;
   const chipY = bandTop;
-  ctx.fillStyle = PAPER_CHIP;
-  ctx.fillRect(chipX, chipY, chipW, SCALE_BAND_H);
-  ctx.strokeStyle = HAIRLINE;
-  ctx.lineWidth = 1;
-  ctx.strokeRect(chipX + 0.5, chipY + 0.5, chipW - 1, SCALE_BAND_H - 1);
+  ctx.fillStyle = cosmic ? COSMIC_BG : PAPER_CHIP;
+  ctx.fillRect(chipX, chipY, chipW, bandH);
+  ctx.strokeStyle = cosmic ? COSMIC_HAIRLINE : HAIRLINE;
+  ctx.lineWidth = Math.max(1, uiScale);
+  ctx.strokeRect(chipX + 0.5, chipY + 0.5, chipW - 1, bandH - 1);
 
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  paintInkLabel(ctx, label, chipX + 8, chipY + SCALE_BAND_H / 2);
+  paintInkLabel(ctx, label, chipX + 8 * uiScale, chipY + bandH / 2, cosmic, uiScale);
 }
 
 export const MapChrome: FC<MapChromeSlotProps> = ({ grid, crs, registerLayer }) => {
   useEffect(() => {
     const drawChrome = (helpers: CanvasDrawHelpers) => {
       const { ctx, width, height, scaleX } = helpers;
+      const cosmic = width >= 500;
+      const uiScale = width >= 800 ? width / 650 : 1;
       ctx.save();
       try {
-        drawBoundary(ctx, width, height);
-        drawNorth(ctx);
-        drawScale(ctx, height, scaleX);
+        drawBoundary(ctx, width, height, cosmic, uiScale);
+        drawNorth(ctx, cosmic, uiScale);
+        drawScale(ctx, height, scaleX, cosmic, uiScale);
       } finally {
         ctx.restore();
       }

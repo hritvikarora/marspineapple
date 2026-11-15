@@ -4,11 +4,12 @@
  * Supports independently registering canvas layers to replace corresponding baseline rendering,
  * while preserving full baseline rendering when custom layers are absent.
  *
- * Backing-store scale is clamped so a 1000×1000 HiRISE grid is 1000×1000 pixels, not 28000×28000.
+ * Backing-store scale targets up to 2000×2000 for 1000×1000 HiRISE grids so orbital textures
+ * and vector route/marker pins stay sharp without exceeding browser backing limits.
  * Raster pixels are cached above 4096 cells. Search-trace and route overlays repaint without
  * rebuilding that cache. Trace is a per-frame batch, drawn in the routes band, never in chrome.
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   cellCenter,
   EXCLUSION,
@@ -50,6 +51,8 @@ export interface MapCanvasProps {
   /** One sampled search batch. Cells listed here are not a cumulative explored mask. */
   traceFrame?: SearchTraceFrame | null;
   rejectedPaths?: readonly RejectedPathOverlay[];
+  /** Animated route reveal fraction (0..1); defaults to 1 (complete path). */
+  routeRevealFrac?: number;
 }
 
 const NO_REJECTED_PATHS: readonly RejectedPathOverlay[] = [];
@@ -70,12 +73,30 @@ interface RasterBitmapCache {
   canvas: HTMLCanvasElement;
 }
 
-/** 20×12 stays at 28. 1000×1000 becomes 1. Never lets the per-cell size fall below 1. */
+/** 20×12 stays at 28. 1000×1000 upgrades to 2 (2000×2000). Never lets the per-cell size fall below 1. */
 function mapPxPerCell(width: number, height: number): number {
   return Math.max(
     1,
-    Math.min(28, Math.floor(Math.min(960 / Math.max(1, width), 960 / Math.max(1, height)))),
+    Math.min(28, Math.floor(Math.min(2000 / Math.max(1, width), 2000 / Math.max(1, height)))),
   );
+}
+
+function hasPhotoTextureAsset(bundle: GridBundle): boolean {
+  if (bundle.manifest.synthetic) return false;
+  return (bundle.manifest.displayAssets ?? []).some((a) => a.kind === 'texture' && !a.file.endsWith('.svg'));
+}
+
+function resolveOrthoTextureUrl(bundle: GridBundle): string | null {
+  if (bundle.manifest.synthetic || !bundle.manifestUrl) return null;
+  const asset = (bundle.manifest.displayAssets ?? []).find((a) => a.kind === 'texture' && !a.file.endsWith('.svg'));
+  if (!asset) return null;
+  try {
+    const base = typeof window !== 'undefined' ? new URL(bundle.manifestUrl, window.location.href) : new URL(bundle.manifestUrl);
+    const resolved = new URL(asset.file, base).toString();
+    return /^https?:|^data:|^blob:|^\//i.test(resolved) ? resolved : null;
+  } catch {
+    return null;
+  }
 }
 
 function finiteCellSize(size: number): number {
@@ -277,6 +298,7 @@ function paintBaselineCells(
     }
   }
 
+  const photoUnderlay = hasPhotoTextureAsset(bundle);
   for (let r = 0; r < grid.height; r++) {
     for (let c = 0; c < grid.width; c++) {
       const i = r * grid.width + c;
@@ -288,7 +310,11 @@ function paintBaselineCells(
         if (Number.isFinite(z)) {
           const t = hi > lo ? (z - lo) / (hi - lo) : 0.5;
           const v = Math.round(60 + 170 * t);
-          ctx.fillStyle = `rgb(${v},${Math.round(v * 0.75)},${Math.round(v * 0.6)})`;
+          if (photoUnderlay) {
+            ctx.fillStyle = `rgba(${v},${Math.round(v * 0.72)},${Math.round(v * 0.56)},${(layers.elevation.opacity * 0.24).toFixed(3)})`;
+          } else {
+            ctx.fillStyle = `rgb(${v},${Math.round(v * 0.75)},${Math.round(v * 0.6)})`;
+          }
         } else {
           ctx.fillStyle = '#000';
         }
@@ -357,16 +383,22 @@ function drawTraceFrame(
   if (canSave) ctx.save();
   clearDash(ctx);
   try {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(34, 211, 238, 0.95)';
+    const macro = grid.width >= 100;
+    const cellDrawSize = macro ? Math.max(pxPerCell * 2.5, (grid.width * pxPerCell) / 260) : pxPerCell;
+    const uiScale = macro ? Math.max(1, (grid.width * pxPerCell) / 700) : 1;
+
+    ctx.lineWidth = Math.max(1, uiScale * 0.85);
+    ctx.strokeStyle = macro ? 'rgba(51, 230, 255, 0.55)' : 'rgba(34, 211, 238, 0.95)';
+    ctx.fillStyle = macro ? 'rgba(51, 230, 255, 0.14)' : 'rgba(34, 211, 238, 0.18)';
     for (const index of frame.closedCells) {
       const center = cellCenterForIndex(grid, index);
       if (!center) continue;
       const [px, py] = toPixel(grid, scaleX, scaleY, center);
-      const originX = px - pxPerCell / 2;
-      const originY = py - pxPerCell / 2;
-      const inset = pxPerCell >= 3 ? 1 : 0;
-      const size = Math.max(1, pxPerCell - inset * 2);
+      const inset = cellDrawSize >= 3 ? 1 : 0;
+      const size = Math.max(1, cellDrawSize - inset * 2);
+      const originX = px - cellDrawSize / 2;
+      const originY = py - cellDrawSize / 2;
+      if (macro) ctx.fillRect(originX + inset, originY + inset, size, size);
       ctx.strokeRect(originX + inset, originY + inset, size, size);
       const reach = Math.max(0.5, size * 0.22);
       ctx.beginPath();
@@ -375,8 +407,11 @@ function drawTraceFrame(
       ctx.stroke();
     }
 
-    ctx.strokeStyle = '#f472b6';
-    const radius = Math.min(Math.max(pxPerCell * 0.32, 0.5), pxPerCell * 0.5);
+    ctx.strokeStyle = macro ? '#ffb37a' : '#f472b6';
+    ctx.lineWidth = Math.max(1, uiScale * 1.1);
+    const radius = macro
+      ? Math.max(cellDrawSize * 0.55, uiScale * 2.2)
+      : Math.min(Math.max(pxPerCell * 0.32, 0.5), pxPerCell * 0.5);
     for (const index of frame.frontierCells) {
       const center = cellCenterForIndex(grid, index);
       if (!center) continue;
@@ -387,7 +422,7 @@ function drawTraceFrame(
     }
 
     ctx.strokeStyle = '#e9d5ff';
-    ctx.lineWidth = Math.max(1, Math.min(3, pxPerCell * 0.15));
+    ctx.lineWidth = macro ? Math.max(2, uiScale * 1.5) : Math.max(1, Math.min(3, pxPerCell * 0.15));
     ctx.beginPath();
     let moved = false;
     const centers: [number, number][] = [];
@@ -404,10 +439,12 @@ function drawTraceFrame(
       }
     }
     if (moved) {
-      if (typeof ctx.setLineDash === 'function') ctx.setLineDash([2, 2]);
+      if (typeof ctx.setLineDash === 'function') {
+        ctx.setLineDash(macro ? [Math.round(4 * uiScale), Math.round(3 * uiScale)] : [2, 2]);
+      }
       ctx.stroke();
       clearDash(ctx);
-      const mark = Math.max(1, Math.min(4, pxPerCell * 0.2));
+      const mark = macro ? Math.max(3, uiScale * 2) : Math.max(1, Math.min(4, pxPerCell * 0.2));
       for (const [px, py] of centers) {
         ctx.strokeRect(px - mark / 2, py - mark / 2, mark, mark);
       }
@@ -424,12 +461,15 @@ function drawRejectedPaths(
   paths: readonly RejectedPathOverlay[],
   scaleX: number,
   scaleY: number,
+  pxPerCell: number,
 ) {
   if (paths.length === 0) return;
   const canSave = typeof ctx.save === 'function' && typeof ctx.restore === 'function';
   if (canSave) ctx.save();
   try {
-    ctx.lineWidth = 2;
+    const uiScale = grid.width >= 100 ? Math.max(1, (grid.width * pxPerCell) / 700) : 1;
+    ctx.lineWidth = Math.max(2, 2 * uiScale);
+    const dash = REJECTED_DASH.map((n) => Math.round(n * uiScale));
     for (const path of paths) {
       if (path.path.length < 2) continue;
       ctx.beginPath();
@@ -439,7 +479,7 @@ function drawRejectedPaths(
         else ctx.lineTo(px, py);
       });
       ctx.strokeStyle = path.colorHex && path.colorHex.length > 0 ? path.colorHex : REJECTED_COLOR;
-      if (typeof ctx.setLineDash === 'function') ctx.setLineDash(REJECTED_DASH);
+      if (typeof ctx.setLineDash === 'function') ctx.setLineDash(dash);
       ctx.stroke();
     }
   } finally {
@@ -461,12 +501,41 @@ export function MapCanvas({
   customLayers,
   traceFrame = null,
   rejectedPaths = NO_REJECTED_PATHS,
+  routeRevealFrac = 1,
 }: MapCanvasProps) {
   const ref = useRef<HTMLCanvasElement>(null);
   const rasterCacheRef = useRef<RasterBitmapCache | null>(null);
   const { grid } = bundle.manifest;
   const geometry = canvasGeometry(grid);
   const { pxPerCell, scaleX: sx, scaleY: sy, width: W, height: H } = geometry;
+  const orthoUrl = useMemo(() => resolveOrthoTextureUrl(bundle), [bundle]);
+  const [loadedOrtho, setLoadedOrtho] = useState<{ url: string; img: HTMLImageElement } | null>(null);
+  const orthoImg = loadedOrtho && orthoUrl && loadedOrtho.url === orthoUrl ? loadedOrtho.img : null;
+
+  useEffect(() => {
+    if (!orthoUrl || typeof Image === 'undefined') return;
+    let cancelled = false;
+    const img = new Image();
+    const commit = () => {
+      if (!cancelled) setLoadedOrtho({ url: orthoUrl, img });
+    };
+    img.onload = () => {
+      if (typeof img.decode === 'function') {
+        img.decode().then(commit, commit);
+      } else {
+        commit();
+      }
+    };
+    img.onerror = () => {
+      if (!cancelled) setLoadedOrtho(null);
+    };
+    img.src = orthoUrl;
+    return () => {
+      cancelled = true;
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [orthoUrl]);
 
   useEffect(() => {
     return () => {
@@ -481,6 +550,12 @@ export function MapCanvas({
       rasterCacheRef.current = null;
     }
     ctx.clearRect(0, 0, W, H);
+    if (orthoImg && typeof ctx.drawImage === 'function') {
+      const prevSmooth = ctx.imageSmoothingEnabled;
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(orthoImg, 0, 0, W, H);
+      if (typeof prevSmooth === 'boolean') ctx.imageSmoothingEnabled = prevSmooth;
+    }
 
     const helpers: CanvasDrawHelpers = {
       ctx,
@@ -501,32 +576,65 @@ export function MapCanvas({
       });
     }
 
+    const revealFrac = Math.max(0, Math.min(1, routeRevealFrac));
+    const selectedCandidate = candidates.find((c) => c.candidateId === selectedCandidateId) ?? null;
+
+    if (layers.route.visible && traceFrame) {
+      drawTraceFrame(ctx, grid, traceFrame, sx, sy, pxPerCell);
+    }
+    if (layers.route.visible && rejectedPaths.length > 0) {
+      drawRejectedPaths(ctx, grid, rejectedPaths, sx, sy, pxPerCell);
+    }
+
     if (customLayers?.routes) {
       customLayers.routes(helpers);
-    } else {
-      if (layers.route.visible) {
-        const ordered = [...candidates].sort(
-          (a, b) => Number(a.candidateId === selectedCandidateId) - Number(b.candidateId === selectedCandidateId),
-        );
-        for (const candidate of ordered) {
-          const sel = candidate.candidateId === selectedCandidateId;
-          ctx.strokeStyle = sel ? (stale ? '#9ab' : '#00e5ff') : 'rgba(255,255,255,0.7)';
-          ctx.lineWidth = sel ? 4 : 2;
-          if (typeof ctx.setLineDash === 'function') ctx.setLineDash(stale ? [6, 4] : []);
-          ctx.beginPath();
-          candidate.outbound.path.forEach((point, index) => {
-            const [px, py] = toPixel(grid, sx, sy, point);
-            if (index) ctx.lineTo(px, py);
-            else ctx.moveTo(px, py);
-          });
-          ctx.stroke();
-        }
-        clearDash(ctx);
+    } else if (layers.route.visible) {
+      const ordered = [...candidates].sort(
+        (a, b) => Number(a.candidateId === selectedCandidateId) - Number(b.candidateId === selectedCandidateId),
+      );
+      for (const candidate of ordered) {
+        const sel = candidate.candidateId === selectedCandidateId;
+        const pts = sel && revealFrac < 1
+          ? candidate.outbound.path.slice(0, Math.max(2, Math.round(candidate.outbound.path.length * revealFrac)))
+          : candidate.outbound.path;
+        ctx.strokeStyle = sel ? (stale ? '#9ab' : '#33e6ff') : 'rgba(246,241,234,0.65)';
+        ctx.lineWidth = sel ? (W >= 800 ? 6 : 4) : (W >= 800 ? 3 : 2);
+        if (typeof ctx.setLineDash === 'function') ctx.setLineDash(stale ? [6, 4] : []);
+        ctx.beginPath();
+        pts.forEach((point, index) => {
+          const [px, py] = toPixel(grid, sx, sy, point);
+          if (index) ctx.lineTo(px, py);
+          else ctx.moveTo(px, py);
+        });
+        ctx.stroke();
       }
-      if (traceFrame) {
-        drawTraceFrame(ctx, grid, traceFrame, sx, sy, pxPerCell);
+      clearDash(ctx);
+    }
+
+    if (layers.route.visible && selectedCandidate && revealFrac > 0 && revealFrac < 1 && selectedCandidate.outbound.path.length >= 2) {
+      const path = selectedCandidate.outbound.path;
+      const tipIdx = Math.min(path.length - 1, Math.max(0, Math.round((path.length - 1) * revealFrac)));
+      const tipPt = path[tipIdx];
+      if (tipPt) {
+        const [tx, ty] = toPixel(grid, sx, sy, tipPt);
+        const uiScale = W >= 800 ? W / 650 : 1;
+        const pulseRadius = (15 + 6 * Math.sin(revealFrac * Math.PI * 12)) * uiScale;
+        ctx.save?.();
+        ctx.fillStyle = 'rgba(51, 230, 255, 0.20)';
+        ctx.beginPath();
+        ctx.arc(tx, ty, pulseRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(51, 230, 255, 0.72)';
+        ctx.lineWidth = 1.6 * uiScale;
+        ctx.beginPath();
+        ctx.arc(tx, ty, pulseRadius * 0.72, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#33e6ff';
+        ctx.beginPath();
+        ctx.arc(tx, ty, 4.5 * uiScale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore?.();
       }
-      drawRejectedPaths(ctx, grid, rejectedPaths, sx, sy);
     }
 
     if (customLayers?.markers) {
@@ -589,6 +697,8 @@ export function MapCanvas({
     customLayers,
     traceFrame,
     rejectedPaths,
+    routeRevealFrac,
+    orthoImg,
     grid,
     pxPerCell,
     sx,
@@ -596,6 +706,8 @@ export function MapCanvas({
     W,
     H,
   ]);
+
+  const smoothScale = grid.width >= 100 || !bundle.manifest.synthetic;
 
   return (
     <canvas
@@ -606,7 +718,11 @@ export function MapCanvas({
       data-selected-candidate={selectedCandidateId ?? ''}
       data-hover-index={hover?.pathIndex ?? ''}
       aria-label="Map: click to place the selected endpoint"
-      style={{ cursor: 'crosshair', maxWidth: '100%', imageRendering: 'pixelated' }}
+      style={{
+        cursor: 'crosshair',
+        maxWidth: '100%',
+        imageRendering: smoothScale ? 'auto' : 'pixelated',
+      }}
       onClick={(event) => {
         const canvasEl = event.currentTarget;
         const rect = canvasEl.getBoundingClientRect();

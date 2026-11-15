@@ -28,6 +28,7 @@ export function ElevationProfile({ selection, onHover }: Props) {
     for (let i = 1; i < distance_m.length; i++) if (Math.abs(distance_m[i]! - d) < Math.abs(distance_m[best]! - d)) best = i;
     return best;
   };
+  const areaPts = `${pts} ${px(dMax).toFixed(1)},${H - PAD} ${px(0).toFixed(1)},${H - PAD}`;
   return (
     <figure data-testid="profile" data-candidate-id={c.candidateId} data-hover-index={hv?.pathIndex ?? ''} style={{ margin: 0 }}>
       <svg
@@ -41,16 +42,33 @@ export function ElevationProfile({ selection, onHover }: Props) {
           onHover(nearest(Math.max(0, Math.min(dMax, d))));
         }}
         onMouseLeave={() => onHover(null)}
-        style={{ background: '#1f1916', maxWidth: '100%' }}
+        style={{
+          background: '#080612',
+          maxWidth: '100%',
+          borderRadius: '10px',
+          border: '1px solid rgba(246, 241, 234, 0.12)',
+        }}
       >
-        <polyline points={pts} fill="none" stroke="#00e5ff" strokeWidth={2} />
-        <text x={4} y={14} fill="#bbb" fontSize={10}>{hi.toFixed(1)} m</text>
-        <text x={4} y={H - 22} fill="#bbb" fontSize={10}>{lo.toFixed(1)} m</text>
-        <text x={W - 70} y={H - 4} fill="#bbb" fontSize={10}>{dMax.toFixed(0)} m →</text>
-        {hv && <circle cx={px(hv.distance_m)} cy={py(hv.point.elevation_m)} r={5} fill="#ffd400" />}
+        <defs>
+          <linearGradient id="elevFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="rgba(51, 230, 255, 0.32)" />
+            <stop offset="100%" stopColor="rgba(51, 230, 255, 0.02)" />
+          </linearGradient>
+        </defs>
+        <polygon points={areaPts} fill="url(#elevFill)" />
+        <polyline points={pts} fill="none" stroke="#33e6ff" strokeWidth={2.2} strokeLinejoin="round" />
+        <text x={8} y={15} fill="#a9a1b6" fontSize={10} fontFamily="monospace">{hi.toFixed(1)} m</text>
+        <text x={8} y={H - 22} fill="#a9a1b6" fontSize={10} fontFamily="monospace">{lo.toFixed(1)} m</text>
+        <text x={W - 68} y={H - 6} fill="#a9a1b6" fontSize={10} fontFamily="monospace">{dMax.toFixed(0)} m →</text>
+        {hv && (
+          <g>
+            <circle cx={px(hv.distance_m)} cy={py(hv.point.elevation_m)} r={7} fill="rgba(255, 179, 122, 0.28)" />
+            <circle cx={px(hv.distance_m)} cy={py(hv.point.elevation_m)} r={4} fill="#ffb37a" stroke="#040208" strokeWidth={1.5} />
+          </g>
+        )}
       </svg>
-      <label className="muted">
-        Inspect position along route{' '}
+      <label className="muted elev-scrubber-label">
+        <span>Inspect position along route</span>
         <input
           type="range"
           aria-label="Inspect position along route"

@@ -64,17 +64,19 @@ button.button.lg {
 }
 
 button.button.primary {
-  background-color: var(--color-ink, #000000);
-  color: var(--color-paper, #ffffff);
-  border-color: var(--color-ink, #000000);
+  background-color: var(--color-accent, #33e6ff);
+  color: #040208;
+  border-color: var(--color-accent, #33e6ff);
 }
 
 button.button.primary:hover:not(:disabled):not([aria-disabled='true']) {
-  background-color: rgba(0, 0, 0, 0.86);
+  background-color: var(--color-accent-hover, #7cedff);
+  color: #040208;
 }
 
 button.button.primary:active:not(:disabled):not([aria-disabled='true']) {
-  background-color: rgba(0, 0, 0, 0.78);
+  background-color: var(--color-accent, #33e6ff);
+  color: #040208;
 }
 
 button.button.secondary,

@@ -180,6 +180,11 @@ function blitBitmap(ctx: CanvasRenderingContext2D, bitmap: HTMLCanvasElement, wi
   }
 }
 
+function hasPhotoTextureAsset(bundle: RasterBundle): boolean {
+  if (bundle.manifest.synthetic) return false;
+  return (bundle.manifest.displayAssets ?? []).some((a) => a.kind === 'texture' && !a.file.endsWith('.svg'));
+}
+
 function paintRasterCells(
   ctx: CanvasRenderingContext2D,
   bundle: RasterBundle,
@@ -189,6 +194,8 @@ function paintRasterCells(
   maxZ: number,
 ) {
   const { width: cols, height: rows } = bundle.manifest.grid;
+  const photoUnderlay = hasPhotoTextureAsset(bundle);
+  const elevOpacity = photoUnderlay ? layers.elevation.opacity * 0.24 : layers.elevation.opacity;
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const i = r * cols + c;
@@ -197,7 +204,7 @@ function paintRasterCells(
 
       if (layers.elevation.visible) {
         const z = bundle.elevation[i]!;
-        ctx.fillStyle = getElevationColor(z, minZ, maxZ, layers.elevation.opacity);
+        ctx.fillStyle = getElevationColor(z, minZ, maxZ, elevOpacity);
         ctx.fillRect(x, y, pxPerCell, pxPerCell);
       }
 

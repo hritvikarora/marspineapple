@@ -43,6 +43,8 @@ interface StrokeStyleSpec {
   dash: readonly number[];
   haloStyle: string;
   haloWidth: number;
+  glowStyle?: string;
+  glowWidth?: number;
 }
 
 interface RejectedPathOverlay {
@@ -62,6 +64,7 @@ interface RouteDrawState {
   stale: boolean;
   hover: MapRoutesSlotProps['hover'];
   routeLayerVisible: boolean;
+  routeRevealFrac: number;
   traceFrame: SearchTraceFrame | null;
   rejectedPaths: readonly RejectedPathOverlay[];
 }
@@ -213,40 +216,102 @@ function uniquePolylines(
   return background.concat(foreground);
 }
 
-function routeStroke(role: RouteInkRole, stale: boolean): StrokeStyleSpec {
+function scaleDash(dash: readonly number[], uiScale: number): readonly number[] {
+  if (uiScale <= 1.01 || dash.length === 0) return dash;
+  return dash.map((d) => Math.max(1, Math.round(d * uiScale)));
+}
+
+function sliceProgressivePath(
+  path: readonly { east_m: number; north_m: number }[],
+  frac: number,
+): readonly { east_m: number; north_m: number }[] {
+  if (frac >= 0.999 || path.length < 2) return path;
+  if (frac <= 0.005) return [];
+  const count = Math.max(2, Math.min(path.length, Math.round(path.length * frac)));
+  return path.slice(0, count);
+}
+
+function routeStroke(
+  role: RouteInkRole,
+  stale: boolean,
+  cosmic: boolean,
+  uiScale: number,
+): StrokeStyleSpec {
+  const lw = (base: number) => base * uiScale;
+  if (!cosmic) {
+    if (role === 'selected-outbound') {
+      return {
+        strokeStyle: stale ? INK_STALE : INK_SOLID,
+        lineWidth: lw(ROUTE_LINE_WIDTH),
+        dash: scaleDash(stale ? DASH_SELECTED_STALE : DASH_SOLID, uiScale),
+        haloStyle: stale ? PAPER_HALO_STALE : PAPER_HALO_SELECTED,
+        haloWidth: lw(ROUTE_HALO_WIDTH),
+      };
+    }
+    if (role === 'selected-return') {
+      return {
+        strokeStyle: stale ? INK_RETURN_STALE : INK_SOLID,
+        lineWidth: lw(ROUTE_LINE_WIDTH),
+        dash: scaleDash(stale ? DASH_RETURN_STALE : DASH_RETURN_SELECTED, uiScale),
+        haloStyle: stale ? PAPER_HALO_STALE : PAPER_HALO_SELECTED,
+        haloWidth: lw(ROUTE_HALO_WIDTH),
+      };
+    }
+    if (role === 'other-outbound') {
+      return {
+        strokeStyle: stale ? INK_SECONDARY_STALE : INK_SECONDARY,
+        lineWidth: lw(ROUTE_LINE_WIDTH),
+        dash: scaleDash(DASH_UNSELECTED_OUTBOUND, uiScale),
+        haloStyle: stale ? PAPER_HALO_UNSELECTED_STALE : PAPER_HALO_UNSELECTED,
+        haloWidth: lw(ROUTE_HALO_WIDTH),
+      };
+    }
+    return {
+      strokeStyle: stale ? INK_SECONDARY_STALE : INK_SECONDARY_MUTED,
+      lineWidth: lw(ROUTE_LINE_WIDTH),
+      dash: scaleDash(DASH_UNSELECTED_RETURN, uiScale),
+      haloStyle: stale ? PAPER_HALO_UNSELECTED_STALE : PAPER_HALO_UNSELECTED,
+      haloWidth: lw(ROUTE_HALO_WIDTH),
+    };
+  }
+
   if (role === 'selected-outbound') {
     return {
-      strokeStyle: stale ? INK_STALE : INK_SOLID,
-      lineWidth: ROUTE_LINE_WIDTH,
-      dash: stale ? DASH_SELECTED_STALE : DASH_SOLID,
-      haloStyle: stale ? PAPER_HALO_STALE : PAPER_HALO_SELECTED,
-      haloWidth: ROUTE_HALO_WIDTH,
+      strokeStyle: stale ? '#9aa5b4' : '#33E6FF',
+      lineWidth: lw(2.6),
+      dash: scaleDash(stale ? DASH_SELECTED_STALE : DASH_SOLID, uiScale),
+      haloStyle: 'rgba(4, 2, 8, 0.90)',
+      haloWidth: lw(5.4),
+      glowStyle: stale ? undefined : 'rgba(51, 230, 255, 0.24)',
+      glowWidth: lw(9.5),
     };
   }
   if (role === 'selected-return') {
     return {
-      strokeStyle: stale ? INK_RETURN_STALE : INK_SOLID,
-      lineWidth: ROUTE_LINE_WIDTH,
-      dash: stale ? DASH_RETURN_STALE : DASH_RETURN_SELECTED,
-      haloStyle: stale ? PAPER_HALO_STALE : PAPER_HALO_SELECTED,
-      haloWidth: ROUTE_HALO_WIDTH,
+      strokeStyle: stale ? 'rgba(154, 165, 180, 0.85)' : '#FFB37A',
+      lineWidth: lw(2.4),
+      dash: scaleDash(stale ? DASH_RETURN_STALE : DASH_RETURN_SELECTED, uiScale),
+      haloStyle: 'rgba(4, 2, 8, 0.88)',
+      haloWidth: lw(5),
+      glowStyle: stale ? undefined : 'rgba(255, 179, 122, 0.20)',
+      glowWidth: lw(8.5),
     };
   }
   if (role === 'other-outbound') {
     return {
-      strokeStyle: stale ? INK_SECONDARY_STALE : INK_SECONDARY,
-      lineWidth: ROUTE_LINE_WIDTH,
-      dash: DASH_UNSELECTED_OUTBOUND,
-      haloStyle: stale ? PAPER_HALO_UNSELECTED_STALE : PAPER_HALO_UNSELECTED,
-      haloWidth: ROUTE_HALO_WIDTH,
+      strokeStyle: stale ? 'rgba(154, 165, 180, 0.45)' : 'rgba(246, 241, 234, 0.58)',
+      lineWidth: lw(1.8),
+      dash: scaleDash(DASH_UNSELECTED_OUTBOUND, uiScale),
+      haloStyle: 'rgba(4, 2, 8, 0.72)',
+      haloWidth: lw(3.6),
     };
   }
   return {
-    strokeStyle: stale ? INK_SECONDARY_STALE : INK_SECONDARY_MUTED,
-    lineWidth: ROUTE_LINE_WIDTH,
-    dash: DASH_UNSELECTED_RETURN,
-    haloStyle: stale ? PAPER_HALO_UNSELECTED_STALE : PAPER_HALO_UNSELECTED,
-    haloWidth: ROUTE_HALO_WIDTH,
+    strokeStyle: stale ? 'rgba(154, 165, 180, 0.35)' : 'rgba(246, 241, 234, 0.38)',
+    lineWidth: lw(1.6),
+    dash: scaleDash(DASH_UNSELECTED_RETURN, uiScale),
+    haloStyle: 'rgba(4, 2, 8, 0.68)',
+    haloWidth: lw(3.2),
   };
 }
 
@@ -272,6 +337,13 @@ function strokePolyline(
       }
     }
   };
+  if (spec.glowStyle && spec.glowWidth) {
+    paint();
+    ctx.strokeStyle = spec.glowStyle;
+    ctx.lineWidth = spec.glowWidth;
+    applyDash(ctx, spec.dash);
+    ctx.stroke();
+  }
   paint();
   ctx.strokeStyle = spec.haloStyle;
   ctx.lineWidth = spec.haloWidth;
@@ -290,6 +362,7 @@ export const MapRoutes: FC<MapRoutesProps> = ({
   stale,
   hover,
   routeLayerVisible,
+  routeRevealFrac = 1,
   registerLayer,
   traceFrame = null,
   rejectedPaths = NO_REJECTED_PATHS,
@@ -300,6 +373,7 @@ export const MapRoutes: FC<MapRoutesProps> = ({
     stale,
     hover,
     routeLayerVisible,
+    routeRevealFrac,
     traceFrame,
     rejectedPaths,
   });
@@ -313,10 +387,11 @@ export const MapRoutes: FC<MapRoutesProps> = ({
       stale,
       hover,
       routeLayerVisible,
+      routeRevealFrac,
       traceFrame,
       rejectedPaths,
     };
-  }, [candidates, selectedCandidateId, stale, hover, routeLayerVisible, traceFrame, rejectedPaths]);
+  }, [candidates, selectedCandidateId, stale, hover, routeLayerVisible, routeRevealFrac, traceFrame, rejectedPaths]);
 
   useEffect(() => {
     const drawRoutes = (helpers: CanvasDrawHelpers) => {
@@ -326,6 +401,7 @@ export const MapRoutes: FC<MapRoutesProps> = ({
         stale: curStale,
         hover: curHover,
         routeLayerVisible: curVisible,
+        routeRevealFrac: curRevealFrac,
         traceFrame: curTrace,
         rejectedPaths: curRejected,
       } = latestRef.current;
@@ -334,49 +410,95 @@ export const MapRoutes: FC<MapRoutesProps> = ({
       if (curCandidates.length === 0 && curTrace == null && curRejected.length === 0) return;
 
       const { ctx, toPx, pxPerCell, width, height } = helpers;
+      const cosmic = width >= 500;
+      const uiScale = width >= 800 ? width / 650 : 1;
+      const reveal = Math.max(0, Math.min(1, curRevealFrac));
+      const selected = curCandidates.find((c) => c.candidateId === curSelectedCandidateId) ?? null;
+      const hasReturn = Boolean(selected?.returnLeg && selected.returnLeg.path.length >= 2);
+      const outboundFrac = hasReturn ? Math.min(1, reveal / 0.56) : reveal;
+      const returnFrac = hasReturn ? Math.max(0, Math.min(1, (reveal - 0.56) / 0.44)) : 0;
+
       ctx.save();
 
       if (curCandidates.length > 0) {
+        let activeTip: { east_m: number; north_m: number } | null = null;
+        let tipIsReturn = false;
+
         for (const polyline of uniquePolylines(curCandidates, curSelectedCandidateId, 'outbound')) {
+          const path = polyline.selected ? sliceProgressivePath(polyline.path, outboundFrac) : polyline.path;
+          if (polyline.selected && reveal < 0.995 && outboundFrac > 0.005 && path.length > 0) {
+            activeTip = path[path.length - 1] ?? null;
+          }
           strokePolyline(
             ctx,
-            polyline.path,
+            path,
             toPx,
-            routeStroke(polyline.selected ? 'selected-outbound' : 'other-outbound', curStale),
+            routeStroke(polyline.selected ? 'selected-outbound' : 'other-outbound', curStale, cosmic, uiScale),
           );
         }
         for (const polyline of uniquePolylines(curCandidates, curSelectedCandidateId, 'return')) {
+          const path = polyline.selected ? sliceProgressivePath(polyline.path, returnFrac) : polyline.path;
+          if (polyline.selected && reveal < 0.995 && returnFrac > 0.005 && path.length > 0) {
+            activeTip = path[path.length - 1] ?? null;
+            tipIsReturn = true;
+          }
           strokePolyline(
             ctx,
-            polyline.path,
+            path,
             toPx,
-            routeStroke(polyline.selected ? 'selected-return' : 'other-return', curStale),
+            routeStroke(polyline.selected ? 'selected-return' : 'other-return', curStale, cosmic, uiScale),
           );
+        }
+
+        if (activeTip && cosmic) {
+          const [tx, ty] = toPx(activeTip);
+          const color = tipIsReturn ? '#FFB37A' : '#33E6FF';
+          ctx.fillStyle = tipIsReturn ? 'rgba(255, 179, 122, 0.28)' : 'rgba(51, 230, 255, 0.28)';
+          ctx.beginPath();
+          ctx.arc(tx, ty, 11 * uiScale, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(tx, ty, 4.2 * uiScale, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         if (curHover) {
           const [hx, hy] = toPx(curHover.point);
           applyDash(ctx, DASH_SOLID);
-          ctx.strokeStyle = INK_SOLID;
-          ctx.lineWidth = ROUTE_LINE_WIDTH;
+          ctx.strokeStyle = cosmic ? '#33E6FF' : INK_SOLID;
+          ctx.lineWidth = ROUTE_LINE_WIDTH * uiScale;
           ctx.beginPath();
-          ctx.arc(hx, hy, 8, 0, Math.PI * 2);
+          ctx.arc(hx, hy, 8 * uiScale, 0, Math.PI * 2);
           ctx.stroke();
 
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = cosmic ? '#F6F1EA' : '#ffffff';
           ctx.beginPath();
-          ctx.arc(hx, hy, 3, 0, Math.PI * 2);
+          ctx.arc(hx, hy, 3 * uiScale, 0, Math.PI * 2);
           ctx.fill();
 
-          ctx.font = '10px monospace';
+          const fontSize = Math.round(10 * uiScale);
+          ctx.font = `${fontSize}px monospace`;
           const tagText = `${Math.round(curHover.distance_m)}m (${curHover.point.elevation_m.toFixed(1)}m)`;
           const tagW = ctx.measureText(tagText).width;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(hx + 11, hy - 9, tagW + 6, 15);
-          ctx.fillStyle = INK_SOLID;
+          const boxW = tagW + Math.round(8 * uiScale);
+          const boxH = Math.round(16 * uiScale);
+          let boxX = hx + 11 * uiScale;
+          if (width > 0 && boxX + boxW > width - 6 * uiScale) {
+            boxX = Math.max(4, hx - 11 * uiScale - boxW);
+          }
+          const boxY = hy - boxH / 2;
+          ctx.fillStyle = cosmic ? 'rgba(9, 7, 17, 0.92)' : '#ffffff';
+          ctx.fillRect(boxX, boxY, boxW, boxH);
+          if (cosmic) {
+            ctx.strokeStyle = 'rgba(51, 230, 255, 0.65)';
+            ctx.lineWidth = Math.max(1, Math.round(uiScale));
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+          }
+          ctx.fillStyle = cosmic ? '#F6F1EA' : INK_SOLID;
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
-          ctx.fillText(tagText, hx + 14, hy - 1);
+          ctx.fillText(tagText, boxX + Math.round(4 * uiScale), hy);
         }
       }
 

@@ -46,7 +46,13 @@ export function MarswalkLaunch({ bundle, candidate, mission, modelVersion, isSta
 
   return (
     <div className="marswalk-launch" data-testid="marswalk-launch">
-      <button type="button" onClick={launch} disabled={!supported || !candidate || isStale} data-testid="marswalk-launch-button">
+      <button
+        type="button"
+        className="marswalk-launch-btn"
+        onClick={launch}
+        disabled={!supported || !candidate || isStale}
+        data-testid="marswalk-launch-button"
+      >
         Walk this route in Marswalk VR
       </button>
       <p className="muted">
