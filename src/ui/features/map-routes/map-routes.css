@@ -1,12 +1,15 @@
 /**
- * Scoped styles for Map Routes Feature (TASK-011)
+ * Scoped styles for Map Routes Feature (TASK-011 / UI-019)
  */
 .map-routes-status {
   padding: var(--space-2, 8px) var(--space-3, 12px);
-  background: var(--color-surface-sunken, #090d16);
-  border: 1px solid var(--color-border-subtle, #334155);
-  border-radius: var(--radius-sm, 4px);
-  font-size: var(--font-size-xs, 11px);
+  background: var(--color-paper-subtle, #FAFAFA);
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: 12px;
+  line-height: 1.4;
   margin-top: var(--space-1, 4px);
 }
 
@@ -15,22 +18,56 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-3, 12px);
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-ink-secondary, #686666);
+}
+
+.map-routes-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1, 4px);
 }
 
 .map-routes-item strong {
-  color: var(--color-text-main, #f8fafc);
-  margin-right: var(--space-1, 4px);
+  color: var(--color-ink, #000000);
+  font-weight: 600;
+}
+
+.map-routes-count {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink, #000000);
+}
+
+.map-routes-value {
+  color: var(--color-ink, #000000);
 }
 
 .map-routes-stale-tag {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm, 4px);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-paper, #FFFFFF);
+  color: var(--color-status, #9E2A2B);
+  border: 1px solid var(--color-status, #9E2A2B);
+  padding: 2px 8px;
+  border-radius: var(--radius, 12px);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-routes-status,
+  .map-routes-stale-tag {
+    animation: none;
+    transition: none;
+  }
+}
+
+@media print {
+  .map-routes-status {
+    background: #FFFFFF;
+    color: #000000;
+    border-color: var(--color-hairline, #E5E5E5);
+  }
 }

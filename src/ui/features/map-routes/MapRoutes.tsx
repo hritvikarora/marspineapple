@@ -11,8 +11,35 @@ import type { CanvasDrawHelpers, MapRoutesSlotProps, RouteCandidate } from '../.
 import './map-routes.css';
 
 const NO_REJECTED_PATHS: readonly RejectedPathOverlay[] = [];
-const REJECTED_COLOR = '#7c3aed';
+const REJECTED_COLOR = 'rgba(104, 102, 102, 0.6)';
 const REJECTED_DASH: readonly number[] = [8, 4];
+
+const PAPER_HALO_SELECTED = 'rgba(255, 255, 255, 0.92)';
+const PAPER_HALO_STALE = 'rgba(255, 255, 255, 0.85)';
+const PAPER_HALO_UNSELECTED = 'rgba(255, 255, 255, 0.55)';
+const PAPER_HALO_UNSELECTED_STALE = 'rgba(255, 255, 255, 0.4)';
+
+const INK_SOLID = '#000000';
+const INK_STALE = 'rgba(0, 0, 0, 0.82)';
+const INK_RETURN_STALE = 'rgba(0, 0, 0, 0.72)';
+const INK_SECONDARY = '#686666';
+const INK_SECONDARY_MUTED = 'rgba(104, 102, 102, 0.72)';
+const INK_SECONDARY_STALE = 'rgba(104, 102, 102, 0.55)';
+
+const DASH_SOLID: readonly number[] = [];
+const DASH_SELECTED_STALE: readonly number[] = [8, 4];
+const DASH_RETURN_SELECTED: readonly number[] = [5, 5];
+const DASH_RETURN_STALE: readonly number[] = [2, 4];
+const DASH_UNSELECTED_OUTBOUND: readonly number[] = [4, 4];
+const DASH_UNSELECTED_RETURN: readonly number[] = [2, 4];
+
+interface StrokeStyleSpec {
+  strokeStyle: string;
+  lineWidth: number;
+  dash: readonly number[];
+  haloStyle: string;
+  haloWidth: number;
+}
 
 interface RejectedPathOverlay {
   id: string;
