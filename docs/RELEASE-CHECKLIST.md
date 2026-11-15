@@ -1,7 +1,7 @@
 # Release checklist — MARS PATHFINDER
 
 Owner of this document: **Role C** (integration). Update it as items are verified.
-Release candidate: commit `cc3a19a` · app `0.1.0` · bundle `jezero-west-hirise-v0.1.0` · model `placeholder-astar-0.2.0`.
+Release candidate: commit `ccc8907` · app `0.1.0` · bundle `jezero-west-hirise-v0.1.0` · model `eva-astar-1.0.0`.
 Live URL: https://hritvikarora.github.io/marspineapple/ · Repo: https://github.com/hritvikarora/marspineapple
 
 **Deadline.** The official 2026 overview reports the submission window closing on **15 Nov 2026, 23:59 local time**.
@@ -23,16 +23,17 @@ npm run build:e2e && npm run e2e
 cd dist && python3 -m http.server 8080   # in another shell: npm run smoke -- http://localhost:8080/
 ```
 
-- [x] Typecheck, lint, 156/156 vitest tests (includes the simulation suite and real-data tests), `npm run sim`
-      (38 cases, 0 invariant violations) — CI run **43603537638** on `cc3a19a`, 14 Nov 15:13.
-- [x] `npm run build` + `npm run audit` + `npm run audit:release` pass. Gzip: entry JS 79.5 KB / 150 KB budget,
-      all JS 83.9 KB / 450 KB, worker 4.0 KB, CSS 0.5 KB; HiRISE bundle 10.30 MB gz / 15 MB; total dist 14.5 MB raw / 60 MB.
-      No console calls, secrets, local paths or source maps in `dist/` — CI run 43603537638.
-- [x] Browser e2e 21/21 (real-data release build, synthetic journey with golden export, 12 failure modes) — CI run 43603537638.
-- [x] Headless smoke against `dist/` served under `/marspineapple/` by a plain static server (`python3 -m http.server`),
-      i.e. the offline/local package path works — CI run 43603537638.
-- [ ] Re-run the full command block above on the **final** commit after the last merge (Ayush's solver, Dhani's UI,
-      Role B's 3D) and update the evidence here — **Role C**.
+- [x] Typecheck, lint, 284/284 vitest tests across 30 suites (includes the simulation suite and real-data tests), `npm run sim`
+      (40 cases, 0 invariant violations) — verified 15 Nov on `ccc8907`.
+- [x] `npm run build` + `npm run audit` + `npm run audit:release` pass. Gzip: entry JS 115.7 KB / 150 KB budget,
+      all JS 298.3 KB / 450 KB, Marswalk VR JS 316.9 KB / 400 KB, worker 6.9 KB / 50 KB, CSS 13.2 KB / 30 KB;
+      HiRISE bundle 9.94 MB gz / 15 MB; total dist 57.35 MB raw / 60 MB.
+      No console calls, secrets, local paths or source maps in `dist/` — verified 15 Nov on `ccc8907`.
+- [x] Browser e2e 21/21 (real-data release build, synthetic journey with golden export, 12 failure modes) — verified 15 Nov on `ccc8907`.
+- [x] Headless smoke against `dist/` served under `/marspineapple/` by a plain static server (`npm run smoke` and `npm run smoke:no-webgl`),
+      i.e. the offline/local package path works — verified 15 Nov on `ccc8907`.
+- [x] Re-run the full command block above on the merged commit (`ccc8907`, after Ayush's solver `eva-astar-1.0.0`, Dhani's UI,
+      and Role B's 3D / Marswalk VR) and update the evidence here — **Role C** (15 Nov).
 - [ ] Local offline package (plan 4.3): in a *fresh* shell on a second machine, `npm ci && npm run build`, serve `dist/`
       with `python3 -m http.server`, route P3 → P4 with Wi-Fi off — **Role C** with one teammate.
 
@@ -50,8 +51,8 @@ cd dist && python3 -m http.server 8080   # in another shell: npm run smoke -- ht
 ## 3. Live site checks (fresh browser profile)
 
 - [x] Loads with no auth wall, worker starts, header shows
-      `app 0.1.0 · bundle jezero-west-hirise-v0.1.0 · model placeholder-astar-0.2.0`; route P3 → P4 succeeds (842 ms);
-      no console errors or failed requests — headless Chrome with a fresh profile, 14 Nov 15:15 and 15:45.
+      `app 0.1.0 · bundle jezero-west-hirise-v0.1.0 · model eva-astar-1.0.0`; route P3 → P4 succeeds (< 1 s);
+      no console errors or failed requests — headless Chrome with a fresh profile, 15 Nov.
 - [x] **No-WebGL fallback** on the live site: 3D degrades to the 2D map with "3D view unavailable", map/profile/briefing
       stay in sync — `npm run smoke:no-webgl` against the live URL, 14 Nov 15:45.
 - [ ] Manual check on a real laptop in an **incognito** window (Chrome) and on one other browser (Firefox or Safari):
@@ -79,12 +80,12 @@ cd dist && python3 -m http.server 8080   # in another shell: npm run smoke -- ht
 - [ ] INTERFACE.md §9 open decisions signed off (quality/exclusion codes, primary distance, grade unit, edge quality rule,
       raster format, round trip, strict-unsupported, cancellation, timing estimates, bundle selection, display assets).
       Record who agreed and when next to each item — **Role C** collects; **Ayush**, **Dhani**, **Role A**, **Role B** sign.
-- [ ] Ayush's solver replaces `src/routing/placeholderEngine.ts`, bumps `MODEL_VERSION`, passes `npm run sim:test`
-      (see docs/SIMULATION-FOR-AYUSH.md); then `npm run sim:update-golden`, `npm run examples`, `npm run e2e:update-golden` — **Ayush**.
-- [ ] EVA limits (placeholder 25° max terrain slope, 20° max edge grade) replaced or confirmed against project-plan.md — **Ayush**.
-- [ ] Role B's 3D terrain replaces the placeholder in `src/terrain3d/` (lazy chunk, keeps `data-testid="terrain-view"`
+- [x] Ayush's solver (`eva-astar-1.0.0`) replaces `src/routing/placeholderEngine.ts`, bumps `MODEL_VERSION`, passes `npm run sim:test`
+      (see docs/SIMULATION-FOR-AYUSH.md); `npm run sim:update-golden`, `npm run examples`, `npm run e2e:update-golden` updated — **Ayush** / **Role C**.
+- [x] EVA limits confirmed against project-plan.md — **Ayush**.
+- [x] Role B's 3D terrain and Marswalk VR (`dist/marswalk-vr/`) integrated (lazy chunk, keeps `data-testid="terrain-view"`
       and the props); audit budgets still pass — **Role B**.
-- [ ] Dhani's UI replaces the stubs in `src/ui/`, keeping the `data-testid`s listed in README → Testing — **Dhani**.
+- [x] Dhani's UI replaces the stubs in `src/ui/`, keeping the `data-testid`s listed in README → Testing — **Dhani**.
 
 ## 6. Repository and access
 

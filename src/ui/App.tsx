@@ -27,6 +27,8 @@ import { StartMenuModal } from './StartMenuModal';
 import { MarswalkLaunch } from './MarswalkLaunch';
 import { Landing } from './Landing';
 import { PathExplainer } from './PathExplainer';
+import { LangToggle } from './LangToggle';
+import { introHref, plannerHref, stationHref, syncViewUrl, useUiLang } from './i18n';
 import { Slot } from './shared/Slot';
 import type { CustomCanvasLayer, FeatureRegistryMap } from './shared/types';
 import './shared/tokens.css';
@@ -54,19 +56,39 @@ const fmt = (n: number, d = 0) => n.toFixed(d);
 export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   const { state, dispatch } = useAppState();
   const { requestRoute, cancelRoute } = useRouteRunner(deps.workerOptions);
-  const [pickMode, setPickMode] = useState<'start' | 'destination'>('destination');
+  const [pickMode, setPickMode] = useState<'start' | 'destination'>('start');
   const [menuMode, setMenuMode] = useState<'docked' | 'expanded'>('docked');
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [lang] = useUiLang();
   // Landing choice on the published site only (not in tests, not for automated browsers such as the e2e suite).
   const [showLanding, setShowLanding] = useState(
     () =>
-      (typeof location !== 'undefined' && /[?&]landing(=|&|$)/.test(location.search)) ||
+      (typeof location !== 'undefined' &&
+        (/[?&]landing(=|&|$)/.test(location.search) || location.hash === '#intro')) ||
       ((deps.production ?? IS_PRODUCTION_BUILD) &&
-      typeof navigator !== 'undefined' &&
-      !navigator.webdriver &&
-      typeof location !== 'undefined' &&
-      !/[?&]plan(=|&|$)/.test(location.search)),
+        typeof navigator !== 'undefined' &&
+        !navigator.webdriver &&
+        typeof location !== 'undefined' &&
+        !/[?&]plan(=|&|$)/.test(location.search) &&
+        location.hash !== '#planner'),
   );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onNav = () => {
+      if (/[?&]landing(=|&|$)/.test(location.search) || location.hash === '#intro') {
+        setShowLanding(true);
+      } else if (/[?&]plan(=|&|$)/.test(location.search) || location.hash === '#planner') {
+        setShowLanding(false);
+      }
+    };
+    window.addEventListener('popstate', onNav);
+    window.addEventListener('hashchange', onNav);
+    return () => {
+      window.removeEventListener('popstate', onNav);
+      window.removeEventListener('hashchange', onNav);
+    };
+  }, []);
   const [searchTrace, setSearchTrace] = useState<SearchTraceResult | null>(null);
   const [playhead, setPlayhead] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -155,6 +177,13 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
       type: which === 'start' ? 'mission/setStart' : 'mission/setDestination',
       endpoint: point ? { point, poiId } : null,
     });
+
+  const handleMapPick = (point: LocalPoint) => {
+    setEndpoint(pickMode, point, null);
+    if (pickMode === 'start') {
+      setPickMode('destination');
+    }
+  };
 
   const onExport = () => {
     if (!bundle || run.kind !== 'finished' || run.response.status !== 'success') return;
@@ -305,7 +334,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
         layers={state.display.layers}
         stale={state.isStale}
         hover={selection.hover}
-        onPick={(p) => setEndpoint(pickMode, p, null)}
+        onPick={handleMapPick}
         customLayers={customLayers}
         traceFrame={visibleTraceFrame}
         rejectedPaths={rejectedPaths}
@@ -342,7 +371,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             start: m.start?.point ?? null,
             destination: m.destination?.point ?? null,
             poiLayerVisible: state.display.layers.poi.visible,
-            onPick: (p) => setEndpoint(pickMode, p, null),
+            onPick: handleMapPick,
             registerLayer: registerMarkers,
           }}
         />
@@ -373,14 +402,31 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
           )}
         </div>
         <div className="header-actions">
-          <button
-            type="button"
+          <LangToggle />
+          <a
             className="header-btn"
-            onClick={() => setShowLanding(true)}
+            href={introHref(lang)}
+            onClick={(e) => {
+              e.preventDefault();
+              syncViewUrl('intro', lang);
+              setShowLanding(true);
+            }}
             data-testid="open-landing"
           >
-            3D Intro
-          </button>
+            {lang === 'it' ? 'Intro 3D' : '3D Intro'}
+          </a>
+          <a
+            className="header-btn header-btn-active"
+            href={plannerHref(lang)}
+            aria-current="page"
+            onClick={(e) => {
+              e.preventDefault();
+              syncViewUrl('planner', lang);
+            }}
+            data-testid="nav-planner"
+          >
+            {lang === 'it' ? 'Pianifica sulla mappa' : 'Plan on the map'}
+          </a>
           {bundle && (
             <button
               type="button"
@@ -388,11 +434,17 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               onClick={() => setMenuMode((mode) => (mode === 'expanded' ? 'docked' : 'expanded'))}
               data-testid="toggle-presets"
             >
-              Presets
+              {lang === 'it' ? 'Missioni' : 'Presets'}
             </button>
           )}
-          <a className="header-link" href="marswalk-vr/index.html" target="_blank" rel="noopener">
-            Marswalk VR
+          <a
+            className="header-link"
+            href={stationHref(lang)}
+            target="_blank"
+            rel="noopener"
+            data-testid="nav-station"
+          >
+            {lang === 'it' ? 'Entra nella stazione · Marswalk VR' : 'Enter the station · Marswalk VR'}
           </a>
           <span className="release" data-testid="release-id">
             {formatReleaseId(release)}
@@ -407,7 +459,11 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
         </div>
       )}
 
-      {region.status === 'loading' && <p role="status" className="status-banner">Loading region bundle…</p>}
+      {region.status === 'loading' && (
+        <p role="status" className="status-banner">
+          {lang === 'it' ? 'Caricamento dataset regione…' : 'Loading region bundle…'}
+        </p>
+      )}
       {region.status === 'error' && (
         <div role="alert" className="error banner" data-testid="bundle-error">
           Region data failed at stage <code>{region.error.stage}</code>: {region.error.message}
@@ -512,28 +568,32 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
               }
             />
 
-            <div className="quick-pick-row" role="group" aria-label="Map tap target">
-              <span className="quick-pick-label">Map click sets</span>
+            <div className="quick-pick-row" role="group" aria-label={lang === 'it' ? 'Selezione su mappa' : 'Map tap target'}>
+              <span className="quick-pick-label">{lang === 'it' ? 'Clic su mappa' : 'Map click sets'}</span>
               <div className="quick-pick-pills">
                 <button
                   type="button"
                   className={`quick-pick-pill ${pickMode === 'start' ? 'is-active' : ''}`}
                   onClick={() => setPickMode('start')}
+                  data-testid="pick-start"
                 >
-                  Start
+                  {lang === 'it' ? 'Partenza' : 'Start'}
                 </button>
                 <button
                   type="button"
                   className={`quick-pick-pill ${pickMode === 'destination' ? 'is-active' : ''}`}
                   onClick={() => setPickMode('destination')}
+                  data-testid="pick-destination"
                 >
-                  Destination
+                  {lang === 'it' ? 'Destinazione' : 'Destination'}
                 </button>
               </div>
             </div>
 
             <details className="inspector-drawer">
-              <summary>Fine-tune Coordinates &amp; Manual Entry</summary>
+              <summary>
+                {lang === 'it' ? 'Coordinate e inserimento manuale' : 'Fine-tune Coordinates & Manual Entry'}
+              </summary>
               <div className="inspector-drawer-body">
                 {/* Slot: endpoints */}
                 <Slot
@@ -758,7 +818,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
           </section>
 
           <section className="results" aria-live="polite">
-            <h2>Result</h2>
+            <h2>{lang === 'it' ? 'Risultato' : 'Result'}</h2>
 
             {/* Slot: result-state */}
             <Slot
@@ -770,10 +830,16 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                     data-testid="route-status"
                     data-status={run.kind === 'finished' ? run.response.status : run.kind}
                   >
-                    {run.kind === 'idle' && 'No route calculated yet.'}
-                    {run.kind === 'running' && `Calculating… (${run.exploredNodes} cells explored)`}
+                    {run.kind === 'idle' &&
+                      (lang === 'it' ? 'Nessun percorso calcolato.' : 'No route calculated yet.')}
+                    {run.kind === 'running' &&
+                      (lang === 'it'
+                        ? `Calcolo in corso… (${run.exploredNodes} celle esplorate)`
+                        : `Calculating… (${run.exploredNodes} cells explored)`)}
                     {run.kind === 'finished' && (
-                      <span data-status={run.response.status}>Status: {run.response.status}</span>
+                      <span data-status={run.response.status}>
+                        {lang === 'it' ? 'Stato' : 'Status'}: {run.response.status}
+                      </span>
                     )}
                     {state.isStale && (
                       <strong className="stale" data-testid="stale">
@@ -871,7 +937,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                   data-testid="export-json"
                   disabled={!(run.kind === 'finished' && run.response.status === 'success')}
                 >
-                  Export JSON
+                  {lang === 'it' ? 'Esporta JSON' : 'Export JSON'}
                 </button>
               }
               props={{

@@ -121,6 +121,19 @@ body {
   color: #ffffff;
 }
 
+.header-btn-active {
+  background: #33e6ff;
+  border-color: #33e6ff;
+  color: #040208;
+  font-weight: 700;
+}
+
+.header-btn-active:hover {
+  background: #8ff0ff;
+  border-color: #8ff0ff;
+  color: #040208;
+}
+
 .release {
   font-size: 0.72rem;
   color: var(--color-ink-secondary);

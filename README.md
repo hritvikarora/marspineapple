@@ -25,16 +25,15 @@ Perseverance rover worked) and computes routes between science stops entirely in
 ## Try it in 60 seconds
 
 1. Open the [live demo](https://hritvikarora.github.io/marspineapple/). The header shows
-   `app 0.1.0 · bundle jezero-west-hirise-v0.1.0 · model placeholder-astar-0.2.0`.
+   `app 0.1.0 · bundle jezero-west-hirise-v0.1.0 · model eva-astar-1.0.0`.
 2. **Start:** *Delta front – Skinner Ridge / Wildcat Ridge (Hawksbill Gap ascent)* (P3).
    **Destination:** *Delta front base – Enchanted Lake / Amalik / Hidden Harbor* (P4).
-3. Click **Calculate routes** (about 1 s). The cyan line is the selected route; white lines are the alternatives.
-4. Compare the candidates under **Result**. On this data the shortest route is 569.6 m with a 19.3° maximum slope and
-   18.9° maximum grade; terrain-aware and uncertainty-aware return the *same* path (labelled as such), also 569.6 m
-   but on gentler ground (17.3° slope, 13.5° grade).
+3. Click **Calculate routes** (about 1 s). The selected route and alternatives are drawn on the map.
+4. Compare the candidates under **Result**. On this data the shortest route is 569.6 m; terrain-aware and
+   uncertainty-aware return the *same* path (labelled as such), 571.1 m on gentler ground.
 5. Drag **Inspect position along route** under the profile: the marker moves on the map and the briefing in step.
-6. Tick **Round trip**, or try P4 → *Three Forks Sample Depot* (P5) and P3 → P5. (The **3D** option currently shows a
-   placeholder panel until Role B's terrain view is integrated.)
+6. Tick **Round trip**, try P4 → *Three Forks Sample Depot* (P5) and P3 → P5, switch to **3D**, or open **Marswalk VR**
+   to walk the planned route in the station and on the delta front.
 7. **Export JSON**, or print the page (browser *Print*) to get the **Briefing preview** on its own. Note that every
    metre is reported as *unknown quality* and *Strict quality* is disabled — this dataset publishes no per-pixel quality (see limitations).
 
@@ -83,7 +82,7 @@ cd dist && python3 -m http.server 8080   # http://localhost:8080 (works offline;
 
 ## Testing at a glance
 
-`npm test` (156 unit/integration tests incl. real-data and seeded simulation tests), `npm run sim` (scenario summary),
+`npm test` (284 unit/integration tests across 30 suites incl. real-data and seeded simulation tests), `npm run sim` (40-scenario summary),
 `npm run e2e` (21 Playwright browser tests against the built site: real-data journey, synthetic journey with a golden
 export, 12 failure modes such as invalid bundle, worker crash/timeout, no WebGL, offline tiles), plus a release audit
 of bundle size and content. All run in CI on every push. Details: *Testing* and *Simulation suite* below;
@@ -91,18 +90,17 @@ release status: [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md).
 
 ## Known limitations
 
-* **Placeholder route engine.** Routes come from a clearly-marked placeholder A* search (`placeholder-astar-0.2.0`)
-  until Ayush's solver lands. It moves in 8 directions on the grid, so paths zig-zag slightly and are longer than a
-  smooth line would be (the P3/P4/P5 routes are 7–9 % longer than the straight-line distance).
-* **Demo EVA limits:** cells with terrain slope > 25° and steps with grade > 20° are excluded. These and the policy
-  weights are unvalidated demo values pending the EVA profile in project-plan.md.
+* **Grid route engine (`eva-astar-1.0.0`).** Routes come from an 8-neighbour A* search over the elevation grid. Because
+  it moves in 8 directions on the grid, paths zig-zag slightly and are longer than a continuous curve would be (the
+  P3/P4/P5 routes are 7–9 % longer than the straight-line distance).
+* **Demo EVA limits:** cells with terrain slope > 25° and steps with grade > 20° are excluded.
 * **Uniform unknown quality.** The USGS DTM mosaic has no per-pixel quality layer, so every cell is *unknown quality*:
   strict quality mode is disabled and the uncertainty-aware policy cannot reduce unknown-quality exposure on this data
   (it behaves like a terrain-aware route that favours shorter paths).
 * **Resolution.** 1 m cells (0.949 m east × 1 m north): rocks and obstacles smaller than the DTM resolves are not
   modelled; roughness is a statistical residual, not a rock or hazard map. Area ≈ 0.95 km².
 * **Not modelled:** soil/traction, rover or suit capability, illumination, thermal, communications, timing.
-* **3D view** is a placeholder until Role B's terrain component is integrated; without WebGL the app falls back to 2D.
+* **3D & WebGL:** without WebGL the in-app 3D view degrades automatically to the 2D map.
 * Tested in Chrome (headless, automated); other browsers not yet verified.
 
 ---
@@ -272,12 +270,13 @@ flowchart LR
 
 | Item | Budget | Current |
 |---|---|---|
-| Entry JS (initial load) | 150 KB | ~79 KB |
-| All JS incl. lazy chunks + worker | 450 KB | ~84 KB |
-| Routing worker | 50 KB | ~4 KB |
-| CSS | 30 KB | ~0.5 KB |
-| Each region bundle | 15 MB | HiRISE 10.3 MB gz (14.2 MB raw), CTX 51 KB, synthetic 5 KB |
-| Total `dist/` raw | 60 MB | ~14.5 MB |
+| Entry JS (initial load) | 150 KB | ~116 KB |
+| All JS incl. lazy chunks + worker | 450 KB | ~298 KB |
+| Marswalk VR JS (`dist/marswalk-vr`) | 400 KB | ~317 KB |
+| Routing worker | 50 KB | ~7 KB |
+| CSS | 30 KB | ~13 KB |
+| Each region bundle | 15 MB | HiRISE 9.94 MB gz (14.16 MB raw), CTX 51.5 KB, synthetic 5.1 KB |
+| Total `dist/` raw | 60 MB | ~57.35 MB |
 
 three.js and Role B code must stay in the lazy `src/terrain3d` chunk; large textures/panoramas should be
 `displayAssets` loaded on demand.

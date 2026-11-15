@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react';
 import type { RouteCandidate, SearchTraceFrame } from '../contracts';
 import type { SearchTraceResult } from '../routing/searchTrace';
 import type { RouteRunState } from '../state/store';
+import { useUiLang, type UiLang } from './i18n';
 import './path-explainer.css';
 
 export interface PathExplainerProps {
@@ -17,35 +19,160 @@ export interface PathExplainerProps {
   onScrub: (fraction: number) => void;
 }
 
-const PHASE_LABELS: Record<string, string> = {
-  endpoints: 'Endpoints',
-  admissibility: 'Safety gate',
-  'policy-eval': 'Cost function',
-  'frontier-pruning': 'A* frontier',
-  comparison: 'Vs Dijkstra',
-  selection: 'Route choice',
+const PHASE_LABELS: Record<UiLang, Record<string, string>> = {
+  en: {
+    endpoints: 'Endpoints',
+    admissibility: 'Safety gate',
+    'policy-eval': 'Cost function',
+    'frontier-pruning': 'A* frontier',
+    comparison: 'Vs Dijkstra',
+    selection: 'Route choice',
+  },
+  it: {
+    endpoints: 'Punti estremi',
+    admissibility: 'Soglia sicurezza',
+    'policy-eval': 'Funzione di costo',
+    'frontier-pruning': 'Frontiera A*',
+    comparison: 'Confronto Dijkstra',
+    selection: 'Scelta percorso',
+  },
 };
 
-const IDLE_PILLARS = [
-  {
-    code: '01',
-    title: 'Sample HiRISE terrain',
-    formula: '(east_m, north_m) · 1 m/cell',
-    detail: 'Reads bundled orbital elevation, slope angle, surface roughness, quality flags, and manual hazard masks.',
-  },
-  {
-    code: '02',
-    title: 'Gate unwalkable terrain',
-    formula: 'slope <= suit_limit',
-    detail: 'Rejects steep crater walls, excluded voids, and missing-elevation patches before scoring any corridor.',
-  },
-  {
-    code: '03',
-    title: 'Expand A* search wave',
-    formula: 'f(n) = g(n) + h(n)',
-    detail: 'Combines accumulated traverse effort g(n) with straight-line heuristic h(n) toward your destination.',
-  },
-] as const;
+const STEP_TITLES_IT: Record<string, string> = {
+  endpoints: 'Posiziona partenza e destinazione sulla griglia',
+  admissibility: 'Scarta celle e passi oltre il limite della tuta',
+  'policy-eval': 'Calcola il costo di ogni passo con i pesi attivi',
+  'frontier-pruning': 'Espandi il nodo con minima priorità A*',
+  comparison: 'Confronta Dijkstra e Greedy Best-First con A*',
+  selection: 'Mantieni il percorso ottimo e i corridoi scartati',
+};
+
+function MathFormula({ phase, raw }: { phase?: string; raw: string }): ReactNode {
+  const s = raw.trim();
+  let expr: ReactNode = s;
+
+  if (s.includes('row * width') || s === '(east_m, north_m)') {
+    expr = (
+      <>
+        <var>i</var> <span className="pe-op">=</span> <var>r</var> <span className="pe-op">&middot;</span>{' '}
+        <var>W</var> <span className="pe-op">+</span> <var>c</var>
+      </>
+    );
+  } else if (s.includes('tan(') || s.includes('z[v]')) {
+    expr = (
+      <>
+        <span className="pe-op">|</span>
+        <var>z</var>
+        <sub>
+          <var>v</var>
+        </sub>{' '}
+        <span className="pe-op">&minus;</span> <var>z</var>
+        <sub>
+          <var>u</var>
+        </sub>
+        <span className="pe-op">|</span> <span className="pe-op">/</span> &Delta;<var>s</var>{' '}
+        <span className="pe-op">&le;</span> tan(20&deg;)
+      </>
+    );
+  } else if (s.includes('slopeWeight') || s.includes('stepLen')) {
+    expr = (
+      <>
+        &Delta;<var>g</var> <span className="pe-op">=</span> &Delta;<var>s</var>{' '}
+        <span className="pe-op">&middot;</span> (1 <span className="pe-op">+</span> <var>w</var>
+        <sub>s</sub>
+        <var>s&#772;</var> <span className="pe-op">+</span> <var>w</var>
+        <sub>r</sub>
+        <var>r&#772;</var> <span className="pe-op">+</span> <var>w</var>
+        <sub>q</sub>
+        <var>q</var>)
+      </>
+    );
+  } else if (s.includes('A* priority') || (phase === 'frontier-pruning' && s.includes('Euclidean'))) {
+    expr = (
+      <>
+        <var>f</var>(<var>n</var>) <span className="pe-op">=</span> <var>g</var>(<var>n</var>){' '}
+        <span className="pe-op">+</span> <var>h</var>(<var>n</var>), &nbsp; <var>h</var>(<var>n</var>){' '}
+        <span className="pe-op">=</span> &parallel;<var>p</var>
+        <sub>
+          <var>n</var>
+        </sub>{' '}
+        <span className="pe-op">&minus;</span> <var>p</var>*&parallel;<sub>2</sub>
+      </>
+    );
+  } else if (s.includes('Dijkstra priority')) {
+    expr = (
+      <>
+        <var>f</var>
+        <sub>D</sub>(<var>n</var>) <span className="pe-op">=</span> <var>g</var>(<var>n</var>){' '}
+        <span className="pe-op">|</span> <var>f</var>
+        <sub>G</sub>(<var>n</var>) <span className="pe-op">=</span> <var>h</var>(<var>n</var>)
+      </>
+    );
+  } else if (s.includes('suit_limit')) {
+    expr = (
+      <>
+        <var>&theta;</var> <span className="pe-op">&le;</span> <var>&theta;</var>
+        <sub>max</sub>
+      </>
+    );
+  } else if (s.startsWith('(east_m, north_m)')) {
+    expr = (
+      <>
+        <var>p</var> <span className="pe-op">=</span> (<var>e</var>, <var>n</var>) &middot; &Delta;<var>x</var>{' '}
+        <span className="pe-op">=</span> 1 m
+      </>
+    );
+  }
+
+  return (
+    <span className="pe-formula pe-formula-math" role="math" aria-label={s}>
+      {expr}
+    </span>
+  );
+}
+
+const IDLE_PILLARS_BY_LANG = {
+  en: [
+    {
+      code: '01',
+      title: 'Sample HiRISE terrain',
+      formula: '(east_m, north_m) · 1 m/cell',
+      detail: 'Reads bundled orbital elevation, slope angle, surface roughness, quality flags, and manual hazard masks.',
+    },
+    {
+      code: '02',
+      title: 'Gate unwalkable terrain',
+      formula: 'slope <= suit_limit',
+      detail: 'Rejects steep crater walls, excluded voids, and missing-elevation patches before scoring any corridor.',
+    },
+    {
+      code: '03',
+      title: 'Expand A* search wave',
+      formula: 'f(n) = g(n) + h(n)',
+      detail: 'Combines accumulated traverse effort g(n) with straight-line heuristic h(n) toward your destination.',
+    },
+  ],
+  it: [
+    {
+      code: '01',
+      title: 'Campiona il terreno HiRISE',
+      formula: '(east_m, north_m) · 1 m/cell',
+      detail: 'Legge quota orbitale, pendenza, rugosità superficiale, qualità dei dati e aree interdette.',
+    },
+    {
+      code: '02',
+      title: 'Filtra i tratti non percorribili',
+      formula: 'slope <= suit_limit',
+      detail: 'Esclude pareti ripide del cratere, zone vuote o prive di quota prima di valutare i corridoi.',
+    },
+    {
+      code: '03',
+      title: 'Espandi l’onda di ricerca A*',
+      formula: 'f(n) = g(n) + h(n)',
+      detail: 'Unisce il costo accumulato g(n) alla distanza euclidea h(n) fino alla destinazione.',
+    },
+  ],
+} as const;
 
 export function PathExplainer({
   run,
@@ -60,6 +187,7 @@ export function PathExplainer({
   onReplay,
   onScrub,
 }: PathExplainerProps) {
+  const [lang] = useUiLang();
   const isSuccess = run.kind === 'finished' && run.response.status === 'success';
   const clamped = Math.max(0, Math.min(1, playhead));
   const steps = traceResult?.thinkingSteps ?? [];
@@ -110,12 +238,20 @@ export function PathExplainer({
           <span className="pe-eyebrow">
             <span className={`pe-dot ${run.kind === 'running' || isPlaying ? 'pe-dot-active' : ''}`} aria-hidden="true" />
             {run.kind === 'running'
-              ? 'SEARCHING TERRAIN'
+              ? lang === 'it'
+                ? 'RICERCA SUL TERRENO'
+                : 'SEARCHING TERRAIN'
               : isPlaying
-                ? 'REPLAYING A* WAVEFRONT'
-                : 'A* PATH CALCULATION'}
+                ? lang === 'it'
+                  ? 'RIPRODUZIONE ONDA A*'
+                  : 'REPLAYING A* WAVEFRONT'
+                : lang === 'it'
+                  ? 'CALCOLO PERCORSO A*'
+                  : 'A* PATH CALCULATION'}
           </span>
-          <h2 className="pe-title">How we find the safest route</h2>
+          <h2 className="pe-title">
+            {lang === 'it' ? 'Come troviamo il percorso più sicuro' : 'How we find the safest route'}
+          </h2>
         </div>
 
         {isSuccess && traceResult && (
@@ -126,7 +262,17 @@ export function PathExplainer({
               onClick={onPlayPause}
               data-testid="explainer-play-pause"
             >
-              {isPlaying ? 'Pause' : clamped >= 0.995 ? 'Play' : 'Resume'}
+              {isPlaying
+                ? lang === 'it'
+                  ? 'Pausa'
+                  : 'Pause'
+                : clamped >= 0.995
+                  ? lang === 'it'
+                    ? 'Avvia'
+                    : 'Play'
+                  : lang === 'it'
+                    ? 'Riprendi'
+                    : 'Resume'}
             </button>
             <button
               type="button"
@@ -134,7 +280,7 @@ export function PathExplainer({
               onClick={onReplay}
               data-testid="explainer-replay"
             >
-              Replay
+              {lang === 'it' ? 'Ripeti' : 'Replay'}
             </button>
           </div>
         )}
@@ -143,16 +289,25 @@ export function PathExplainer({
       {run.kind === 'idle' && (
         <div className="pe-idle">
           <p className="pe-lead">
-            Pick a <strong>Start</strong> and <strong>Destination</strong> on the Jezero map, then press{' '}
-            <strong>Calculate routes</strong> to watch A* search the terrain live.
+            {lang === 'it' ? (
+              <>
+                Scegli <strong>Partenza</strong> e <strong>Destinazione</strong> sulla mappa di Jezero, poi premi{' '}
+                <strong>Calcola percorso</strong> per vedere A* animato.
+              </>
+            ) : (
+              <>
+                Pick a <strong>Start</strong> and <strong>Destination</strong> on the Jezero map, then press{' '}
+                <strong>Calculate routes</strong> to watch A* search the terrain live.
+              </>
+            )}
           </p>
           <ol className="pe-steps">
-            {IDLE_PILLARS.map((item) => (
+            {IDLE_PILLARS_BY_LANG[lang].map((item) => (
               <li key={item.code} className="pe-step pe-step-idle">
                 <div className="pe-step-top">
                   <span className="pe-step-num">{item.code}</span>
                   <span className="pe-step-name">{item.title}</span>
-                  <code className="pe-formula">{item.formula}</code>
+                  <MathFormula raw={item.formula} />
                 </div>
                 <p className="pe-step-text">{item.detail}</p>
               </li>
@@ -203,19 +358,19 @@ export function PathExplainer({
             {isGridSkipped ? (
               <>
                 <div className="pe-metric">
-                  <span className="pe-metric-label">Path cells</span>
+                  <span className="pe-metric-label">{lang === 'it' ? 'Celle percorso' : 'Path cells'}</span>
                   <strong className="pe-metric-val" data-testid="explainer-explored">
                     {totalPathCells > 0 ? `${liveStepCells.toLocaleString()} / ${totalPathCells.toLocaleString()}` : '—'}
                   </strong>
                 </div>
                 <div className="pe-metric">
-                  <span className="pe-metric-label">Distance</span>
+                  <span className="pe-metric-label">{lang === 'it' ? 'Distanza' : 'Distance'}</span>
                   <strong className="pe-metric-val">
                     {distM != null ? `${Math.round(distM)} m` : '—'}
                   </strong>
                 </div>
                 <div className="pe-metric">
-                  <span className="pe-metric-label">Max slope</span>
+                  <span className="pe-metric-label">{lang === 'it' ? 'Pendenza max' : 'Max slope'}</span>
                   <strong className="pe-metric-val pe-metric-accent">
                     {maxSlopeDeg != null ? `${maxSlopeDeg.toFixed(1)}°` : '—'}
                   </strong>
@@ -224,22 +379,22 @@ export function PathExplainer({
             ) : (
               <>
                 <div className="pe-metric">
-                  <span className="pe-metric-label">Explored</span>
+                  <span className="pe-metric-label">{lang === 'it' ? 'Esplorate' : 'Explored'}</span>
                   <strong className="pe-metric-val" data-testid="explainer-explored">
                     {exploredCount.toLocaleString()}
                   </strong>
                 </div>
                 <div className="pe-metric">
-                  <span className="pe-metric-label">Frontier</span>
+                  <span className="pe-metric-label">{lang === 'it' ? 'Frontiera' : 'Frontier'}</span>
                   <strong className="pe-metric-val">{openSize.toLocaleString()}</strong>
                 </div>
                 <div className="pe-metric">
                   <span className="pe-metric-label">
-                    {reductionFactor != null ? 'vs Dijkstra' : 'Distance'}
+                    {reductionFactor != null ? 'vs Dijkstra' : lang === 'it' ? 'Distanza' : 'Distance'}
                   </span>
                   <strong className="pe-metric-val pe-metric-accent">
                     {reductionFactor != null
-                      ? `${reductionFactor.toFixed(1)}× fewer`
+                      ? `${reductionFactor.toFixed(1)}× ${lang === 'it' ? 'in meno' : 'fewer'}`
                       : distM != null
                         ? `${Math.round(distM)} m`
                         : '—'}
@@ -296,9 +451,12 @@ export function PathExplainer({
                     <div className="pe-step-top">
                       <span className="pe-step-num">{String(index + 1).padStart(2, '0')}</span>
                       <span className="pe-step-name">
-                        {step.title || PHASE_LABELS[step.phase] || 'Step'}
+                        {(lang === 'it' && STEP_TITLES_IT[step.phase]) ||
+                          step.title ||
+                          PHASE_LABELS[lang][step.phase] ||
+                          (lang === 'it' ? 'Passo' : 'Step')}
                       </span>
-                      {step.formula && <code className="pe-formula">{step.formula}</code>}
+                      {step.formula && <MathFormula phase={step.phase} raw={step.formula} />}
                     </div>
                     {isActive && <p className="pe-step-text">{visibleText}</p>}
                   </button>
@@ -309,7 +467,9 @@ export function PathExplainer({
 
           {traceResult.rejectedPaths.length > 0 && (
             <div className="pe-rejected" data-testid="explainer-rejected">
-              <span className="pe-rejected-title">Why not go straight?</span>
+              <span className="pe-rejected-title">
+                {lang === 'it' ? 'Perché non andare dritti?' : 'Why not go straight?'}
+              </span>
               <ul className="pe-rejected-list">
                 {traceResult.rejectedPaths.slice(0, 2).map((rej) => (
                   <li key={rej.id} className="pe-rejected-item">
