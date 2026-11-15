@@ -364,6 +364,7 @@ describe('EndpointsFeature (TASK-004)', () => {
 
     it('mounts inside the full App shell replacing slot fallback without regressions', async () => {
       const syntheticBundle = {
+        manifestUrl: '/bundles/test/manifest.json',
         manifest: {
           schema: 'mars-pathfinder/region-bundle' as const,
           schemaVersion: '1.0',

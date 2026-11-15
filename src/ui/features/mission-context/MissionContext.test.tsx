@@ -545,6 +545,7 @@ describe('TASK-002: Mounting in FeatureHarness with all other leaves absent', ()
             skipRegionLoader: true,
           }}
           initialBundle={{
+            manifestUrl: '/bundles/test/manifest.json',
             manifest: baseManifest,
             bundleVersion: baseManifest.bundleVersion,
             width: baseManifest.grid.width,

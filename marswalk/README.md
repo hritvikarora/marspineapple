@@ -6,6 +6,8 @@ Un simulatore VR (Meta Quest 2, oppure PC) in cui un astronauta prova in anticip
 
 **Demo:** https://gabryg07.github.io/mars-eva-vr/
 
+**Riepilogo del progetto (PDF):** [docs/Marswalk_riepilogo.pdf](docs/Marswalk_riepilogo.pdf)
+
 ## Dati NASA usati
 
 | Dato | Missione e strumento | Fonte |

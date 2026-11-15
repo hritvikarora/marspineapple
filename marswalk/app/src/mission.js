@@ -23,7 +23,7 @@ export class Mission {
   // remaining planned path length from the current target back to base (m)
   check(pos) {   // call each frame with the astronaut position; returns the POI just reached, if any
     const t = this.target; if (!t) return null;
-    if (Math.hypot(pos.x - t.x, pos.z + t.y) < 9) { this.visited.add(t.id); this.leg++; if (this.leg >= this.order.length) this.done = true; this.changed = true; return t; }
+    if (Math.hypot(pos.x - t.x, pos.z + t.y) < (this.leg === this.order.length - 1 ? 3 : 9)) { this.visited.add(t.id); this.leg++; if (this.leg >= this.order.length) this.done = true; this.changed = true; return t; }
     return null;
   }
   state(pos) {

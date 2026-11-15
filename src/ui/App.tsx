@@ -22,6 +22,7 @@ import { Briefing } from './Briefing';
 import { ElevationProfile } from './ElevationProfile';
 import { MapCanvas, type RejectedPathOverlay } from './MapCanvas';
 import { StartMenuModal } from './StartMenuModal';
+import { MarswalkLaunch } from './MarswalkLaunch';
 import type { SearchTraceFrame } from '../contracts';
 import { Slot } from './shared/Slot';
 import type { CustomCanvasLayer, FeatureRegistryMap } from './shared/types';
@@ -267,6 +268,9 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
             SYNTHETIC DATA
           </span>
         )}
+        <a className="header-link" href="marswalk-vr/index.html" target="_blank" rel="noopener">
+          Marswalk VR
+        </a>
         <span className="release" data-testid="release-id">
           {formatReleaseId(release)}
         </span>
@@ -652,6 +656,14 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
                 selectedCandidateId: selection.candidateId,
                 dispatch,
               }}
+            />
+
+            <MarswalkLaunch
+              bundle={bundle}
+              candidate={selection.candidate}
+              mission={m}
+              modelVersion={EXPECTED_MODEL_VERSION}
+              isStale={state.isStale}
             />
 
             {/* Slot: mission-evidence */}

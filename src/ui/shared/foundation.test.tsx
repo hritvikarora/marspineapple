@@ -235,6 +235,7 @@ describe('Feature Registry and Slot Integrity', () => {
 });
 
 const fakeBundle: GridBundle = {
+  manifestUrl: '/bundles/test/manifest.json',
   bundleVersion: 'test-v1',
   width: 4,
   height: 4,

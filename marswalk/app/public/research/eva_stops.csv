@@ -1,0 +1,7 @@
+id,name,lon_deg_e,lat_deg_n,elev_m_mola,rover_sol
+base,Base,77.410419,18.453946,-2545.58,409
+threeforks,Three Forks,77.408078,18.452766,-2545.18,663
+nukshak,Cape Nukshak,77.40144,18.450726,-2526.56,565
+yori,Yori Pass,77.399154,18.453644,-2517.24,609
+wildcat,Wildcat Ridge,77.405925,18.458647,-2523.13,502
+rockytop,Rocky Top,77.402934,18.461671,-2496.74,709

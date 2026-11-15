@@ -764,3 +764,10 @@ legend {
     background: transparent;
   }
 }
+
+/* Marswalk VR hand-off */
+.marswalk-launch { display: grid; gap: 6px; margin: 12px 0; padding: 12px; border: 1px solid var(--color-hairline, #e5e5e5); border-radius: 12px; }
+.marswalk-launch button { min-height: 44px; background: var(--color-ink, #000); color: var(--color-paper, #fff); border: 0; border-radius: 12px; font-weight: 600; cursor: pointer; }
+.marswalk-launch button:disabled { opacity: 0.45; cursor: not-allowed; }
+.marswalk-launch p { margin: 0; font-size: 0.85rem; }
+.header-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }

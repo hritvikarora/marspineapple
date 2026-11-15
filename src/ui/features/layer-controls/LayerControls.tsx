@@ -97,7 +97,7 @@ export const LayerControls: FC<LayerControlsSlotProps> = ({ layers, dispatch }) 
                   checked={setting.visible}
                   onChange={(event) => handleVisibilityChange(key, event)}
                 />
-                <span className="layer-name">{label}</span>
+                <span className="layer-name">{label.toLowerCase()}</span>
               </label>
 
               {setting.visible && legend.length > 0 ? (

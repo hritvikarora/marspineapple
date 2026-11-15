@@ -1,5 +1,6 @@
 // Canvas-backed panels: the same drawing code feeds the helmet HUD, the wrist panel and the info cards.
 import * as THREE from 'three';
+import { num } from './i18n.js';
 export const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif';
 export class Panel {
   constructor(w, h, pxPerM = 1000, opts = {}) {
@@ -18,4 +19,4 @@ export function wrap(c, s, x, y, maxW, size, lh, color = '#fff', weight = 400) {
   if (line) { c.fillText(line, x, y); y += lh; } return y;
 }
 export const fmtHM = s => { s = Math.max(0, s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return `${h}h${String(m).padStart(2, '0')}`; };
-export const fmtDist = m => m >= 1000 ? (m / 1000).toFixed(2).replace('.', ',') + ' km' : Math.round(m) + ' m';
+export const fmtDist = m => m >= 1000 ? num(m / 1000, 2) + ' km' : Math.round(m) + ' m';
