@@ -34,6 +34,27 @@ const SCIENCE_PIP_RADIUS = 1.8;
 const CONTEXT_DOT_RADIUS = 2.5;
 const POI_STROKE_WIDTH = 1.5;
 
+const COSMIC_OBSIDIAN = 'rgba(9, 7, 17, 0.90)';
+const COSMIC_IVORY = '#F6F1EA';
+const COSMIC_VOID = '#040208';
+const COSMIC_CYAN = '#33E6FF';
+const COSMIC_AMBER = '#FFB37A';
+const COSMIC_START = '#5BE08A';
+const COSMIC_DEST = '#FF6B5B';
+
+function scaledFont(family: 'sans-bold' | 'sans' | 'mono-bold', scale: number): string {
+  if (scale <= 1.01) {
+    if (family === 'sans-bold') return FONT_SANS_BOLD;
+    if (family === 'mono-bold') return FONT_MONO_BOLD;
+    return FONT_SANS;
+  }
+  if (family === 'mono-bold') {
+    return `bold ${Math.round(11 * scale)}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+  }
+  const px = Math.round(9.5 * scale);
+  return `${family === 'sans-bold' ? 'bold ' : ''}${px}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+}
+
 function drawPoiLabel(
   ctx: CanvasRenderingContext2D,
   name: string,
@@ -42,31 +63,34 @@ function drawPoiLabel(
   canvasWidth: number,
   bold: boolean,
   pillBackground: string,
+  cosmic: boolean,
+  uiScale: number,
 ) {
   if (!name) return;
 
-  ctx.font = bold ? FONT_SANS_BOLD : FONT_SANS;
+  ctx.font = scaledFont(bold ? 'sans-bold' : 'sans', uiScale);
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
 
   const textWidth = ctx.measureText(name).width;
-  const pillW = textWidth + 8;
-  const pillH = bold ? 14 : 13;
-  const offset = 11;
+  const padX = Math.round(8 * uiScale);
+  const pillW = textWidth + padX;
+  const pillH = Math.round((bold ? 14 : 13) * uiScale);
+  const offset = Math.round(11 * uiScale);
   let pillX = px + offset;
   if (canvasWidth > 0 && pillX + pillW > canvasWidth && px - offset - pillW >= 0) {
     pillX = px - offset - pillW;
   }
   const pillY = py - pillH / 2;
+  const border = Math.max(1, Math.round(uiScale));
 
-  // Paper pill with secondary-ink frame reads on both pale and dark terrain without strokeRect.
-  ctx.fillStyle = INK_SECONDARY;
-  ctx.fillRect(pillX - 1, pillY - 1, pillW + 2, pillH + 2);
-  ctx.fillStyle = pillBackground;
+  ctx.fillStyle = cosmic ? (bold ? COSMIC_CYAN : COSMIC_AMBER) : INK_SECONDARY;
+  ctx.fillRect(pillX - border, pillY - border, pillW + border * 2, pillH + border * 2);
+  ctx.fillStyle = cosmic ? COSMIC_OBSIDIAN : pillBackground;
   ctx.fillRect(pillX, pillY, pillW, pillH);
 
-  ctx.fillStyle = INK;
-  ctx.fillText(name, pillX + 4, py);
+  ctx.fillStyle = cosmic ? COSMIC_IVORY : INK;
+  ctx.fillText(name, pillX + Math.round(4 * uiScale), py);
 }
 
 function traceSquare(ctx: CanvasRenderingContext2D, px: number, py: number, half: number) {
@@ -78,8 +102,45 @@ function traceSquare(ctx: CanvasRenderingContext2D, px: number, py: number, half
   ctx.closePath();
 }
 
-function drawEndpointPin(ctx: CanvasRenderingContext2D, px: number, py: number, letter: 'S' | 'D') {
+function drawEndpointPin(
+  ctx: CanvasRenderingContext2D,
+  px: number,
+  py: number,
+  letter: 'S' | 'D',
+  cosmic: boolean,
+  uiScale: number,
+) {
   const isDestination = letter === 'D';
+
+  if (cosmic) {
+    const accent = isDestination ? COSMIC_DEST : COSMIC_START;
+    const halo = isDestination ? 'rgba(255, 107, 91, 0.28)' : 'rgba(91, 224, 138, 0.26)';
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(px, py, 16 * uiScale, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = COSMIC_VOID;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2.4 * uiScale;
+    ctx.lineJoin = 'round';
+    if (isDestination) {
+      traceSquare(ctx, px, py, 9 * uiScale);
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(px, py, 9.5 * uiScale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.fillStyle = isDestination ? COSMIC_IVORY : COSMIC_START;
+    ctx.font = scaledFont('mono-bold', uiScale);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(letter, px, py);
+    return;
+  }
 
   // Shared ink plate. On pale ground it is the dark badge. On dark ground the
   // paper centre (start) or paper square (destination) is what remains.
@@ -138,6 +199,8 @@ export const MapMarkers: FC<MapMarkersSlotProps> = ({
   useEffect(() => {
     const drawMarkers = (helpers: CanvasDrawHelpers) => {
       const { ctx, toPx, width } = helpers;
+      const cosmic = width >= 500;
+      const uiScale = width >= 800 ? width / 650 : 1;
 
       ctx.save();
       try {
@@ -151,64 +214,65 @@ export const MapMarkers: FC<MapMarkersSlotProps> = ({
             if (!Number.isFinite(px) || !Number.isFinite(py)) continue;
 
             if (poi.kind === 'outpost') {
-              ctx.fillStyle = INK;
-              ctx.strokeStyle = PAPER;
-              ctx.lineWidth = POI_STROKE_WIDTH;
+              const r = OUTPOST_RADIUS * uiScale;
+              ctx.fillStyle = cosmic ? COSMIC_CYAN : INK;
+              ctx.strokeStyle = cosmic ? COSMIC_VOID : PAPER;
+              ctx.lineWidth = POI_STROKE_WIDTH * uiScale;
               ctx.beginPath();
-              ctx.moveTo(px, py - OUTPOST_RADIUS);
-              ctx.lineTo(px + OUTPOST_RADIUS, py);
-              ctx.lineTo(px, py + OUTPOST_RADIUS);
-              ctx.lineTo(px - OUTPOST_RADIUS, py);
+              ctx.moveTo(px, py - r);
+              ctx.lineTo(px + r, py);
+              ctx.lineTo(px, py + r);
+              ctx.lineTo(px - r, py);
               ctx.closePath();
               ctx.fill();
               ctx.stroke();
 
-              drawPoiLabel(ctx, poi.name, px, py, width, true, PAPER);
+              drawPoiLabel(ctx, poi.name, px, py, width, true, PAPER, cosmic, uiScale);
             } else if (poi.kind === 'science-stop') {
-              ctx.fillStyle = PAPER;
+              ctx.fillStyle = cosmic ? 'rgba(9, 7, 17, 0.8)' : PAPER;
               ctx.beginPath();
-              ctx.arc(px, py, SCIENCE_HALO_RADIUS, 0, Math.PI * 2);
+              ctx.arc(px, py, SCIENCE_HALO_RADIUS * uiScale, 0, Math.PI * 2);
               ctx.fill();
 
-              ctx.fillStyle = PAPER;
-              ctx.strokeStyle = INK;
-              ctx.lineWidth = POI_STROKE_WIDTH;
+              ctx.fillStyle = cosmic ? COSMIC_VOID : PAPER;
+              ctx.strokeStyle = cosmic ? COSMIC_AMBER : INK;
+              ctx.lineWidth = POI_STROKE_WIDTH * uiScale;
               ctx.beginPath();
-              ctx.arc(px, py, SCIENCE_RING_RADIUS, 0, Math.PI * 2);
+              ctx.arc(px, py, SCIENCE_RING_RADIUS * uiScale, 0, Math.PI * 2);
               ctx.fill();
               ctx.stroke();
 
-              ctx.fillStyle = INK;
+              ctx.fillStyle = cosmic ? COSMIC_AMBER : INK;
               ctx.beginPath();
-              ctx.arc(px, py, SCIENCE_PIP_RADIUS, 0, Math.PI * 2);
+              ctx.arc(px, py, SCIENCE_PIP_RADIUS * uiScale, 0, Math.PI * 2);
               ctx.fill();
 
-              drawPoiLabel(ctx, poi.name, px, py, width, false, PAPER_SUBTLE);
+              drawPoiLabel(ctx, poi.name, px, py, width, false, PAPER_SUBTLE, cosmic, uiScale);
             } else {
-              ctx.fillStyle = INK_SECONDARY;
-              ctx.strokeStyle = PAPER;
-              ctx.lineWidth = POI_STROKE_WIDTH;
+              ctx.fillStyle = cosmic ? 'rgba(246, 241, 234, 0.72)' : INK_SECONDARY;
+              ctx.strokeStyle = cosmic ? COSMIC_VOID : PAPER;
+              ctx.lineWidth = POI_STROKE_WIDTH * uiScale;
               ctx.beginPath();
-              ctx.arc(px, py, CONTEXT_DOT_RADIUS, 0, Math.PI * 2);
+              ctx.arc(px, py, CONTEXT_DOT_RADIUS * uiScale, 0, Math.PI * 2);
               ctx.fill();
               ctx.stroke();
             }
           }
         }
 
-        // 2. Start: paper centre, ink ring, letter S. Cell centre from toPx, no pixel nudge.
+        // 2. Start: marker at cell centre from toPx, no pixel nudge.
         if (start) {
           const [sx, sy] = toPx(start);
           if (Number.isFinite(sx) && Number.isFinite(sy)) {
-            drawEndpointPin(ctx, sx, sy, 'S');
+            drawEndpointPin(ctx, sx, sy, 'S', cosmic, uiScale);
           }
         }
 
-        // 3. Destination: ink plate, paper square, letter D.
+        // 3. Destination: square mark at cell centre.
         if (destination) {
           const [dx, dy] = toPx(destination);
           if (Number.isFinite(dx) && Number.isFinite(dy)) {
-            drawEndpointPin(ctx, dx, dy, 'D');
+            drawEndpointPin(ctx, dx, dy, 'D', cosmic, uiScale);
           }
         }
       } finally {

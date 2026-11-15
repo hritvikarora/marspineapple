@@ -181,6 +181,7 @@ export interface MapRoutesSlotProps {
   stale: boolean;
   hover: { pathIndex: number; distance_m: number; point: LocalPoint3 } | null;
   routeLayerVisible: boolean;
+  routeRevealFrac?: number;
   registerLayer: RegisterCanvasLayer;
 }
 

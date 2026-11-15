@@ -90,13 +90,14 @@ legend.pickLegend {
   align-items: center;
   justify-content: center;
   min-width: 44px;
-  min-height: var(--min-touch-target, 44px);
+  min-height: 40px;
   margin: 0;
-  padding: 0 8px;
+  padding: 0 5px;
   appearance: none;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.25;
+  white-space: nowrap;
   text-align: center;
   border: 0;
   border-radius: 0;

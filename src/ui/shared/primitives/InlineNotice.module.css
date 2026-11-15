@@ -8,9 +8,9 @@
   min-width: 0;
   margin: 0;
   padding: 8px 12px;
-  background: #ffffff;
-  color: #000000;
-  border: 1px solid #e5e5e5;
+  background: var(--color-paper-subtle, #141022);
+  color: var(--color-ink, #f6f1ea);
+  border: 1px solid var(--color-hairline, rgba(246, 241, 234, 0.14));
   border-radius: 12px;
   font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   font-size: 13px;
@@ -19,16 +19,16 @@
 
 .notice.info,
 .notice.success {
-  background: #ffffff;
-  color: #000000;
-  border-color: #e5e5e5;
+  background: var(--color-paper-subtle, #141022);
+  color: var(--color-ink, #f6f1ea);
+  border-color: var(--color-hairline, rgba(246, 241, 234, 0.14));
 }
 
 .notice.warning,
 .notice.error {
-  background: #ffffff;
-  color: #9e2a2b;
-  border-color: #9e2a2b;
+  background: var(--color-error-bg, rgba(255, 122, 107, 0.12));
+  color: var(--color-status, #ff7a6b);
+  border-color: var(--color-status, #ff7a6b);
 }
 
 .icon {

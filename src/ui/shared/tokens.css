@@ -1,37 +1,40 @@
 /**
- * Shared Design Tokens — Paper System. OWNER: Dhani.
- * Defines the light paper/ink palette, spacing, radii, typography, and motion tokens.
- * Old variable names (such as --color-surface, --color-panel, --color-accent, --spacing-*)
- * are kept as compatibility aliases for the paper system.
+ * Shared Design Tokens — Cosmic Obsidian System. OWNER: Dhani.
+ * Defines the dark orbital ground (#040208), obsidian cards (#0c0916), ivory ink (#f6f1ea),
+ * cyan/amber accents, spacing, radii, typography, and motion tokens, with light paper in @media print.
  */
 :root {
-  /* Paper palette */
-  --color-paper: #FFFFFF;
-  --color-paper-subtle: #FAFAFA;
-  --color-ink: #000000;
-  --color-ink-secondary: #686666;
-  --color-hairline: #E5E5E5;
-  --color-status: #9E2A2B;
+  color-scheme: dark;
 
-  /* Compatibility color aliases for the paper system */
+  /* Cosmic Mars palette */
+  --color-paper: #0c0916;
+  --color-paper-subtle: #141022;
+  --color-ink: #f6f1ea;
+  --color-ink-secondary: #a9a1b6;
+  --color-hairline: rgba(246, 241, 234, 0.14);
+  --color-status: #ff7a6b;
+  --color-accent-cyan: #33e6ff;
+  --color-accent-amber: #ffb37a;
+
+  /* Compatibility color aliases */
   --color-surface: var(--color-paper);
-  --color-surface-sunken: var(--color-paper-subtle);
+  --color-surface-sunken: #07050e;
   --color-panel: var(--color-paper-subtle);
-  --color-panel-header: var(--color-paper-subtle);
+  --color-panel-header: #18132a;
   --color-text: var(--color-ink);
   --color-text-main: var(--color-ink);
   --color-muted: var(--color-ink-secondary);
   --color-text-muted: var(--color-ink-secondary);
   --color-border: var(--color-hairline);
   --color-border-subtle: var(--color-hairline);
-  --color-accent: var(--color-ink);
-  --color-accent-hover: var(--color-ink);
-  --color-warning: var(--color-status);
+  --color-accent: var(--color-accent-cyan);
+  --color-accent-hover: #7cedff;
+  --color-warning: var(--color-accent-amber);
   --color-error: var(--color-status);
   --color-danger: var(--color-status);
-  --color-error-bg: var(--color-paper-subtle);
-  --color-success: var(--color-ink);
-  --color-focus: var(--color-ink);
+  --color-error-bg: rgba(255, 122, 107, 0.12);
+  --color-success: #5be08a;
+  --color-focus: var(--color-accent-cyan);
 
   /* Spacing scale */
   --space-1: 4px;
@@ -85,6 +88,19 @@ samp,
 .mono,
 .measurement {
   font-family: var(--font-mono);
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+    --color-paper: #ffffff;
+    --color-paper-subtle: #fafafa;
+    --color-ink: #000000;
+    --color-ink-secondary: #555555;
+    --color-hairline: #d4d4d4;
+    --color-status: #9e2a2b;
+    --color-accent: #000000;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

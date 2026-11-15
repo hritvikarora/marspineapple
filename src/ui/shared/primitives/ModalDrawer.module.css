@@ -36,8 +36,8 @@
   max-height: 100dvh;
   margin: 0;
   padding: 0;
-  background: #ffffff;
-  color: #000000;
+  background: var(--color-paper, #0c0916);
+  color: var(--color-ink, #f6f1ea);
   border: 0;
   box-shadow: none;
   display: flex;
@@ -52,17 +52,17 @@
 }
 
 .panel.panelRight {
-  border-left: 1px solid #e5e5e5;
+  border-left: 1px solid var(--color-hairline, rgba(246, 241, 234, 0.14));
   border-radius: 12px 0 0 12px;
 }
 
 .panel.panelLeft {
-  border-right: 1px solid #e5e5e5;
+  border-right: 1px solid var(--color-hairline, rgba(246, 241, 234, 0.14));
   border-radius: 0 12px 12px 0;
 }
 
 .panel.panel:focus-visible {
-  outline: 2px solid #000000 !important;
+  outline: 2px solid var(--color-focus, #33e6ff) !important;
   outline-offset: -2px !important;
 }
 
@@ -82,9 +82,9 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px 14px 20px;
-  background: #ffffff;
-  color: #000000;
-  border-bottom: 1px solid #e5e5e5;
+  background: var(--color-panel-header, #18132a);
+  color: var(--color-ink, #f6f1ea);
+  border-bottom: 1px solid var(--color-hairline, rgba(246, 241, 234, 0.14));
 }
 
 .title.title {
@@ -94,7 +94,7 @@
   font-weight: 560;
   line-height: 1.35;
   letter-spacing: normal;
-  color: #000000;
+  color: var(--color-ink, #f6f1ea);
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
@@ -112,7 +112,7 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: #000000;
+  color: var(--color-ink, #f6f1ea);
   border: 1px solid transparent;
   border-radius: 12px;
   cursor: pointer;
@@ -123,8 +123,8 @@
 }
 
 .closeButton.closeButton:hover:not(:disabled) {
-  background: #fafafa;
-  border-color: #e5e5e5;
+  background: var(--color-paper-subtle, #141022);
+  border-color: var(--color-hairline, rgba(246, 241, 234, 0.14));
 }
 
 .closeButton.closeButton:active:not(:disabled) {
@@ -132,7 +132,7 @@
 }
 
 .closeButton.closeButton:focus-visible {
-  outline: 2px solid #000000 !important;
+  outline: 2px solid var(--color-focus, #33e6ff) !important;
   outline-offset: 2px !important;
 }
 
@@ -147,8 +147,8 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 16px 20px;
-  background: #ffffff;
-  color: #000000;
+  background: var(--color-paper, #0c0916);
+  color: var(--color-ink, #f6f1ea);
 }
 
 /* Entry transition via @starting-style. Browsers that ignore @starting-style

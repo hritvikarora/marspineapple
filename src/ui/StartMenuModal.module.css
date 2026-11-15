@@ -16,14 +16,26 @@
   border-radius: 6px;
 }
 
-.docked,
-.expanded {
+.docked {
   position: static;
   inset: auto;
 }
 
 .expanded {
-  padding: 16px;
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(620px, calc(100vw - 24px));
+  max-height: calc(100dvh - 88px);
+  overflow-y: auto;
+  z-index: 45;
+  padding: 18px;
+  background: rgba(12, 9, 22, 0.96);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(51, 230, 255, 0.34);
+  border-radius: 16px;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.78);
 }
 
 .heading,
