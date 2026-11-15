@@ -1,6 +1,6 @@
 /**
- * Layer Controls Feature Entry. OWNER: Dhani (TASK-009).
- * Registers the layer visibility/opacity controls and legends into 'layer-controls' slot.
+ * Layer Controls Feature Entry.
+ * Registers visibility and opacity switches into the 'layer-controls' slot.
  */
 import type { FeatureModule } from '../../shared/types';
 import { LayerControls } from './LayerControls';

@@ -1,396 +1,589 @@
 /**
- * Scoped styles for TASK-004 Endpoints Feature. OWNER: Dhani (UI Role).
- * Conforms to shared design tokens, WCAG AA contrast, and minimum 44px touch targets.
+ * Scoped styles for Endpoints Feature (UI-012). OWNER: Dhani (UI Role).
+ * Paper-and-ink visual system: #FFFFFF/#FAFAFA paper, #000000 ink, #686666 secondary ink,
+ * #E5E5E5 hairline, #9E2A2B status, 12px radius, 14px type, 44px hit targets, tabular figures.
  */
 
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3, 12px);
+  gap: var(--space-3, 12px);
   width: 100%;
+  min-width: 0;
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: 14px;
+  color: var(--color-ink, #000000);
 }
 
 .sectionHeader {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-1, 4px);
+  gap: var(--space-2, 8px);
+  min-width: 0;
 }
 
 .sectionTitle {
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-text, #f3f6f8);
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Pick mode toggle fieldset */
-.pickFieldset {
-  border: 1px solid var(--color-border, #526477);
-  border-radius: var(--radius-sm, 4px);
-  background: var(--color-panel, #18242f);
-  padding: 8px 12px;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.pickLegend {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-accent, #73d0c1);
-  padding: 0 4px;
-}
-
-.pickOptions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.pickOptionLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: var(--min-touch-target, 44px);
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: var(--radius-sm, 4px);
-  transition: background-color 0.15s ease;
-  user-select: none;
-}
-
-.pickOptionLabel:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.pickMarkerBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.badgeStart {
-  background-color: var(--color-success, #2ecc71);
-}
-
-.badgeDestination {
-  background-color: #e74c3c;
-}
-
-.pickHint {
-  font-size: 11px;
-  color: var(--color-muted, #b7c3cf);
-  margin: 0;
-}
-
-/* Swap Endpoints Button */
-.swapContainer {
-  display: flex;
-  justify-content: flex-end;
+  line-height: 1.35;
+  color: var(--color-ink, #000000);
+  text-wrap: balance;
 }
 
 .swapBtn {
+  flex-shrink: 0;
+}
+
+.swapIcon {
+  flex-shrink: 0;
+}
+
+/* Thin Start / Destination / Inspect pill. Outer radius only; 44px hit. */
+fieldset.pickFieldset {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  min-inline-size: 0;
+}
+
+legend.pickLegend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  pointer-events: none;
+}
+
+.pickPill {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
   min-height: var(--min-touch-target, 44px);
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--color-panel-header, #1f2f3d);
-  color: var(--color-text, #f3f6f8);
-  border: 1px solid var(--color-border, #526477);
-  border-radius: var(--radius-md, 6px);
-  cursor: pointer;
-  display: inline-flex;
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
+  background: var(--color-paper, #FFFFFF);
+}
+
+.pickModes {
+  display: grid;
+  grid-template-columns: minmax(44px, 1fr) minmax(44px, 1fr);
+  flex: 2 1 0;
+  min-width: 0;
+  min-height: var(--min-touch-target, 44px);
+}
+
+.pickFieldset .pickPill .pickSegment {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  justify-content: center;
+  min-width: 44px;
+  min-height: var(--min-touch-target, 44px);
+  margin: 0;
+  padding: 0 8px;
+  appearance: none;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.25;
+  text-align: center;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: scale(1);
+  transition:
+    background-color var(--duration-medium, 200ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    color var(--duration-medium, 200ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    transform var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
-.swapBtn:hover:not(:disabled) {
-  background: #273b4d;
-  border-color: var(--color-accent, #73d0c1);
+.pickFieldset .pickPill .pickModes .pickSegment:first-child {
+  border-start-start-radius: 11px;
+  border-end-start-radius: 11px;
 }
 
-.swapBtn:disabled {
-  opacity: 0.5;
+.pickFieldset .pickPill .pickModes .pickSegment + .pickSegment,
+.pickFieldset .pickPill .pickSegmentInspect {
+  border-inline-start: 1px solid var(--color-hairline, #E5E5E5);
+}
+
+.pickFieldset .pickPill .pickSegmentInspect {
+  border-start-end-radius: 11px;
+  border-end-end-radius: 11px;
+}
+
+.pickSegmentInspect {
+  flex: 1 1 0;
+  min-width: 44px;
+}
+
+.pickFieldset .pickPill .pickSegmentSelected {
+  background-color: var(--color-ink, #000000);
+  color: var(--color-paper, #FFFFFF);
+  font-weight: 600;
+}
+
+.pickFieldset .pickPill .pickSegmentUnselected {
+  background-color: var(--color-paper, #FFFFFF);
+  color: var(--color-ink, #000000);
+  font-weight: 500;
+}
+
+.pickFieldset .pickPill label.pickSegmentUnselected:hover,
+.pickFieldset .pickPill button.pickSegmentUnselected:hover:not(:disabled) {
+  background-color: var(--color-paper-subtle, #FAFAFA);
+}
+
+.pickFieldset .pickPill button.pickSegment:disabled {
+  color: var(--color-ink-secondary, #686666);
+  background-color: var(--color-paper, #FFFFFF);
   cursor: not-allowed;
+  font-weight: 500;
+  opacity: 1;
+}
+
+.pickFieldset .pickPill .pickSegment:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.pickFieldset .pickPill label.pickSegment:has(input[type='radio'].visuallyHiddenRadio:focus-visible),
+.pickFieldset .pickPill button.pickSegment:focus-visible {
+  outline: 2px solid var(--color-ink, #000000);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.pickFieldset .pickPill label.pickSegmentSelected:has(input[type='radio'].visuallyHiddenRadio:focus-visible) {
+  outline-color: var(--color-paper, #FFFFFF);
+}
+
+.pickPill input[type='radio'].visuallyHiddenRadio {
+  position: absolute;
+  clip-path: inset(50%);
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}
+
+.pickSegmentLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.pickSegmentLabelSelected {
+  font-weight: 600;
 }
 
 /* Endpoint Card */
 .card {
-  border: 1px solid var(--color-border, #526477);
-  border-radius: var(--radius-md, 6px);
-  background: var(--color-panel, #18242f);
-  padding: 12px;
+  box-sizing: border-box;
+  container-type: inline-size;
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
+  background: var(--color-paper, #FFFFFF);
+  padding: var(--space-3, 12px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  gap: var(--space-3, 12px);
+  min-width: 0;
+  transition: border-color var(--duration-medium, 200ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .cardActiveTarget {
-  border-color: var(--color-accent, #73d0c1);
-  box-shadow: 0 0 0 1px var(--color-accent, #73d0c1);
+  border-color: var(--color-ink, #000000);
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--space-2, 8px);
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .cardTitleWrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+  min-width: 0;
+}
+
+.pickMarkerBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  background: var(--color-paper-subtle, #FAFAFA);
+  color: var(--color-ink, #000000);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badgeActive {
+  background: var(--color-ink, #000000);
+  color: var(--color-paper, #FFFFFF);
+  border-color: var(--color-ink, #000000);
 }
 
 .cardTitle {
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
-  margin: 0;
+  line-height: 1.35;
+  color: var(--color-ink, #000000);
+  text-wrap: balance;
 }
 
 .badgePreset {
-  background: rgba(115, 208, 193, 0.15);
-  color: var(--color-accent, #73d0c1);
-  border: 1px solid var(--color-accent, #73d0c1);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm, 4px);
+  background: var(--color-paper-subtle, #FAFAFA);
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  padding: 2px 8px;
+  border-radius: var(--radius, 12px);
+  overflow-wrap: anywhere;
+}
+
+.cardTargetSlot {
+  display: flex;
+  align-items: center;
+  margin-inline-start: auto;
 }
 
 .activeTargetBadge {
-  background: rgba(115, 208, 193, 0.2);
-  color: var(--color-accent, #73d0c1);
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-paper-subtle, #FAFAFA);
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-ink, #000000);
+  font-size: 12px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm, 4px);
+  line-height: 1.3;
+  padding: 4px 10px;
+  border-radius: var(--radius, 12px);
 }
 
 .setTargetBtn {
-  min-height: 32px;
-  padding: 4px 10px;
-  font-size: 12px;
-  background: transparent;
-  color: var(--color-muted, #b7c3cf);
-  border: 1px dashed var(--color-border, #526477);
-  border-radius: var(--radius-sm, 4px);
-  cursor: pointer;
-}
-
-.setTargetBtn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--color-text, #f3f6f8);
-  border-color: var(--color-muted, #b7c3cf);
+  white-space: nowrap;
 }
 
 /* Coordinate Input Form */
 .form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2, 8px);
+  min-width: 0;
 }
 
 .inputGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2, 8px);
+  min-width: 0;
 }
 
-@media (max-width: 480px) {
+@container (inline-size < 240px) {
   .inputGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .inputGroup {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1, 4px);
+  min-width: 0;
 }
 
 .inputLabel {
-  font-size: 12px;
+  display: block;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--color-text, #f3f6f8);
+  line-height: 1.35;
+  color: var(--color-ink, #000000);
 }
 
 .inputHint {
-  font-size: 11px;
-  color: var(--color-muted, #b7c3cf);
-  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-ink-secondary, #686666);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
 }
 
-.coordInput {
+input[type='text'].coordInput {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   min-height: var(--min-touch-target, 44px);
   padding: 8px 10px;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
   font-size: 14px;
-  font-family: var(--font-mono, monospace);
-  background: var(--color-surface, #101820);
-  color: var(--color-text, #f3f6f8);
-  border: 1px solid var(--color-border, #526477);
-  border-radius: var(--radius-sm, 4px);
-  width: 100%;
+  line-height: 1.4;
+  background: var(--color-paper, #FFFFFF);
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-ink-secondary, #686666);
+  border-radius: var(--radius, 12px);
+  transition:
+    border-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    background-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
-.coordInput:focus-visible {
-  border-color: var(--color-focus, #73d0c1);
+input[type='text'].coordInput::placeholder {
+  color: var(--color-ink-secondary, #686666);
+  opacity: 0.75;
 }
 
-.inputHasError {
-  border-color: var(--color-error, #ff9b9b);
-  background: rgba(255, 155, 155, 0.05);
+input[type='text'].coordInput:hover {
+  border-color: var(--color-ink, #000000);
+}
+
+input[type='text'].coordInput:focus-visible {
+  outline: 2px solid var(--color-ink, #000000);
+  outline-offset: 2px;
+  border-color: var(--color-ink, #000000);
+}
+
+input[type='text'].coordInput.inputHasError {
+  border-color: var(--color-status, #9E2A2B);
+  background: var(--color-paper, #FFFFFF);
+}
+
+@media (pointer: coarse) {
+  input[type='text'].coordInput {
+    font-size: max(1rem, 14px);
+  }
 }
 
 .errorMessage {
-  background: var(--color-error-bg, #4a1515);
-  color: var(--color-error, #ff9b9b);
-  border: 1px solid var(--color-error, #ff9b9b);
-  border-radius: var(--radius-sm, 4px);
-  padding: 6px 10px;
-  font-size: 12px;
-  line-height: 1.4;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 8px);
+  width: 100%;
+  min-width: 0;
   margin: 0;
+  padding: 8px 12px;
+  background: var(--color-paper, #FFFFFF);
+  color: var(--color-status, #9E2A2B);
+  border: 1px solid var(--color-status, #9E2A2B);
+  border-radius: var(--radius, 12px);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.errorIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.errorText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .buttonRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.actionBtn {
-  min-height: var(--min-touch-target, 44px);
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: var(--radius-sm, 4px);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  transition: background-color 0.15s ease;
-}
-
-.primaryAction {
-  background: var(--color-accent, #73d0c1);
-  color: #101820;
-  font-weight: 600;
-}
-
-.primaryAction:hover:not(:disabled) {
-  background: var(--color-accent-hover, #5abdae);
-}
-
-.secondaryAction {
-  background: var(--color-panel-header, #1f2f3d);
-  color: var(--color-text, #f3f6f8);
-  border-color: var(--color-border, #526477);
-}
-
-.secondaryAction:hover:not(:disabled) {
-  background: #273b4d;
-}
-
-.clearAction {
-  background: transparent;
-  color: var(--color-muted, #b7c3cf);
-  border-color: transparent;
-}
-
-.clearAction:hover:not(:disabled) {
-  color: var(--color-error, #ff9b9b);
-  background: rgba(255, 155, 155, 0.1);
+  gap: var(--space-2, 8px);
+  margin-top: var(--space-1, 4px);
 }
 
 /* Cell Center Resolution Feedback Box */
 .cellFeedback {
-  background: var(--color-surface, #101820);
-  border: 1px solid rgba(115, 208, 193, 0.3);
-  border-radius: var(--radius-sm, 4px);
-  padding: 10px;
-  font-size: 12px;
+  box-sizing: border-box;
+  background: var(--color-paper-subtle, #FAFAFA);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
+  padding: 10px 12px;
+  min-width: 0;
+}
+
+.feedbackList {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.feedbackHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 600;
-  color: var(--color-accent, #73d0c1);
+  margin: 0;
+  padding: 0;
 }
 
 .feedbackRow {
   display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  color: var(--color-muted, #b7c3cf);
-  font-family: var(--font-mono, monospace);
-  font-size: 11px;
+  gap: 2px 12px;
+  min-width: 0;
+}
+
+.feedbackKey {
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink-secondary, #686666);
 }
 
 .feedbackVal {
-  color: var(--color-text, #f3f6f8);
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink, #000000);
+  overflow-wrap: anywhere;
 }
 
-.feedbackNote {
-  font-size: 11px;
-  color: var(--color-muted, #b7c3cf);
+.cellCentreLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+  margin: 0 0 6px;
+  padding: 0 0 6px;
+  border-bottom: 1px solid var(--color-hairline, #E5E5E5);
+  min-width: 0;
+}
+
+.cellCentreLabel {
+  font-size: 12px;
+  font-weight: 500;
   line-height: 1.4;
-  margin: 2px 0 0 0;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
-  padding-top: 4px;
+  color: var(--color-ink-secondary, #686666);
+}
+
+.cellCentreValue {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink, #000000);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.cellCentreValue:focus {
+  outline: 2px solid var(--color-ink, #000000);
+  outline-offset: 2px;
 }
 
 .emptyState {
-  color: var(--color-muted, #b7c3cf);
-  font-size: 12px;
-  font-style: italic;
   margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-ink-secondary, #686666);
+  text-wrap: pretty;
 }
 
-/* Regional Grid Spec Info Card */
+/* Regional Grid Spec One-Line Info Strip */
 .gridInfoCard {
-  border: 1px solid rgba(82, 100, 119, 0.4);
-  border-radius: var(--radius-sm, 4px);
-  background: rgba(16, 24, 32, 0.6);
-  padding: 8px 12px;
-  font-size: 11px;
-  color: var(--color-muted, #b7c3cf);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.gridInfoTitle {
-  font-weight: 600;
-  color: var(--color-text, #f3f6f8);
-  font-size: 12px;
-  margin: 0;
-}
-
-.gridInfoDetails {
+  box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  font-family: var(--font-mono, monospace);
+  align-items: center;
+  gap: 2px 8px;
+  padding: 8px 12px;
+  background: var(--color-paper-subtle, #FAFAFA);
+  color: var(--color-ink-secondary, #686666);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.gridInfoSep {
+  color: var(--color-hairline, #E5E5E5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pickFieldset .pickPill .pickSegment,
+  .card,
+  input[type='text'].coordInput {
+    transition-duration: 0ms;
+  }
+
+  .pickFieldset .pickPill .pickSegment:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .pickFieldset .pickPill .pickSegmentUnselected {
+    background-color: Canvas;
+    color: CanvasText;
+    border-color: ButtonText;
+  }
+
+  .pickFieldset .pickPill .pickSegmentSelected {
+    background-color: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+
+  .pickFieldset .pickPill button.pickSegment:disabled {
+    color: GrayText;
+    background-color: Canvas;
+  }
+
+  .card {
+    background-color: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+
+  .cardActiveTarget {
+    border-color: Highlight;
+  }
+
+  .errorMessage {
+    border-color: LinkText;
+    color: LinkText;
+  }
+}
+
+@media print {
+  .card,
+  .cellFeedback,
+  .gridInfoCard {
+    background: #FFFFFF;
+    color: #000000;
+    border-color: var(--color-hairline, #E5E5E5);
+  }
 }

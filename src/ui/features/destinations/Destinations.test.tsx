@@ -84,12 +84,43 @@ describe('TASK-003: Science Destination Selector', () => {
       />,
     );
 
-    const select = screen.getByTestId('destinations-dropdown') as HTMLSelectElement;
+    const select = screen.getByTestId('destination-preset') as HTMLSelectElement;
     expect(select.options).toHaveLength(3); // placeholder + 2 science stops
+    expect(select.options[0]?.text).toBe('\u2014 choose \u2014');
     expect(within(select).queryByText(/Outpost Alpha/)).toBeNull();
     expect(within(select).queryByText(/North Ridge Viewpoint/)).toBeNull();
     expect(screen.getAllByText(/Gullied Crater Rim/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Basaltic Sand Sheet/).length).toBeGreaterThan(0);
+  });
+
+  it('keeps every manifest point in the start preset', () => {
+    const setEndpoint = vi.fn();
+    render(
+      <Destinations
+        pois={mockPois}
+        mission={initialMission}
+        setEndpoint={setEndpoint}
+      />,
+    );
+
+    const start = screen.getByTestId('start-preset') as HTMLSelectElement;
+    expect(Array.from(start.options).map((option) => option.text)).toEqual([
+      '\u2014 choose \u2014',
+      'Outpost Alpha',
+      'Gullied Crater Rim',
+      'Basaltic Sand Sheet',
+      'North Ridge Viewpoint',
+    ]);
+    expect(Array.from(start.options).map((option) => option.value)).toEqual([
+      '',
+      'outpost-alpha',
+      'stop-crater',
+      'stop-dune',
+      'context-ridge',
+    ]);
+
+    fireEvent.change(start, { target: { value: 'context-ridge' } });
+    expect(setEndpoint).toHaveBeenCalledWith('start', { east_m: 2000, north_m: 2500 }, 'context-ridge');
   });
 
   it('renders helpful message when no science stops exist', () => {
@@ -103,7 +134,7 @@ describe('TASK-003: Science Destination Selector', () => {
     );
 
     expect(screen.getByTestId('no-science-stops')).toBeTruthy();
-    expect(screen.queryByTestId('destinations-dropdown')).toBeNull();
+    expect(screen.queryByTestId('destination-preset')).toBeNull();
   });
 
   it('selecting a destination preset via dropdown updates destination without modifying start', () => {
@@ -117,7 +148,7 @@ describe('TASK-003: Science Destination Selector', () => {
       />,
     );
 
-    const select = screen.getByTestId('destinations-dropdown');
+    const select = screen.getByTestId('destination-preset');
     fireEvent.change(select, { target: { value: 'stop-crater' } });
 
     expect(setEndpoint).toHaveBeenCalledTimes(1);
@@ -158,7 +189,7 @@ describe('TASK-003: Science Destination Selector', () => {
       />,
     );
 
-    const select = screen.getByTestId('destinations-dropdown');
+    const select = screen.getByTestId('destination-preset');
     fireEvent.change(select, { target: { value: '' } });
 
     expect(setEndpoint).toHaveBeenCalledWith('destination', null, null);
@@ -208,5 +239,38 @@ describe('TASK-003: Science Destination Selector', () => {
 
     expect(screen.getByText('Synthetic Target')).toBeTruthy();
     expect(screen.getByText('Mission Target')).toBeTruthy();
+  });
+
+  it('renders a long science-stop place name while keeping the option value equal to the manifest id', () => {
+    const longStop: PointOfInterest = {
+      id: 'poi-long-ridge',
+      name: 'Delta front – Skinner Ridge / Wildcat Ridge (Hawksbill Gap upper sedimentary outcrop traverse stop)',
+      kind: 'science-stop',
+      position: { east_m: 610.687, north_m: 656.7 },
+      purpose: 'Inspect western delta front lower sedimentary layers.',
+      officialName: false,
+      positionalUncertainty_m: null,
+      sourceIds: ['s1'],
+      synthetic: false,
+    };
+    const setEndpoint = vi.fn();
+
+    render(
+      <Destinations
+        pois={[...mockPois, longStop]}
+        mission={initialMission}
+        setEndpoint={setEndpoint}
+      />,
+    );
+
+    const select = screen.getByTestId('destination-preset') as HTMLSelectElement;
+    const longOption = within(select).getByText(longStop.name) as HTMLOptionElement;
+    expect(longOption).toBeTruthy();
+    expect(longOption.value).toBe('poi-long-ridge');
+    expect(screen.queryByTestId('selected-destination-details')).toBeNull();
+    expect(screen.queryByText(longStop.purpose)).toBeNull();
+
+    fireEvent.change(select, { target: { value: 'poi-long-ridge' } });
+    expect(setEndpoint).toHaveBeenCalledWith('destination', { east_m: 610.687, north_m: 656.7 }, 'poi-long-ridge');
   });
 });

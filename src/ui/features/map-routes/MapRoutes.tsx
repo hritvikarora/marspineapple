@@ -1,9 +1,9 @@
 /**
- * Map Routes Component. OWNER: Dhani (TASK-011).
- * Renders candidate route polylines, outbound/return legs, stale route indications,
- * and profile hover synchronization onto the 2D Canvas.
- * Search-trace batches and dashed rejected paths are drawn here when this layer is active.
- * They are not part of the chrome layer.
+ * Map Routes Component. OWNER: Dhani (TASK-011). UI-019 stroke pass.
+ * Selected route: solid ink. The same polyline is dashed while stale.
+ * Equivalent policies that share a path are one line on the sampled coordinates.
+ * Return legs differ by dash pattern. Rejected paths stay dashed and lighter.
+ * Search-trace batches are drawn here when this layer is active, not in chrome.
  */
 import { type FC, useEffect, useLayoutEffect, useRef } from 'react';
 import type { SearchTraceFrame } from '../../../contracts';
@@ -11,8 +11,39 @@ import type { CanvasDrawHelpers, MapRoutesSlotProps, RouteCandidate } from '../.
 import './map-routes.css';
 
 const NO_REJECTED_PATHS: readonly RejectedPathOverlay[] = [];
-const REJECTED_COLOR = '#7c3aed';
+const REJECTED_COLOR = 'rgba(104, 102, 102, 0.6)';
 const REJECTED_DASH: readonly number[] = [8, 4];
+
+const PAPER_HALO_SELECTED = 'rgba(255, 255, 255, 0.92)';
+const PAPER_HALO_STALE = 'rgba(255, 255, 255, 0.85)';
+const PAPER_HALO_UNSELECTED = 'rgba(255, 255, 255, 0.55)';
+const PAPER_HALO_UNSELECTED_STALE = 'rgba(255, 255, 255, 0.4)';
+
+const INK_SOLID = '#000000';
+const INK_STALE = 'rgba(0, 0, 0, 0.82)';
+const INK_RETURN_STALE = 'rgba(0, 0, 0, 0.72)';
+const INK_SECONDARY = '#686666';
+const INK_SECONDARY_MUTED = 'rgba(104, 102, 102, 0.72)';
+const INK_SECONDARY_STALE = 'rgba(104, 102, 102, 0.55)';
+
+const DASH_SOLID: readonly number[] = [];
+const DASH_SELECTED_STALE: readonly number[] = [8, 4];
+/** Selected return leg. MapRoutes.test.tsx expects setLineDash([5, 5]). */
+const DASH_RETURN_SELECTED: readonly number[] = [5, 5];
+const DASH_RETURN_STALE: readonly number[] = [2, 4];
+const DASH_UNSELECTED_OUTBOUND: readonly number[] = [4, 4];
+const DASH_UNSELECTED_RETURN: readonly number[] = [2, 4];
+
+const ROUTE_LINE_WIDTH = 2;
+const ROUTE_HALO_WIDTH = 4;
+
+interface StrokeStyleSpec {
+  strokeStyle: string;
+  lineWidth: number;
+  dash: readonly number[];
+  haloStyle: string;
+  haloWidth: number;
+}
 
 interface RejectedPathOverlay {
   id: string;
@@ -35,8 +66,13 @@ interface RouteDrawState {
   rejectedPaths: readonly RejectedPathOverlay[];
 }
 
+function applyDash(ctx: CanvasRenderingContext2D, dash: readonly number[]) {
+  if (typeof ctx.setLineDash !== 'function') return;
+  ctx.setLineDash(dash.length === 0 ? [] : [...dash]);
+}
+
 function clearDash(ctx: CanvasRenderingContext2D) {
-  if (typeof ctx.setLineDash === 'function') ctx.setLineDash([]);
+  applyDash(ctx, DASH_SOLID);
 }
 
 function traceCellPixel(index: number, cols: number, rows: number, pxPerCell: number): [number, number] | null {
@@ -55,10 +91,11 @@ function drawTraceFrame(
   width: number,
   height: number,
 ) {
+  clearDash(ctx);
   const cols = pxPerCell > 0 ? Math.round(width / pxPerCell) : 0;
   const rows = pxPerCell > 0 ? Math.round(height / pxPerCell) : 0;
   ctx.lineWidth = 1;
-  ctx.strokeStyle = 'rgba(34, 211, 238, 0.95)';
+  ctx.strokeStyle = INK_SOLID;
   for (const index of frame.closedCells) {
     const pixel = traceCellPixel(index, cols, rows, pxPerCell);
     if (!pixel) continue;
@@ -75,7 +112,7 @@ function drawTraceFrame(
     ctx.stroke();
   }
 
-  ctx.strokeStyle = '#f472b6';
+  ctx.strokeStyle = INK_SECONDARY;
   const radius = Math.min(Math.max(pxPerCell * 0.32, 0.5), pxPerCell * 0.5);
   for (const index of frame.frontierCells) {
     const pixel = traceCellPixel(index, cols, rows, pxPerCell);
@@ -85,7 +122,7 @@ function drawTraceFrame(
     ctx.stroke();
   }
 
-  ctx.strokeStyle = '#e9d5ff';
+  ctx.strokeStyle = INK_STALE;
   ctx.lineWidth = Math.max(1, Math.min(3, pxPerCell * 0.15));
   ctx.beginPath();
   let moved = false;
@@ -102,7 +139,7 @@ function drawTraceFrame(
     }
   }
   if (!moved) return;
-  if (typeof ctx.setLineDash === 'function') ctx.setLineDash([2, 2]);
+  applyDash(ctx, [2, 2]);
   ctx.stroke();
   clearDash(ctx);
   const mark = Math.max(1, Math.min(4, pxPerCell * 0.2));
@@ -126,9 +163,125 @@ function drawRejectedPaths(
       else ctx.lineTo(px, py);
     });
     ctx.strokeStyle = path.colorHex && path.colorHex.length > 0 ? path.colorHex : REJECTED_COLOR;
-    if (typeof ctx.setLineDash === 'function') ctx.setLineDash(REJECTED_DASH);
+    applyDash(ctx, REJECTED_DASH);
     ctx.stroke();
   }
+}
+
+type RouteInkRole = 'selected-outbound' | 'selected-return' | 'other-outbound' | 'other-return';
+
+interface SharedPolyline {
+  path: readonly { east_m: number; north_m: number }[];
+  selected: boolean;
+}
+
+function geometryKey(path: readonly { east_m: number; north_m: number }[]): string {
+  let key = '';
+  for (const point of path) {
+    key += point.east_m;
+    key += ',';
+    key += point.north_m;
+    key += ';';
+  }
+  return key;
+}
+
+/** One stroke per distinct polyline. A shared path is not shifted into a second corridor. */
+function uniquePolylines(
+  candidates: readonly RouteCandidate[],
+  selectedCandidateId: string | null,
+  leg: 'outbound' | 'return',
+): SharedPolyline[] {
+  const grouped = new Map<string, SharedPolyline>();
+  for (const candidate of candidates) {
+    const path = leg === 'outbound' ? candidate.outbound.path : candidate.returnLeg?.path;
+    if (path == null || path.length === 0) continue;
+    const selected = candidate.candidateId === selectedCandidateId;
+    const key = geometryKey(path);
+    const previous = grouped.get(key);
+    grouped.set(key, {
+      path: previous?.path ?? path,
+      selected: (previous?.selected ?? false) || selected,
+    });
+  }
+  const background: SharedPolyline[] = [];
+  const foreground: SharedPolyline[] = [];
+  for (const polyline of grouped.values()) {
+    if (polyline.selected) foreground.push(polyline);
+    else background.push(polyline);
+  }
+  return background.concat(foreground);
+}
+
+function routeStroke(role: RouteInkRole, stale: boolean): StrokeStyleSpec {
+  if (role === 'selected-outbound') {
+    return {
+      strokeStyle: stale ? INK_STALE : INK_SOLID,
+      lineWidth: ROUTE_LINE_WIDTH,
+      dash: stale ? DASH_SELECTED_STALE : DASH_SOLID,
+      haloStyle: stale ? PAPER_HALO_STALE : PAPER_HALO_SELECTED,
+      haloWidth: ROUTE_HALO_WIDTH,
+    };
+  }
+  if (role === 'selected-return') {
+    return {
+      strokeStyle: stale ? INK_RETURN_STALE : INK_SOLID,
+      lineWidth: ROUTE_LINE_WIDTH,
+      dash: stale ? DASH_RETURN_STALE : DASH_RETURN_SELECTED,
+      haloStyle: stale ? PAPER_HALO_STALE : PAPER_HALO_SELECTED,
+      haloWidth: ROUTE_HALO_WIDTH,
+    };
+  }
+  if (role === 'other-outbound') {
+    return {
+      strokeStyle: stale ? INK_SECONDARY_STALE : INK_SECONDARY,
+      lineWidth: ROUTE_LINE_WIDTH,
+      dash: DASH_UNSELECTED_OUTBOUND,
+      haloStyle: stale ? PAPER_HALO_UNSELECTED_STALE : PAPER_HALO_UNSELECTED,
+      haloWidth: ROUTE_HALO_WIDTH,
+    };
+  }
+  return {
+    strokeStyle: stale ? INK_SECONDARY_STALE : INK_SECONDARY_MUTED,
+    lineWidth: ROUTE_LINE_WIDTH,
+    dash: DASH_UNSELECTED_RETURN,
+    haloStyle: stale ? PAPER_HALO_UNSELECTED_STALE : PAPER_HALO_UNSELECTED,
+    haloWidth: ROUTE_HALO_WIDTH,
+  };
+}
+
+function strokePolyline(
+  ctx: CanvasRenderingContext2D,
+  path: readonly { east_m: number; north_m: number }[],
+  toPx: CanvasDrawHelpers['toPx'],
+  spec: StrokeStyleSpec,
+) {
+  if (path.length === 0) return;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  const paint = () => {
+    ctx.beginPath();
+    let started = false;
+    for (const point of path) {
+      const [px, py] = toPx(point);
+      if (!started) {
+        ctx.moveTo(px, py);
+        started = true;
+      } else {
+        ctx.lineTo(px, py);
+      }
+    }
+  };
+  paint();
+  ctx.strokeStyle = spec.haloStyle;
+  ctx.lineWidth = spec.haloWidth;
+  applyDash(ctx, spec.dash);
+  ctx.stroke();
+  paint();
+  ctx.strokeStyle = spec.strokeStyle;
+  ctx.lineWidth = spec.lineWidth;
+  applyDash(ctx, spec.dash);
+  ctx.stroke();
 }
 
 export const MapRoutes: FC<MapRoutesProps> = ({
@@ -184,65 +337,28 @@ export const MapRoutes: FC<MapRoutesProps> = ({
       ctx.save();
 
       if (curCandidates.length > 0) {
-        const sortedCandidates: RouteCandidate[] = [...curCandidates].sort((a, b) => {
-          if (a.candidateId === curSelectedCandidateId) return 1;
-          if (b.candidateId === curSelectedCandidateId) return -1;
-          return 0;
-        });
-
-        for (const candidate of sortedCandidates) {
-          const isSelected = candidate.candidateId === curSelectedCandidateId;
-
-          ctx.beginPath();
-          candidate.outbound.path.forEach((p, idx) => {
-            const [px, py] = toPx(p);
-            if (idx === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          });
-
-          if (isSelected) {
-            if (curStale) {
-              ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)';
-              ctx.lineWidth = 3.5;
-              ctx.setLineDash([6, 4]);
-            } else {
-              ctx.strokeStyle = '#00e5ff';
-              ctx.lineWidth = 4;
-              ctx.setLineDash([]);
-            }
-          } else {
-            ctx.strokeStyle = curStale ? 'rgba(148, 163, 184, 0.35)' : 'rgba(255, 255, 255, 0.6)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash(curStale ? [4, 4] : []);
-          }
-          ctx.stroke();
-
-          if (candidate.returnLeg && candidate.returnLeg.path.length > 0) {
-            ctx.beginPath();
-            candidate.returnLeg.path.forEach((p, idx) => {
-              const [px, py] = toPx(p);
-              if (idx === 0) ctx.moveTo(px, py);
-              else ctx.lineTo(px, py);
-            });
-
-            if (isSelected) {
-              ctx.strokeStyle = curStale ? 'rgba(245, 158, 11, 0.5)' : '#fbbf24';
-              ctx.lineWidth = 3;
-              ctx.setLineDash([5, 5]);
-            } else {
-              ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-              ctx.lineWidth = 1.5;
-              ctx.setLineDash([3, 3]);
-            }
-            ctx.stroke();
-          }
+        for (const polyline of uniquePolylines(curCandidates, curSelectedCandidateId, 'outbound')) {
+          strokePolyline(
+            ctx,
+            polyline.path,
+            toPx,
+            routeStroke(polyline.selected ? 'selected-outbound' : 'other-outbound', curStale),
+          );
+        }
+        for (const polyline of uniquePolylines(curCandidates, curSelectedCandidateId, 'return')) {
+          strokePolyline(
+            ctx,
+            polyline.path,
+            toPx,
+            routeStroke(polyline.selected ? 'selected-return' : 'other-return', curStale),
+          );
         }
 
         if (curHover) {
           const [hx, hy] = toPx(curHover.point);
-          ctx.strokeStyle = '#ffd400';
-          ctx.lineWidth = 3;
-          ctx.setLineDash([]);
+          applyDash(ctx, DASH_SOLID);
+          ctx.strokeStyle = INK_SOLID;
+          ctx.lineWidth = ROUTE_LINE_WIDTH;
           ctx.beginPath();
           ctx.arc(hx, hy, 8, 0, Math.PI * 2);
           ctx.stroke();
@@ -255,9 +371,9 @@ export const MapRoutes: FC<MapRoutesProps> = ({
           ctx.font = '10px monospace';
           const tagText = `${Math.round(curHover.distance_m)}m (${curHover.point.elevation_m.toFixed(1)}m)`;
           const tagW = ctx.measureText(tagText).width;
-          ctx.fillStyle = 'rgba(9, 13, 22, 0.85)';
+          ctx.fillStyle = '#ffffff';
           ctx.fillRect(hx + 11, hy - 9, tagW + 6, 15);
-          ctx.fillStyle = '#fef08a';
+          ctx.fillStyle = INK_SOLID;
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           ctx.fillText(tagText, hx + 14, hy - 1);
@@ -284,7 +400,7 @@ export const MapRoutes: FC<MapRoutesProps> = ({
         </span>
         {stale && (
           <span className="map-routes-stale-tag" data-testid="map-routes-stale-indicator">
-            Inputs Changed (Stale)
+            Stale
           </span>
         )}
       </div>

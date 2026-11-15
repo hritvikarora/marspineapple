@@ -46,6 +46,7 @@ export default function TerrainView({
   onError,
 }: TerrainViewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const sessionRef = useRef<MarswalkSession | null>(null);
   const hudUpdate = useRef<((snapshot: HudSnapshot | null) => void) | null>(null);
   const [webgl] = useState(probeWebGL);
@@ -76,15 +77,15 @@ export default function TerrainView({
   }, []);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host || !webgl) return;
+    const stage = stageRef.current;
+    if (!stage || !webgl) return;
     const bag: { disposed: boolean; session: MarswalkSession | null } = { disposed: false, session: null };
     void import('./marswalkSession')
       .then(({ startMarswalkSession }) => {
         if (bag.disposed) return;
         bag.session = startMarswalkSession({
           bundle,
-          container: host,
+          container: stage,
           candidates,
           selectedCandidateId,
           verticalExaggeration: verticalExaggeration || 1,
@@ -98,7 +99,7 @@ export default function TerrainView({
           onCleared: () => hudUpdate.current?.(CLEAR_HUD),
         });
         sessionRef.current = bag.session;
-        const canvas = host.querySelector('canvas');
+        const canvas = stage.querySelector('canvas');
         canvas?.addEventListener('webglcontextlost', (event) => {
           event.preventDefault();
           onError?.({ kind: 'context-lost', message: 'webglcontextlost' });
@@ -126,15 +127,18 @@ export default function TerrainView({
       data-testid="terrain-view"
       data-selected-candidate={selectedCandidateId ?? ''}
       data-hover-index={highlightPathIndex ?? ''}
-      style={{ position: 'relative', minHeight: 360, background: '#1a120c' }}
+      style={{ position: 'relative', height: 'min(70dvh, 640px)', maxHeight: '70dvh', overflow: 'hidden', background: '#1a120c' }}
     >
-      <p style={{ margin: 8 }}>{note}</p>
-      <button type="button" data-testid="sim-step-along-route" onClick={() => sessionRef.current?.player.moveAlongRouteForDemo()}>
-        Step along route
-      </button>
-      <button type="button" data-testid="sim-step-off-path" onClick={() => sessionRef.current?.player.stepOffPathForDemo()}>
-        Step off path
-      </button>
+      <div ref={stageRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }} />
+      <div style={{ position: 'relative', zIndex: 2 }}>
+        <p style={{ margin: 8 }}>{note}</p>
+        <button type="button" data-testid="sim-step-along-route" onClick={() => sessionRef.current?.player.moveAlongRouteForDemo()}>
+          Step along route
+        </button>
+        <button type="button" data-testid="sim-step-off-path" onClick={() => sessionRef.current?.player.stepOffPathForDemo()}>
+          Step off path
+        </button>
+      </div>
     </div>
   );
 }

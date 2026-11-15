@@ -1,16 +1,68 @@
 /**
- * Map Rasters Component. OWNER: Dhani (TASK-008).
+ * Map Rasters Component. OWNER: Dhani (TASK-008 / UI-018).
  * Renders multi-layer terrain rasters (elevation, slope, roughness, quality, exclusion)
  * onto the 2D Canvas in accordance with physical data units and frozen quality/exclusion codes.
  *
  * Grids of 4096 cells or fewer keep the fillRect loop on the destination context so the
  * small-grid tests observe those calls. Larger grids paint that same loop once into an
  * offscreen bitmap keyed by bundle identity, layer visibility, and layer opacity.
+ *
+ * Quality and exclusion words stay on the info line. This layer paints bundle rasters only.
  */
 import { type FC, useEffect, useMemo, useRef } from 'react';
 import type { CanvasDrawHelpers, MapRastersSlotProps } from '../../shared/types';
-import { getElevationColor, getExclusionColor, getQualityColor, getSlopeColor } from './colorScale';
+import {
+  exclusionLegendItems,
+  getElevationColor,
+  getExclusionColor,
+  getQualityColor,
+  getSlopeColor,
+  qualityLegendItems,
+  type ExclusionLegendItem,
+  type ExclusionPattern,
+  type QualityLegendItem,
+} from './colorScale';
 import './map-rasters.css';
+
+type RasterLegendItem = QualityLegendItem | ExclusionLegendItem;
+
+const EXCLUSION_SWATCH_CLASS: Record<ExclusionPattern, string> = {
+  crosshatch: 'map-rasters-swatch map-rasters-swatch-crosshatch',
+  diagonal: 'map-rasters-swatch map-rasters-swatch-diagonal',
+  horizontal: 'map-rasters-swatch map-rasters-swatch-horizontal',
+  frame: 'map-rasters-swatch map-rasters-swatch-frame',
+};
+
+function legendPattern(item: RasterLegendItem): ExclusionPattern | null {
+  if ('pattern' in item) return item.pattern;
+  return null;
+}
+
+function RasterLegend({ items }: { items: readonly RasterLegendItem[] }) {
+  return (
+    <span className="map-rasters-legend">
+      {items.map((item, index) => {
+        const pattern = legendPattern(item);
+        const comma = index < items.length - 1 ? ', ' : '';
+        return (
+          <span key={item.code} className="map-rasters-legend-item">
+            {item.color ? (
+              <span
+                className={pattern ? EXCLUSION_SWATCH_CLASS[pattern] : 'map-rasters-swatch'}
+                style={{ backgroundColor: item.color }}
+                aria-hidden="true"
+              />
+            ) : null}
+            <span className="map-rasters-legend-word">
+              {item.label}
+              {comma}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
 
 type RasterBundle = MapRastersSlotProps['bundle'];
 type RasterLayers = MapRastersSlotProps['layers'];
@@ -280,12 +332,20 @@ export const MapRasters: FC<MapRastersSlotProps> = ({ bundle, layers, registerLa
     return active;
   }, [layers, minZ, maxZ]);
 
+  const qualityLegend = layers.quality.visible ? qualityLegendItems(layers.quality.opacity) : [];
+  const exclusionLegend = layers.exclusion.visible ? exclusionLegendItems(layers.exclusion.opacity) : [];
+
   return (
     <div className="map-rasters-status" data-testid="map-rasters-info">
       <span className="map-rasters-label">Rendered Rasters:</span>
       <span className="map-rasters-list">
         {activeLayers.length > 0 ? activeLayers.join(', ') : 'None (all hidden)'}
       </span>
+      {qualityLegend.length > 0 ? <RasterLegend items={qualityLegend} /> : null}
+      {qualityLegend.length > 0 && exclusionLegend.length > 0 ? (
+        <span className="map-rasters-legend-sep"> — </span>
+      ) : null}
+      {exclusionLegend.length > 0 ? <RasterLegend items={exclusionLegend} /> : null}
     </div>
   );
 };

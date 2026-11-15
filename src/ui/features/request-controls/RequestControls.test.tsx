@@ -15,7 +15,7 @@ describe('TASK-006: Request Controls', () => {
     expect(entry.Component).toBeDefined();
   });
 
-  it('renders calculate button with data-testid="calculate"', () => {
+  it('renders calculate button with data-testid="calculate" and omits cancel while idle', () => {
     const requestRoute = vi.fn();
     const cancelRoute = vi.fn();
 
@@ -29,10 +29,18 @@ describe('TASK-006: Request Controls', () => {
       />,
     );
 
+    expect(screen.getByTestId('request-controls-feature')).toBeTruthy();
+
     const button = screen.getByTestId('calculate');
     expect(button).toBeTruthy();
-    expect(button.textContent).toContain('Calculate Traverse');
+    expect(button.textContent).toBe('Calculate');
+    expect(button.className).toContain('btn-primary');
     expect((button as HTMLButtonElement).disabled).toBe(false);
+    expect(button.getAttribute('aria-busy')).toBe('false');
+
+    expect(screen.queryByTestId('cancel-request')).toBeNull();
+    expect(screen.queryByTestId('solving-progress')).toBeNull();
+    expect(screen.queryByTestId('cannot-request-reason')).toBeNull();
   });
 
   it('clicking calculate button triggers requestRoute when canRequest is true', () => {
@@ -54,16 +62,17 @@ describe('TASK-006: Request Controls', () => {
     expect(requestRoute).toHaveBeenCalledTimes(1);
   });
 
-  it('disables calculate button and shows reason when canRequest is false', () => {
+  it('disables calculate button, blocks requestRoute, and shows exact reason when canRequest is false', () => {
     const requestRoute = vi.fn();
     const cancelRoute = vi.fn();
+    const engineReason = 'Choose a start point.';
 
     render(
       <RequestControls
         requestRoute={requestRoute}
         cancelRoute={cancelRoute}
         canRequest={false}
-        canReason="Set mission start and destination points before calculating."
+        canReason={engineReason}
         isRunning={false}
         candidateCount={0}
       />,
@@ -71,16 +80,35 @@ describe('TASK-006: Request Controls', () => {
 
     const button = screen.getByTestId('calculate') as HTMLButtonElement;
     expect(button.disabled).toBe(true);
+    fireEvent.click(button);
+    expect(requestRoute).not.toHaveBeenCalled();
 
     const reason = screen.getByTestId('cannot-request-reason');
-    expect(reason.textContent).toContain('Set mission start and destination points');
+    expect(reason.textContent).toBe(engineReason);
+    expect(screen.queryByTestId('cancel-request')).toBeNull();
   });
 
-  it('shows cancel button and solving indicator while isRunning is true', () => {
+  it('omits cannot-request-reason when canRequest is false without a reason', () => {
+    render(
+      <RequestControls
+        requestRoute={vi.fn()}
+        cancelRoute={vi.fn()}
+        canRequest={false}
+        isRunning={false}
+        candidateCount={0}
+      />,
+    );
+
+    const button = screen.getByTestId('calculate') as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(screen.queryByTestId('cannot-request-reason')).toBeNull();
+  });
+
+  it('shows cancel button, aria-busy, and honest calculating status while isRunning is true', () => {
     const requestRoute = vi.fn();
     const cancelRoute = vi.fn();
 
-    render(
+    const { container } = render(
       <RequestControls
         requestRoute={requestRoute}
         cancelRoute={cancelRoute}
@@ -92,14 +120,22 @@ describe('TASK-006: Request Controls', () => {
 
     const calcButton = screen.getByTestId('calculate') as HTMLButtonElement;
     expect(calcButton.disabled).toBe(true);
+    expect(calcButton.getAttribute('aria-busy')).toBe('true');
     expect(calcButton.textContent).toContain('Calculating...');
+    fireEvent.click(calcButton);
+    expect(requestRoute).not.toHaveBeenCalled();
 
     const cancelButton = screen.getByTestId('cancel-request');
     expect(cancelButton).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBe(cancelButton);
 
     const progress = screen.getByTestId('solving-progress');
     expect(progress).toBeTruthy();
     expect(progress.getAttribute('role')).toBe('status');
+    expect(progress.getAttribute('aria-live')).toBe('polite');
+    expect(progress.textContent).toBe('Calculating');
+    expect(progress.textContent).not.toMatch(/\d/);
+    expect(container.querySelector('progress')).toBeNull();
   });
 
   it('clicking cancel button triggers cancelRoute', () => {
@@ -121,7 +157,7 @@ describe('TASK-006: Request Controls', () => {
     expect(cancelRoute).toHaveBeenCalledTimes(1);
   });
 
-  it('shows recalculate text when candidates already exist', () => {
+  it('shows Recalculate text when candidates already exist', () => {
     const requestRoute = vi.fn();
     const cancelRoute = vi.fn();
 
@@ -136,6 +172,7 @@ describe('TASK-006: Request Controls', () => {
     );
 
     const button = screen.getByTestId('calculate');
-    expect(button.textContent).toContain('Recalculate Traverse');
+    expect(button.textContent).toBe('Recalculate');
+    expect(screen.queryByTestId('cancel-request')).toBeNull();
   });
 });

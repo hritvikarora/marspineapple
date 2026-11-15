@@ -1,0 +1,137 @@
+.toast {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: 360px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 8px 8px 8px 14px;
+  background-color: var(--color-paper, #FFFFFF);
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-medium, 200ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    transform var(--duration-medium, 200ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+@starting-style {
+  .toast {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.message {
+  margin: 0;
+  flex: 1 1 140px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-ink, #000000);
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.undoButton,
+.dismissButton {
+  box-sizing: border-box;
+  min-width: var(--min-touch-target, 44px);
+  min-height: var(--min-touch-target, 44px);
+  min-inline-size: var(--min-touch-target, 44px);
+  min-block-size: var(--min-touch-target, 44px);
+  border-radius: var(--radius, 12px);
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    background-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    border-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.undoButton {
+  padding: 8px 12px;
+  background-color: var(--color-paper, #FFFFFF);
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  font-weight: 600;
+}
+
+.undoButton:hover {
+  background-color: var(--color-paper-subtle, #FAFAFA);
+  border-color: var(--color-ink, #000000);
+}
+
+.dismissButton {
+  padding: 8px;
+  background-color: transparent;
+  color: var(--color-ink-secondary, #686666);
+  border: 1px solid transparent;
+}
+
+.dismissButton:hover {
+  background-color: var(--color-paper-subtle, #FAFAFA);
+  color: var(--color-ink, #000000);
+}
+
+.undoButton:active,
+.dismissButton:active {
+  transform: scale(0.97);
+}
+
+.undoButton:focus-visible,
+.dismissButton:focus-visible {
+  outline: 2px solid var(--color-ink, #000000);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    opacity: 1;
+    transform: none;
+    transition-property: none;
+    transition-duration: 0ms;
+  }
+
+  .undoButton,
+  .dismissButton {
+    transition-property: none;
+    transition-duration: 0ms;
+  }
+
+  .undoButton:active,
+  .dismissButton:active {
+    transform: none;
+  }
+}
+
+@media print {
+  .toast {
+    display: none;
+    position: static;
+  }
+}

@@ -2,6 +2,7 @@
  * Accessible Form Field wrapper primitive. OWNER: Dhani.
  */
 import { useId, type ReactNode } from 'react';
+import styles from './Field.module.css';
 
 export interface FieldProps {
   label: string;
@@ -29,30 +30,41 @@ export function Field({
   const descId = useId();
   const errorId = useId();
 
-  const describedBy = [
-    description ? descId : null,
-    error ? errorId : null,
-  ].filter(Boolean).join(' ') || undefined;
+  const hasDescription = Boolean(description && description.trim().length > 0);
+  const hasError = Boolean(error && error.trim().length > 0);
+
+  const describedBy =
+    [hasDescription ? descId : null, hasError ? errorId : null].filter(Boolean).join(' ') || undefined;
+
+  const rootClassName = [styles.field, className.trim()].filter(Boolean).join(' ');
 
   return (
-    <div className={`field-group ${error ? 'has-error' : ''} ${className}`.trim()}>
-      <label htmlFor={inputId} className="field-label">
-        {label}
-        {required && <span className="field-required" aria-hidden="true">*</span>}
-      </label>
-      {description && (
-        <p id={descId} className="field-description muted">
+    <div className={rootClassName}>
+      <div className={styles.labelRow}>
+        <label htmlFor={inputId} className={styles.label}>
+          {label}
+        </label>
+        {required && (
+          <span className={styles.required} aria-hidden="true">
+            (required)
+          </span>
+        )}
+      </div>
+      <div className={styles.control}>
+        {children({
+          id: inputId,
+          'aria-describedby': describedBy,
+          'aria-invalid': hasError ? true : undefined,
+          'aria-required': required ? true : undefined,
+        })}
+      </div>
+      {hasDescription && (
+        <p id={descId} className={styles.description}>
           {description}
         </p>
       )}
-      {children({
-        id: inputId,
-        'aria-describedby': describedBy,
-        'aria-invalid': error ? true : undefined,
-        'aria-required': required ? true : undefined,
-      })}
-      {error && (
-        <p id={errorId} role="alert" className="field-error error">
+      {hasError && (
+        <p id={errorId} role="alert" className={styles.error}>
           {error}
         </p>
       )}

@@ -2,8 +2,8 @@
  * CoordinateForm component. OWNER: Dhani (UI Role).
  * Provides accessible numeric coordinate inputs, extent validation, and snapped cell-center feedback.
  */
-import { useId, useMemo, useState, type FC, type FormEvent } from 'react';
-import { cellCenter, pointToCell } from '../../shared';
+import { useId, useMemo, useState, type FC, type FormEvent, type Ref } from 'react';
+import { Button, VisuallyHidden, cellCenter, pointToCell } from '../../shared';
 import type { GridSpec, LocalPoint } from '../../shared';
 import type { MissionEndpoint } from '../../../state/store';
 import styles from './endpoints.module.css';
@@ -17,6 +17,7 @@ export interface CoordinateFormProps {
   onClear: () => void;
   isActiveTarget: boolean;
   onSelectAsTarget: () => void;
+  cellCentreRef?: Ref<HTMLSpanElement>;
 }
 
 export const CoordinateForm: FC<CoordinateFormProps> = ({
@@ -27,16 +28,18 @@ export const CoordinateForm: FC<CoordinateFormProps> = ({
   onClear,
   isActiveTarget,
   onSelectAsTarget,
+  cellCentreRef,
 }) => {
   const idPrefix = useId();
+  const cardTitleId = `${idPrefix}-title`;
   const eastInputId = `${idPrefix}-east`;
   const northInputId = `${idPrefix}-north`;
+  const eastHintId = `${idPrefix}-east-hint`;
+  const northHintId = `${idPrefix}-north-hint`;
   const errorId = `${idPrefix}-error`;
-  const hintId = `${idPrefix}-hint`;
 
   const isStart = which === 'start';
-  const labelText = isStart ? 'Start Endpoint (S)' : 'Destination Endpoint (D)';
-  const badgeClass = isStart ? styles.badgeStart : styles.badgeDestination;
+  const labelText = isStart ? 'Start' : 'Destination';
 
   // Track previous endpoint to adjust local state during render without effects
   const [prevEndpoint, setPrevEndpoint] = useState(endpoint);
@@ -107,6 +110,9 @@ export const CoordinateForm: FC<CoordinateFormProps> = ({
     };
   }, [endpoint, grid]);
 
+  const eastDescribedBy = [eastHintId, error ? errorId : null].filter(Boolean).join(' ');
+  const northDescribedBy = [northHintId, error ? errorId : null].filter(Boolean).join(' ');
+
   return (
     <div
       className={`${styles.card} ${isActiveTarget ? styles.cardActiveTarget : ''}`}
@@ -114,176 +120,203 @@ export const CoordinateForm: FC<CoordinateFormProps> = ({
     >
       <div className={styles.cardHeader}>
         <div className={styles.cardTitleWrapper}>
-          <span className={`${styles.pickMarkerBadge} ${badgeClass}`} aria-hidden="true">
+          <span
+            className={`${styles.pickMarkerBadge} ${isActiveTarget ? styles.badgeActive : ''}`}
+            aria-hidden="true"
+          >
             {isStart ? 'S' : 'D'}
           </span>
-          <h3 className={styles.cardTitle}>{labelText}</h3>
+          <h3 id={cardTitleId} className={styles.cardTitle}>
+            {labelText}
+          </h3>
           {endpoint?.poiId && (
             <span className={styles.badgePreset} data-testid={`endpoint-${which}-preset-badge`}>
               Preset: {endpoint.poiId}
             </span>
           )}
         </div>
-        <div>
+        <div className={styles.cardTargetSlot}>
           {isActiveTarget ? (
             <span className={styles.activeTargetBadge} data-testid={`endpoint-${which}-active-target`}>
-              Active Map Target
+              Active map target
             </span>
           ) : (
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               className={styles.setTargetBtn}
               onClick={onSelectAsTarget}
               aria-label={`Set ${which} as map click target`}
             >
-              Set as Map Target
-            </button>
+              Set as map target
+            </Button>
           )}
         </div>
       </div>
 
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form className={styles.form} onSubmit={handleSubmit} aria-labelledby={cardTitleId} noValidate>
         <div className={styles.inputGrid}>
           <div className={styles.inputGroup}>
             <label htmlFor={eastInputId} className={styles.inputLabel}>
-              East coordinate (m)
+              East <VisuallyHidden>({which}) </VisuallyHidden>(m)
             </label>
             <input
               id={eastInputId}
               data-testid={`endpoint-${which}-east`}
               type="text"
               inputMode="decimal"
-              className={`${styles.coordInput} ${error ? styles.inputHasError : ''}`}
-              placeholder="e.g. 25.0"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              className={`measurement ${styles.coordInput} ${error ? styles.inputHasError : ''}`}
+              placeholder="25.0"
               value={eastInput}
               onChange={(e) => {
                 setEastInput(e.target.value);
                 if (error) setError(null);
               }}
-              aria-describedby={error ? errorId : hintId}
+              aria-describedby={eastDescribedBy}
               aria-invalid={error ? true : undefined}
-              aria-label={`${which} east coordinate in meters`}
             />
-            <span id={hintId} className={styles.inputHint}>
-              Valid: {grid.extent.west_m} m to &lt; {grid.extent.east_m} m
+            <span id={eastHintId} className={`tabular-nums ${styles.inputHint}`}>
+              {grid.extent.west_m} m to &lt; {grid.extent.east_m} m
             </span>
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor={northInputId} className={styles.inputLabel}>
-              North coordinate (m)
+              North <VisuallyHidden>({which}) </VisuallyHidden>(m)
             </label>
             <input
               id={northInputId}
               data-testid={`endpoint-${which}-north`}
               type="text"
               inputMode="decimal"
-              className={`${styles.coordInput} ${error ? styles.inputHasError : ''}`}
-              placeholder="e.g. 65.0"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              className={`measurement ${styles.coordInput} ${error ? styles.inputHasError : ''}`}
+              placeholder="65.0"
               value={northInput}
               onChange={(e) => {
                 setNorthInput(e.target.value);
                 if (error) setError(null);
               }}
-              aria-describedby={error ? errorId : hintId}
+              aria-describedby={northDescribedBy}
               aria-invalid={error ? true : undefined}
-              aria-label={`${which} north coordinate in meters`}
             />
-            <span className={styles.inputHint}>
-              Valid: &gt; {grid.extent.south_m} m to {grid.extent.north_m} m
+            <span id={northHintId} className={`tabular-nums ${styles.inputHint}`}>
+              &gt; {grid.extent.south_m} m to {grid.extent.north_m} m
             </span>
           </div>
         </div>
 
         {error && (
-          <p id={errorId} className={styles.errorMessage} role="alert" data-testid={`endpoint-${which}-error`}>
-            ⚠ {error}
-          </p>
+          <div id={errorId} className={styles.errorMessage} role="alert" data-testid={`endpoint-${which}-error`}>
+            <svg
+              className={styles.errorIcon}
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="8" cy="8" r="6" />
+              <path d="M8 5v3.5" />
+              <path d="M8 11h.01" />
+            </svg>
+            <span className={styles.errorText}>{error}</span>
+          </div>
         )}
 
         <div className={styles.buttonRow}>
-          <button
-            type="submit"
-            className={`${styles.actionBtn} ${styles.primaryAction}`}
-            data-testid={`endpoint-${which}-apply`}
-          >
-            Apply {which === 'start' ? 'Start' : 'Destination'}
-          </button>
+          <Button type="submit" variant="primary" size="sm" data-testid={`endpoint-${which}-apply`}>
+            Apply
+            <VisuallyHidden> {which}</VisuallyHidden>
+          </Button>
 
           {endpoint && !cellDetails?.isAligned && (
-            <button
+            <Button
               type="button"
-              className={`${styles.actionBtn} ${styles.secondaryAction}`}
+              variant="secondary"
+              size="sm"
               onClick={handleSnapToCenter}
               data-testid={`endpoint-${which}-snap`}
               title="Snap coordinates to containing cell center"
             >
-              Snap to Cell Center
-            </button>
+              Snap to cell center
+              <VisuallyHidden> ({which})</VisuallyHidden>
+            </Button>
           )}
 
           {endpoint && (
-            <button
+            <Button
               type="button"
-              className={`${styles.actionBtn} ${styles.clearAction}`}
+              variant="secondary"
+              size="sm"
               onClick={onClear}
               data-testid={`endpoint-${which}-clear`}
-              aria-label={`Clear ${which} endpoint`}
             >
               Clear
-            </button>
+              <VisuallyHidden> {which} endpoint</VisuallyHidden>
+            </Button>
           )}
         </div>
       </form>
 
-      {/* Cell-Resolution & Snapping Feedback */}
       {endpoint && cellDetails ? (
         <div className={styles.cellFeedback} data-testid={`endpoint-${which}-feedback`}>
-          <div className={styles.feedbackHeader}>
-            <span>Cell Resolution &amp; Center Snapping</span>
-            <span>
-              {grid.cellSizeEast_m}m × {grid.cellSizeNorth_m}m cell
-            </span>
-          </div>
-
-          <div className={styles.feedbackRow}>
-            <span>Requested Position:</span>
-            <span className={styles.feedbackVal} data-testid={`endpoint-${which}-requested-pos`}>
-              East {endpoint.point.east_m.toFixed(2)} m, North {endpoint.point.north_m.toFixed(2)} m
-            </span>
-          </div>
-
-          <div className={styles.feedbackRow}>
-            <span>Accepted Cell Center:</span>
-            <span className={styles.feedbackVal} data-testid={`endpoint-${which}-cell-center`}>
+          <div className={styles.cellCentreLine}>
+            <span className={styles.cellCentreLabel}>Accepted cell center</span>
+            <span
+              ref={cellCentreRef}
+              tabIndex={-1}
+              className={`measurement ${styles.cellCentreValue}`}
+              data-testid={`endpoint-${which}-cell-center`}
+            >
               East {cellDetails.center.east_m.toFixed(2)} m, North {cellDetails.center.north_m.toFixed(2)} m
             </span>
           </div>
+          <dl className={styles.feedbackList}>
+            <div className={styles.feedbackRow}>
+              <dt className={styles.feedbackKey}>Requested</dt>
+              <dd
+                className={`measurement ${styles.feedbackVal}`}
+                data-testid={`endpoint-${which}-requested-pos`}
+              >
+                East {endpoint.point.east_m.toFixed(2)} m, North {endpoint.point.north_m.toFixed(2)} m
+              </dd>
+            </div>
 
-          <div className={styles.feedbackRow}>
-            <span>Grid Cell Coordinates:</span>
-            <span className={styles.feedbackVal} data-testid={`endpoint-${which}-cell-indices`}>
-              Row {cellDetails.cell.row}, Col {cellDetails.cell.col} (Index {cellDetails.cell.index})
-            </span>
-          </div>
+            <div className={styles.feedbackRow}>
+              <dt className={styles.feedbackKey}>Grid cell</dt>
+              <dd
+                className={`measurement ${styles.feedbackVal}`}
+                data-testid={`endpoint-${which}-cell-indices`}
+              >
+                Row {cellDetails.cell.row}, Col {cellDetails.cell.col} (Index {cellDetails.cell.index})
+              </dd>
+            </div>
 
-          <div className={styles.feedbackRow}>
-            <span>Center Alignment:</span>
-            <span className={styles.feedbackVal}>
-              {cellDetails.isAligned
-                ? 'Aligned with cell center (0.00 m offset)'
-                : `${cellDetails.offsetDistance.toFixed(2)} m offset from center`}
-            </span>
-          </div>
-
-          <p className={styles.feedbackNote}>
-            The routing engine operates on discrete raster cell centers. Calculations will traverse from this cell
-            center.
-          </p>
+            <div className={styles.feedbackRow}>
+              <dt className={styles.feedbackKey}>Alignment</dt>
+              <dd className={`measurement ${styles.feedbackVal}`}>
+                {cellDetails.isAligned
+                  ? 'Aligned with cell center (0.00 m offset)'
+                  : `${cellDetails.offsetDistance.toFixed(2)} m offset from center`}
+              </dd>
+            </div>
+          </dl>
         </div>
       ) : (
         <p className={styles.emptyState} data-testid={`endpoint-${which}-empty`}>
-          Endpoint not set. Click on the 2D map or enter coordinates above to place {which}.
+          Endpoint not set. Click on the map or enter coordinates above.
         </p>
       )}
     </div>

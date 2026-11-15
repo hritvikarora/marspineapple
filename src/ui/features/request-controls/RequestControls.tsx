@@ -1,8 +1,8 @@
 /**
- * Route Request, Cancel, and Progress Controls Component. OWNER: Dhani (TASK-006).
- * Manages route execution lifecycle, providing clear feedback on solving state and cancellation.
+ * Calculate and Cancel controls. OWNER: Dhani (UI-014).
+ * Calculate is the primary action. Cancel is mounted only while a request is running.
  */
-import { type FC } from 'react';
+import { useId, type FC } from 'react';
 import type { RequestControlsSlotProps } from '../../shared/types';
 import { Button } from '../../shared/primitives/Button';
 import './request-controls.css';
@@ -15,6 +15,23 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
   isRunning,
   candidateCount,
 }) => {
+  const reasonId = useId();
+  const reason = typeof canReason === 'string' ? canReason : '';
+  const showReason = !canRequest && reason.trim().length > 0;
+  const isCalculateDisabled = !canRequest || isRunning;
+  const calculateLabel = isRunning
+    ? 'Calculating...'
+    : candidateCount > 0
+      ? 'Recalculate'
+      : 'Calculate';
+
+  const handleCalculateClick = () => {
+    if (isCalculateDisabled) {
+      return;
+    }
+    requestRoute();
+  };
+
   return (
     <div className="request-controls-container" data-testid="request-controls-feature">
       <div className="request-controls-buttons">
@@ -23,40 +40,40 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
           size="md"
           className="request-controls-calculate-btn"
           data-testid="calculate"
-          disabled={!canRequest || isRunning}
-          onClick={requestRoute}
-          title={!canRequest ? canReason : 'Calculate traversable paths for selected policies'}
-          aria-busy={isRunning}
-        >
-          {isRunning ? 'Calculating...' : candidateCount > 0 ? 'Recalculate Traverse' : 'Calculate Traverse'}
-        </Button>
-
-        {isRunning && (
+          disabled={isCalculateDisabled}
+          aria-busy={isRunning ? 'true' : 'false'}
+          aria-describedby={showReason ? reasonId : undefined}
+          onClick={handleCalculateClick}
+          children={calculateLabel}
+        />
+        {isRunning ? (
           <Button
             variant="danger"
             size="md"
             className="request-controls-cancel-btn"
             data-testid="cancel-request"
             onClick={cancelRoute}
-            aria-label="Cancel traverse calculation"
-          >
-            Cancel
-          </Button>
-        )}
+            children="Cancel"
+          />
+        ) : null}
       </div>
-
-      {isRunning && (
-        <div className="request-controls-progress" role="status" aria-live="polite" data-testid="solving-progress">
-          <span className="request-controls-spinner" aria-hidden="true" />
-          <span className="request-controls-progress-text">Solving optimal Martian traverse routes...</span>
-        </div>
-      )}
-
-      {!canRequest && !isRunning && canReason && (
-        <p className="request-controls-reason" data-testid="cannot-request-reason">
-          {canReason}
-        </p>
-      )}
+      {isRunning ? (
+        <div
+          className="request-controls-progress"
+          role="status"
+          aria-live="polite"
+          data-testid="solving-progress"
+          children="Calculating"
+        />
+      ) : null}
+      {showReason ? (
+        <p
+          id={reasonId}
+          className="request-controls-reason"
+          data-testid="cannot-request-reason"
+          children={reason}
+        />
+      ) : null}
     </div>
   );
 };
