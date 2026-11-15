@@ -1,5 +1,6 @@
 /**
- * Scoped styles for Mission Assumptions Feature (TASK-005)
+ * Mission assumptions. Paper rows, hairline dividers, 44px hits.
+ * The native disclosure has no animation.
  */
 .assumptions-panel {
   margin-bottom: var(--space-4, 16px);
@@ -8,97 +9,203 @@
 .assumptions-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3, 12px);
+  min-width: 0;
+  background: var(--color-paper, #ffffff);
+  color: var(--color-ink, #000000);
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .assumptions-fieldset {
-  border: 1px solid var(--color-border-subtle, #334155);
-  border-radius: var(--radius-md, 6px);
-  padding: var(--space-3, 12px);
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2, 8px);
-  background: var(--color-surface-sunken, #090d16);
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  background: var(--color-paper, #ffffff);
+}
+
+.assumptions-fieldset + .assumptions-fieldset {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-hairline, #e5e5e5);
 }
 
 .assumptions-legend {
-  font-size: var(--font-size-xs, 12px);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-main, #f8fafc);
-  padding: 0 var(--space-2, 8px);
-}
-
-.assumptions-hint {
-  font-size: var(--font-size-xs, 12px);
-  color: var(--color-text-muted, #94a3b8);
-  margin: 0;
+  padding: 0;
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink-secondary, #686666);
 }
 
-.assumptions-policies-list {
+.assumptions-policies-list,
+.assumptions-switch-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 8px);
+  min-width: 0;
+  background: var(--color-paper, #ffffff);
 }
 
-.assumptions-checkbox-item {
+.assumptions-row {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-2, 8px);
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  background: var(--color-paper, #ffffff);
+  color: var(--color-ink, #000000);
   cursor: pointer;
-  min-height: 44px; /* Accessible touch target */
-  padding: var(--space-1, 4px) 0;
+}
+
+.assumptions-policies-list .assumptions-row + .assumptions-row,
+.assumptions-switch-list .assumptions-row + .assumptions-row,
+.assumptions-policies-list + .assumptions-warning,
+.assumptions-warning + .assumptions-weights,
+.assumptions-policies-list + .assumptions-weights {
+  border-top: 1px solid var(--color-hairline, #e5e5e5);
+}
+
+.assumptions-row-strict {
+  align-items: flex-start;
+  padding: 12px 0;
 }
 
 .assumptions-checkbox {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 16px;
+  accent-color: var(--color-ink, #000000);
   cursor: pointer;
-  accent-color: var(--color-accent, #60a5fa);
-  flex-shrink: 0;
 }
 
-.assumptions-checkbox:focus-visible {
-  outline: 2px solid var(--color-focus, #73d0c1);
+.assumptions-row-strict .assumptions-checkbox {
+  margin-top: 2px;
+}
+
+.assumptions-checkbox:focus-visible,
+.assumptions-weights-summary:focus-visible {
+  outline: 2px solid var(--color-ink, #000000);
   outline-offset: 2px;
 }
 
-.assumptions-checkbox-label {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.assumptions-checkbox:disabled,
+.assumptions-row:has(.assumptions-checkbox:disabled) {
+  cursor: not-allowed;
+}
+
+.assumptions-row:has(.assumptions-checkbox:disabled) {
+  color: var(--color-ink-secondary, #686666);
 }
 
 .assumptions-policy-title {
-  font-size: var(--font-size-sm, 13px);
+  min-width: 0;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--color-text-main, #f8fafc);
+  line-height: 1.35;
+  color: inherit;
+  overflow-wrap: anywhere;
 }
 
-.assumptions-policy-desc {
-  font-size: var(--font-size-xs, 11px);
-  color: var(--color-text-muted, #94a3b8);
+.assumptions-strict-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.assumptions-strict-sentence {
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.4;
+  color: var(--color-ink-secondary, #686666);
+  overflow-wrap: anywhere;
 }
 
 .assumptions-warning {
-  font-size: var(--font-size-xs, 12px);
-  color: var(--color-danger, #ef4444);
-  font-weight: 500;
   margin: 0;
-  padding: var(--space-2, 8px);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-sm, 4px);
+  padding: 10px 0;
+  background: var(--color-paper, #ffffff);
+  color: var(--color-status, #9e2a2b);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .assumptions-note {
-  font-size: var(--font-size-xs, 11px);
-  color: var(--color-text-muted, #94a3b8);
-  font-style: italic;
   margin: 0;
+  padding: 0 0 8px 28px;
+  color: var(--color-ink-secondary, #686666);
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.assumptions-weights {
+  min-width: 0;
+  background: var(--color-paper, #ffffff);
+  color: var(--color-ink, #000000);
+}
+
+.assumptions-weights-summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-ink, #000000);
+}
+
+.assumptions-weights-body {
+  margin: 0;
+  padding: 0 0 12px 1.25rem;
+  color: var(--color-ink-secondary, #686666);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.assumptions-equation {
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.assumptions-weights-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.assumptions-weights-list li {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.assumptions-weights-list li:last-child {
+  margin-bottom: 0;
+}
+
+@media print {
+  .assumptions-container,
+  .assumptions-fieldset,
+  .assumptions-row,
+  .assumptions-warning,
+  .assumptions-weights,
+  .assumptions-note,
+  .assumptions-strict-sentence,
+  .assumptions-legend,
+  .assumptions-weights-body {
+    background: #ffffff;
+    color: #000000;
+  }
 }

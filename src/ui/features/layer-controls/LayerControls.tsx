@@ -1,96 +1,76 @@
 /**
- * Layer Controls & Legends Component. OWNER: Dhani (TASK-009).
- * Provides toggles and opacity controls for terrain rasters and mission overlays.
- * Updating display settings does not trigger recalculations or mark routes stale.
+ * Layer visibility and opacity. Display changes dispatch view/setLayer only
+ * and do not recalculate or delete a route.
  */
 import { type ChangeEvent, type FC } from 'react';
 import type { LayerKey } from '../../../state/store';
 import type { LayerControlsSlotProps } from '../../shared/types';
-import { Panel } from '../../shared/primitives/Panel';
 import './layer-controls.css';
 
 interface LayerMeta {
   key: LayerKey;
   label: string;
-  description: string;
-  legend?: Array<{ color: string; label: string }>;
+  title: string;
+  legend: readonly string[];
 }
 
-const LAYER_CONFIGS: LayerMeta[] = [
+const LAYER_CONFIGS: readonly LayerMeta[] = [
   {
     key: 'elevation',
     label: 'Elevation',
-    description: 'Continuous digital elevation model in local planar meters.',
-    legend: [
-      { color: 'rgb(90, 50, 35)', label: 'Low Elevation' },
-      { color: 'rgb(240, 144, 90)', label: 'High Elevation' },
-    ],
+    title: 'Elevation in local metres.',
+    legend: ['Low Elevation', 'High Elevation'],
   },
   {
     key: 'slope',
-    label: 'Slope Gradient',
-    description: 'Surface incline in degrees relative to local gravitational vector.',
-    legend: [
-      { color: 'rgb(245, 158, 11)', label: '15° – 25° (Moderate)' },
-      { color: 'rgb(239, 68, 68)', label: '> 25° (Steep / Critical)' },
-    ],
+    label: 'Slope',
+    title: 'Surface incline in degrees.',
+    legend: ['15° – 25° (Moderate)', '> 25° (Steep / Critical)'],
   },
   {
     key: 'roughness',
-    label: 'Surface Roughness',
-    description: 'Sub-pixel micro-relief obstacles and texture hazards.',
-    legend: [{ color: 'rgba(255, 255, 255, 0.6)', label: 'High Roughness Obstacles' }],
+    label: 'Roughness',
+    title: 'Surface roughness.',
+    legend: ['High Roughness Obstacles'],
   },
   {
     key: 'quality',
-    label: 'Data Quality',
-    description: 'Confidence classifications for elevation measurements (Quality 0..3).',
-    legend: [
-      { color: 'rgb(245, 158, 11)', label: 'Low Quality (2)' },
-      { color: 'rgb(168, 85, 247)', label: 'Unknown Quality (3)' },
-      { color: 'rgb(15, 23, 42)', label: 'No Elevation (0)' },
-    ],
+    label: 'Quality',
+    title: 'Quality codes 0, 1, 2, and 3.',
+    legend: ['Low Quality (2)', 'Unknown Quality (3)', 'No Elevation (0)'],
   },
   {
     key: 'exclusion',
-    label: 'Exclusion Barriers',
-    description: 'Hard constraints and impassable hazards (Exclusion 1..4).',
-    legend: [
-      { color: 'rgb(220, 38, 38)', label: 'Missing / Unsupported' },
-      { color: 'rgb(236, 72, 153)', label: 'Manual Hazard' },
-    ],
+    label: 'Exclusion',
+    title: 'Excluded cells on the display overlay.',
+    legend: ['Missing / Unsupported', 'Manual Hazard'],
   },
   {
     key: 'route',
-    label: 'Candidate Routes',
-    description: 'Computed traversal polylines and waypoint indicators.',
-    legend: [
-      { color: '#2ecc71', label: 'Selected Outbound' },
-      { color: '#60a5fa', label: 'Alternative Policy' },
-    ],
+    label: 'Route',
+    title: 'Shows the route. Hiding it leaves the route in place.',
+    legend: ['Selected Outbound', 'Alternative Policy'],
   },
   {
     key: 'poi',
-    label: 'Waypoints & Landmarks',
-    description: 'Outposts and science destination targets.',
-    legend: [
-      { color: '#3b82f6', label: 'Outpost' },
-      { color: '#10b981', label: 'Science Target' },
-    ],
+    label: 'Places',
+    title: 'Outpost and science stops.',
+    legend: ['Outpost', 'Science Target'],
   },
 ];
 
 export const LayerControls: FC<LayerControlsSlotProps> = ({ layers, dispatch }) => {
-  const handleVisibilityChange = (layer: LayerKey, checked: boolean) => {
+  const handleVisibilityChange = (layer: LayerKey, event: ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: 'view/setLayer',
       layer,
-      visible: checked,
+      visible: event.target.checked,
     });
   };
 
-  const handleOpacityChange = (layer: LayerKey, e: ChangeEvent<HTMLInputElement>) => {
-    const opacity = parseFloat(e.target.value);
+  const handleOpacityChange = (layer: LayerKey, event: ChangeEvent<HTMLInputElement>) => {
+    const opacity = Number(event.target.value);
+    if (!Number.isFinite(opacity)) return;
     dispatch({
       type: 'view/setLayer',
       layer,
@@ -99,70 +79,57 @@ export const LayerControls: FC<LayerControlsSlotProps> = ({ layers, dispatch }) 
   };
 
   return (
-    <Panel className="layer-controls-panel" title="Map Layers & Legends">
-      <div className="layer-controls-container" data-testid="layer-controls-feature">
-        <p className="layer-controls-hint">
-          Toggle layer visibility and adjust opacity. Display adjustments do not invalidate route solutions.
-        </p>
+    <fieldset className="layer-controls" data-testid="layer-controls-feature">
+      <legend className="layer-controls-legend">Layers</legend>
+      <div className="layer-controls-list">
+        {LAYER_CONFIGS.map(({ key, label, title, legend }) => {
+          const setting = layers[key];
+          const opacityId = `layer-opacity-input-${key}`;
+          const percent = Math.round(setting.opacity * 100);
 
-        <div className="layer-controls-list" role="group" aria-label="Map layer controls">
-          {LAYER_CONFIGS.map(({ key, label, description, legend }) => {
-            const currentSetting = layers[key];
-            if (!currentSetting) return null;
+          return (
+            <div key={key} className="layer-row" data-testid={`layer-card-${key}`} title={title}>
+              <label className="layer-toggle">
+                <input
+                  type="checkbox"
+                  className="layer-checkbox"
+                  data-testid={`layer-toggle-${key}`}
+                  checked={setting.visible}
+                  onChange={(event) => handleVisibilityChange(key, event)}
+                />
+                <span className="layer-name">{label}</span>
+              </label>
 
-            return (
-              <div key={key} className="layer-control-card" data-testid={`layer-card-${key}`}>
-                <div className="layer-control-main-row">
-                  <label className="layer-control-toggle">
-                    <input
-                      type="checkbox"
-                      className="layer-control-checkbox"
-                      data-testid={`layer-toggle-${key}`}
-                      aria-label={key}
-                      checked={currentSetting.visible}
-                      onChange={(e) => handleVisibilityChange(key, e.target.checked)}
-                    />
-                    <span className="layer-control-label-text">{label}</span>
-                  </label>
+              {setting.visible && legend.length > 0 ? (
+                <span className="layer-legend-words">
+                  {legend.map((phrase) => (
+                    <span key={phrase} className="layer-legend-text">
+                      {phrase}
+                    </span>
+                  ))}
+                </span>
+              ) : null}
 
-                  {currentSetting.visible && (
-                    <div className="layer-opacity-group">
-                      <label htmlFor={`opacity-${key}`} className="layer-opacity-label">
-                        {Math.round(currentSetting.opacity * 100)}%
-                      </label>
-                      <input
-                        id={`opacity-${key}`}
-                        type="range"
-                        className="layer-opacity-slider"
-                        data-testid={`layer-opacity-${key}`}
-                        min="0.1"
-                        max="1.0"
-                        step="0.05"
-                        value={currentSetting.opacity}
-                        aria-label={`${label} opacity`}
-                        onChange={(e) => handleOpacityChange(key, e)}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <p className="layer-control-desc">{description}</p>
-
-                {currentSetting.visible && legend && legend.length > 0 && (
-                  <div className="layer-legend-items" aria-label={`${label} legend items`}>
-                    {legend.map((item) => (
-                      <div key={item.label} className="layer-legend-item">
-                        <span className="layer-legend-swatch" style={{ backgroundColor: item.color }} />
-                        <span className="layer-legend-text">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              <label className="layer-opacity" htmlFor={opacityId}>
+                <span className="layer-opacity-name">{label} opacity</span>
+                <input
+                  id={opacityId}
+                  type="range"
+                  className="layer-opacity-range"
+                  data-testid={`layer-opacity-${key}`}
+                  min={0.1}
+                  max={1}
+                  step={0.05}
+                  value={setting.opacity}
+                  aria-label={`${label} opacity`}
+                  onChange={(event) => handleOpacityChange(key, event)}
+                />
+                <span className="layer-opacity-value">{percent}%</span>
+              </label>
+            </div>
+          );
+        })}
       </div>
-    </Panel>
+    </fieldset>
   );
 };

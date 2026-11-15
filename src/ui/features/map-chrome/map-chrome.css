@@ -1,24 +1,69 @@
 /**
- * Scoped styles for Map Chrome Feature (TASK-007)
+ * Scoped styles for map chrome (UI-016).
+ * Paper field, quiet labels, tabular metres. The scale bar does not animate.
  */
 .map-chrome-metadata {
+  position: relative;
   margin-top: var(--space-2, 8px);
   padding: var(--space-2, 8px) var(--space-3, 12px);
-  background: var(--color-surface-sunken, #090d16);
-  border: 1px solid var(--color-border-subtle, #334155);
-  border-radius: var(--radius-sm, 4px);
-  font-size: var(--font-size-xs, 11px);
-  color: var(--color-text-muted, #94a3b8);
+  background: var(--color-paper, #ffffff);
+  border: 1px solid var(--color-hairline, #e5e5e5);
+  border-radius: var(--radius, 12px);
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-ink, #000000);
+  animation: none;
+  transition: none;
 }
 
 .map-chrome-details {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3, 12px);
-  align-items: center;
+  align-items: baseline;
+}
+
+.map-chrome-item {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 8px);
+  align-items: baseline;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--color-ink, #000000);
 }
 
 .map-chrome-item strong {
-  color: var(--color-text-main, #f8fafc);
-  margin-right: var(--space-1, 4px);
+  color: var(--color-ink-secondary, #686666);
+  font-weight: 500;
+}
+
+.map-chrome-m {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  color: var(--color-ink, #000000);
+  overflow-wrap: anywhere;
+}
+
+.map-chrome-note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-chrome-metadata,
+  .map-chrome-details,
+  .map-chrome-item {
+    animation: none;
+    transition: none;
+  }
 }

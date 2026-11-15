@@ -1,125 +1,163 @@
 /**
- * Map Chrome Component. OWNER: Dhani (TASK-007).
- * Renders spatial boundary, North arrow orientation, and dynamic meter scale bar onto the canvas,
- * and provides accessible coordinate reference system metadata.
+ * Map chrome. OWNER: Dhani (UI-016).
+ * North-up mark and a local-metre scale bar on the existing canvas layer,
+ * plus the coordinate reference readout.
  */
 import { type FC, useEffect } from 'react';
 import type { CanvasDrawHelpers, MapChromeSlotProps } from '../../shared/types';
 import { calculateScaleBar } from './scale';
 import './map-chrome.css';
 
+const INK = '#000000';
+const PAPER = '#FFFFFF';
+const PAPER_CHIP = 'rgba(255, 255, 255, 0.8)';
+const HAIRLINE = '#E5E5E5';
+
+const MONO_FONT =
+  '12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+
+const EDGE_INSET = 12;
+const NORTH_RADIUS = 16;
+const SCALE_BAND_H = 22;
+const BAR_H = 4;
+const CHIP_MAX_W = 119;
+const MONO_ADVANCE_PX = 7.2;
+
+function paintInkLabel(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+): void {
+  ctx.font = MONO_FONT;
+  ctx.lineWidth = 1;
+  ctx.fillStyle = INK;
+  ctx.fillText(text, x - 1, y);
+  ctx.fillText(text, x + 1, y);
+  ctx.fillText(text, x, y - 1);
+  ctx.fillText(text, x, y + 1);
+  ctx.fillText(text, x, y);
+}
+
+function labelChipWidth(label: string): number {
+  const raw = Math.ceil(label.length * MONO_ADVANCE_PX + 16);
+  if (raw < 36) return 36;
+  if (raw > CHIP_MAX_W) return CHIP_MAX_W;
+  return raw;
+}
+
+function drawBoundary(ctx: CanvasRenderingContext2D, width: number, height: number): void {
+  ctx.strokeStyle = HAIRLINE;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, Math.max(0, width - 1), Math.max(0, height - 1));
+}
+
+function drawNorth(ctx: CanvasRenderingContext2D): void {
+  const cx = EDGE_INSET + NORTH_RADIUS;
+  const cy = EDGE_INSET + NORTH_RADIUS;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, NORTH_RADIUS, 0, Math.PI * 2);
+  ctx.fillStyle = PAPER_CHIP;
+  ctx.fill();
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - 1);
+  ctx.lineTo(cx - 4, cy + 6);
+  ctx.lineTo(cx - 1.25, cy + 6);
+  ctx.lineTo(cx - 1.25, cy + 11);
+  ctx.lineTo(cx + 1.25, cy + 11);
+  ctx.lineTo(cx + 1.25, cy + 6);
+  ctx.lineTo(cx + 4, cy + 6);
+  ctx.closePath();
+  ctx.fillStyle = INK;
+  ctx.fill();
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  paintInkLabel(ctx, 'N', cx, cy - 8);
+}
+
+function drawScale(
+  ctx: CanvasRenderingContext2D,
+  height: number,
+  scaleX: number,
+): void {
+  const { widthPx, label } = calculateScaleBar(scaleX, 80);
+  const bandBottom = height - EDGE_INSET;
+  const bandTop = bandBottom - SCALE_BAND_H;
+  const barX = EDGE_INSET;
+  const barY = bandTop + (SCALE_BAND_H - BAR_H) / 2;
+  const tickTop = bandTop + 4;
+  const tickBottom = bandBottom - 4;
+
+  ctx.fillStyle = PAPER;
+  ctx.fillRect(barX, barY, widthPx, BAR_H);
+  ctx.fillStyle = INK;
+  ctx.fillRect(barX, barY, widthPx / 2, BAR_H);
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, barY, widthPx, BAR_H);
+
+  ctx.beginPath();
+  ctx.moveTo(barX, tickTop);
+  ctx.lineTo(barX, tickBottom);
+  ctx.moveTo(barX + widthPx, tickTop);
+  ctx.lineTo(barX + widthPx, tickBottom);
+  ctx.stroke();
+
+  const chipW = labelChipWidth(label);
+  const chipX = barX + widthPx + 8;
+  const chipY = bandTop;
+  ctx.fillStyle = PAPER_CHIP;
+  ctx.fillRect(chipX, chipY, chipW, SCALE_BAND_H);
+  ctx.strokeStyle = HAIRLINE;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(chipX + 0.5, chipY + 0.5, chipW - 1, SCALE_BAND_H - 1);
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  paintInkLabel(ctx, label, chipX + 8, chipY + SCALE_BAND_H / 2);
+}
+
 export const MapChrome: FC<MapChromeSlotProps> = ({ grid, crs, registerLayer }) => {
   useEffect(() => {
     const drawChrome = (helpers: CanvasDrawHelpers) => {
-      const { ctx, width: W, height: H, scaleX: sx } = helpers;
-
-      // 1. Grid boundary outline (perimeter box)
+      const { ctx, width, height, scaleX } = helpers;
       ctx.save();
-      ctx.strokeStyle = 'rgba(115, 208, 193, 0.4)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
-
-      // Corner accent brackets
-      const bracketLen = Math.min(12, W * 0.05);
-      ctx.strokeStyle = '#73d0c1';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      // Top-left
-      ctx.moveTo(0, bracketLen);
-      ctx.lineTo(0, 0);
-      ctx.lineTo(bracketLen, 0);
-      // Top-right
-      ctx.moveTo(W - bracketLen, 0);
-      ctx.lineTo(W, 0);
-      ctx.lineTo(W, bracketLen);
-      // Bottom-left
-      ctx.moveTo(0, H - bracketLen);
-      ctx.lineTo(0, H);
-      ctx.lineTo(bracketLen, H);
-      // Bottom-right
-      ctx.moveTo(W - bracketLen, H);
-      ctx.lineTo(W, H);
-      ctx.lineTo(W, H - bracketLen);
-      ctx.stroke();
-
-      // 2. North Arrow (Top-Right)
-      const arrowX = W - 32;
-      const arrowY = 32;
-      ctx.fillStyle = 'rgba(9, 13, 22, 0.7)';
-      ctx.beginPath();
-      ctx.arc(arrowX, arrowY, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Draw arrow needle pointing straight up (+North, row 0)
-      ctx.beginPath();
-      ctx.moveTo(arrowX, arrowY - 14); // North tip
-      ctx.lineTo(arrowX - 5, arrowY + 6);
-      ctx.lineTo(arrowX, arrowY + 2);
-      ctx.closePath();
-      ctx.fillStyle = '#ef4444'; // Red north needle
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(arrowX, arrowY - 14);
-      ctx.lineTo(arrowX + 5, arrowY + 6);
-      ctx.lineTo(arrowX, arrowY + 2);
-      ctx.closePath();
-      ctx.fillStyle = '#ffffff'; // White needle side
-      ctx.fill();
-
-      // North text label
-      ctx.font = 'bold 11px system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('N', arrowX, arrowY - 16);
-
-      // 3. Dynamic Meter Scale Bar (Bottom-Left)
-      const { widthPx, label } = calculateScaleBar(sx, 70);
-      const barX = 14;
-      const barY = H - 18;
-      const barH = 5;
-
-      // Dark background badge for high contrast over any terrain
-      ctx.fillStyle = 'rgba(9, 13, 22, 0.75)';
-      ctx.fillRect(barX - 4, barY - 16, widthPx + 40, 24);
-
-      // Alternating black and white scale segments
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(barX, barY, widthPx, barH);
-      ctx.fillStyle = '#090d16';
-      ctx.fillRect(barX, barY, widthPx / 2, barH);
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(barX, barY, widthPx, barH);
-
-      // Scale text label
-      ctx.font = '10px monospace';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(label, barX + widthPx + 6, barY + barH / 2);
-
-      ctx.restore();
+      try {
+        drawBoundary(ctx, width, height);
+        drawNorth(ctx);
+        drawScale(ctx, height, scaleX);
+      } finally {
+        ctx.restore();
+      }
     };
 
     return registerLayer(drawChrome);
-  }, [grid, crs, registerLayer]);
+  }, [registerLayer]);
 
   return (
     <div className="map-chrome-metadata" data-testid="map-chrome-info">
+      <p className="map-chrome-note">North is up. The scale bar is local metres.</p>
       <div className="map-chrome-details">
         <span className="map-chrome-item" title="Coordinate reference system">
           <strong>CRS:</strong> {crs.description}
         </span>
-        <span className="map-chrome-item" title="Planar grid extent in meters">
-          <strong>Extent:</strong> [{grid.extent.west_m}m W to {grid.extent.east_m}m E, {grid.extent.south_m}m S to {grid.extent.north_m}m N]
+        <span className="map-chrome-item" title="Planar grid extent in local metres">
+          <strong>Extent:</strong>{' '}
+          <span className="map-chrome-m">
+            [{grid.extent.west_m}m W to {grid.extent.east_m}m E, {grid.extent.south_m}m S to {grid.extent.north_m}m N]
+          </span>
         </span>
         <span className="map-chrome-item" title="Grid resolution per raster cell">
-          <strong>Resolution:</strong> {grid.cellSizeEast_m}m × {grid.cellSizeNorth_m}m/cell ({grid.width}×{grid.height} cells)
+          <strong>Resolution:</strong>{' '}
+          <span className="map-chrome-m">
+            {grid.cellSizeEast_m}m × {grid.cellSizeNorth_m}m/cell ({grid.width}×{grid.height} cells)
+          </span>
         </span>
       </div>
     </div>

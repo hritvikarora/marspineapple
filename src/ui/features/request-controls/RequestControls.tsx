@@ -1,6 +1,6 @@
 /**
- * Route Request, Cancel, and Progress Controls Component. OWNER: Dhani (TASK-006).
- * Manages route execution lifecycle, providing clear feedback on solving state and cancellation.
+ * Calculate and Cancel controls. OWNER: Dhani (UI-014).
+ * Calculate is the primary action. Cancel is mounted only while a request is running.
  */
 import { useId, type FC } from 'react';
 import type { RequestControlsSlotProps } from '../../shared/types';
@@ -16,10 +16,9 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
   candidateCount,
 }) => {
   const reasonId = useId();
+  const reason = typeof canReason === 'string' ? canReason : '';
+  const showReason = !canRequest && reason.trim().length > 0;
   const isCalculateDisabled = !canRequest || isRunning;
-  const hasReason = typeof canReason === 'string' && canReason.trim().length > 0;
-  const showReason = !canRequest && !isRunning && hasReason;
-
   const calculateLabel = isRunning
     ? 'Calculating...'
     : candidateCount > 0
@@ -42,44 +41,39 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
           className="request-controls-calculate-btn"
           data-testid="calculate"
           disabled={isCalculateDisabled}
-          onClick={handleCalculateClick}
-          title={showReason ? canReason : undefined}
-          aria-busy={isRunning}
+          aria-busy={isRunning ? 'true' : 'false'}
           aria-describedby={showReason ? reasonId : undefined}
-        >
-          {calculateLabel}
-        </Button>
-
-        {isRunning && (
+          onClick={handleCalculateClick}
+          children={calculateLabel}
+        />
+        {isRunning ? (
           <Button
             variant="danger"
             size="md"
             className="request-controls-cancel-btn"
             data-testid="cancel-request"
             onClick={cancelRoute}
-          >
-            Cancel
-          </Button>
-        )}
+            children="Cancel"
+          />
+        ) : null}
       </div>
-
-      {isRunning && (
+      {isRunning ? (
         <div
           className="request-controls-progress"
           role="status"
           aria-live="polite"
           data-testid="solving-progress"
-        >
-          <span className="request-controls-spinner" aria-hidden="true" />
-          <span className="request-controls-progress-text">Calculating</span>
-        </div>
-      )}
-
-      {showReason && (
-        <p id={reasonId} className="request-controls-reason" data-testid="cannot-request-reason">
-          {canReason}
-        </p>
-      )}
+          children="Calculating"
+        />
+      ) : null}
+      {showReason ? (
+        <p
+          id={reasonId}
+          className="request-controls-reason"
+          data-testid="cannot-request-reason"
+          children={reason}
+        />
+      ) : null}
     </div>
   );
 };

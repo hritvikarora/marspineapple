@@ -8,6 +8,8 @@ import { Panel } from '../../shared/primitives/Panel';
 import { Button } from '../../shared/primitives/Button';
 import './destinations.css';
 
+const CHOOSE_PLACEHOLDER = '\u2014 choose \u2014';
+
 export const Destinations: FC<DestinationsSlotProps> = ({
   pois,
   mission,
@@ -17,7 +19,7 @@ export const Destinations: FC<DestinationsSlotProps> = ({
   const destSelectId = useId();
   const destHintId = useId();
 
-  // Filter POIs to destination stops (science stops and test targets), preserving all available goals
+  // Destination choices are science stops and test targets. Start lists every manifest point.
   const scienceStops = useMemo(
     () => pois.filter((poi) => poi.kind === 'science-stop' || poi.kind === 'test'),
     [pois],
@@ -79,12 +81,12 @@ export const Destinations: FC<DestinationsSlotProps> = ({
           <select
             id={startSelectId}
             className="destinations-select"
-            data-testid="start-preset-dropdown"
+            data-testid="start-preset"
             aria-label="start preset"
             value={mission.start?.poiId ?? ''}
             onChange={handleStartChange}
           >
-            <option value="">{mission.start && !mission.start.poiId ? 'Custom point' : 'Choose start'}</option>
+            <option value="">{CHOOSE_PLACEHOLDER}</option>
             {pois.map((poi) => (
               <option key={poi.id} value={poi.id}>
                 {poi.name}
@@ -109,15 +111,13 @@ export const Destinations: FC<DestinationsSlotProps> = ({
               <select
                 id={destSelectId}
                 className="destinations-select"
-                data-testid="destinations-dropdown"
+                data-testid="destination-preset"
                 value={selectedPoi?.id ?? ''}
                 onChange={handleSelectChange}
                 aria-label="destination preset"
                 aria-describedby={destHintId}
               >
-                <option value="">
-                  {mission.destination && !selectedPoi ? 'Custom point' : 'Choose a science stop'}
-                </option>
+                <option value="">{CHOOSE_PLACEHOLDER}</option>
                 {scienceStops.map((poi) => (
                   <option key={poi.id} value={poi.id}>
                     {poi.name}

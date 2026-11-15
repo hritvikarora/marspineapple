@@ -1,5 +1,5 @@
 /**
- * Map Markers Feature Entry. OWNER: Dhani (TASK-010).
+ * Map Markers Feature Entry. OWNER: Dhani (UI-017).
  * Registers waypoint, outpost, start, and destination marker rendering into 'map-markers' slot.
  */
 import type { FeatureModule } from '../../shared/types';

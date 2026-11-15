@@ -4,7 +4,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { EXCLUSION, type GridBundle, QUALITY, type RegionManifest } from '../../../contracts';
 import type { DisplayState } from '../../../state/store';
 import type { CanvasDrawHelpers } from '../../shared/types';
-import { getElevationColor, getExclusionColor, getQualityColor, getSlopeColor } from './colorScale';
+import {
+  exclusionLegendItems,
+  getElevationColor,
+  getExclusionColor,
+  getQualityColor,
+  getSlopeColor,
+  qualityLegendItems,
+} from './colorScale';
 import { MapRasters } from './MapRasters';
 import entry from './entry';
 
@@ -161,10 +168,117 @@ describe('TASK-008: Map Rasters', () => {
     );
 
     const info = screen.getByTestId('map-rasters-info');
+    const text = info.textContent ?? '';
     expect(info).toBeTruthy();
     expect(screen.getByText(/Elevation \(100m to 650m\)/)).toBeTruthy();
     expect(screen.getByText(/Slope/)).toBeTruthy();
     expect(screen.getByText(/Quality/)).toBeTruthy();
     expect(screen.getByText(/Exclusion/)).toBeTruthy();
+    expect(text).toMatch(/Good,\s*Low,\s*Unknown,\s*No elevation/);
+    expect(text).toMatch(/Missing elevation,\s*Unsupported derivative,\s*Outside extent,\s*Manual/);
+    expect(text.toLowerCase()).not.toContain('probability');
+  });
+
+  it('legend words match quality codes and stay distinct from exclusion', () => {
+    const quality = qualityLegendItems();
+    expect(quality.map((item) => item.code)).toEqual([
+      QUALITY.GOOD,
+      QUALITY.LOW,
+      QUALITY.UNKNOWN,
+      QUALITY.NO_ELEVATION,
+    ]);
+    expect(quality.map((item) => item.label)).toEqual(['Good', 'Low', 'Unknown', 'No elevation']);
+    expect(quality.find((item) => item.code === QUALITY.GOOD)?.color).toBeNull();
+    expect(quality.find((item) => item.code === QUALITY.LOW)?.color ?? '').toContain('rgba(245,158,11');
+    expect(quality.find((item) => item.code === QUALITY.UNKNOWN)?.color ?? '').toContain('rgba(168,85,247');
+    expect(quality.find((item) => item.code === QUALITY.NO_ELEVATION)?.color ?? '').toContain('rgba(15,23,42');
+
+    const exclusion = exclusionLegendItems();
+    expect(exclusion.map((item) => item.code)).toEqual([
+      EXCLUSION.MISSING_ELEVATION,
+      EXCLUSION.UNSUPPORTED_DERIVATIVE,
+      EXCLUSION.OUTSIDE_EXTENT,
+      EXCLUSION.MANUAL,
+    ]);
+    expect(exclusion.map((item) => item.label)).toEqual([
+      'Missing elevation',
+      'Unsupported derivative',
+      'Outside extent',
+      'Manual',
+    ]);
+    expect(new Set(exclusion.map((item) => item.pattern)).size).toBe(exclusion.length);
+    expect(exclusion.find((item) => item.code === EXCLUSION.MISSING_ELEVATION)?.color ?? '').toContain(
+      'rgba(220,38,38',
+    );
+    expect(exclusion.find((item) => item.code === EXCLUSION.OUTSIDE_EXTENT)?.color ?? '').toContain(
+      'rgba(100,116,139',
+    );
+  });
+
+  it('omits quality legend words when quality is hidden and still fillRects the small grid', () => {
+    let capturedDraw: ((helpers: CanvasDrawHelpers) => void) | null = null;
+    const registerLayer = vi.fn().mockImplementation((fn: (helpers: CanvasDrawHelpers) => void) => {
+      capturedDraw = fn;
+      return () => {};
+    });
+
+    render(
+      <MapRasters
+        bundle={mockBundle}
+        layers={{ ...defaultLayers, quality: { visible: false, opacity: 0.9 } }}
+        registerLayer={registerLayer}
+      />,
+    );
+
+    const text = screen.getByTestId('map-rasters-info').textContent ?? '';
+    expect(text).toContain('Elevation (100m to 650m)');
+    expect(text).toContain('Missing elevation');
+    expect(text).not.toContain('Quality');
+    expect(text).not.toContain('Good');
+    expect(text).not.toContain('Low');
+    expect(text).not.toContain('Unknown');
+    expect(text).not.toContain('No elevation');
+
+    const fillRectMock = vi.fn();
+    const ctx = {
+      fillRect: fillRectMock,
+      fillStyle: '',
+    } as unknown as CanvasRenderingContext2D;
+    const helpers: CanvasDrawHelpers = {
+      ctx,
+      width: 40,
+      height: 30,
+      pxPerCell: 10,
+      scaleX: 1,
+      scaleY: 1,
+      toPx: (p) => [p.east_m, p.north_m],
+      fromPx: (x, y) => ({ east_m: x, north_m: y }),
+    };
+    if (!capturedDraw) {
+      throw new Error('raster layer was not registered');
+    }
+    capturedDraw(helpers);
+    expect(fillRectMock).toHaveBeenCalled();
+  });
+
+  it('omits exclusion legend words when exclusion is hidden', () => {
+    const registerLayer = vi.fn().mockReturnValue(() => {});
+
+    render(
+      <MapRasters
+        bundle={mockBundle}
+        layers={{ ...defaultLayers, exclusion: { visible: false, opacity: 0.7 } }}
+        registerLayer={registerLayer}
+      />,
+    );
+
+    const text = screen.getByTestId('map-rasters-info').textContent ?? '';
+    expect(text).toContain('Good');
+    expect(text).toContain('No elevation');
+    expect(text).not.toContain('Exclusion');
+    expect(text).not.toContain('Missing elevation');
+    expect(text).not.toContain('Unsupported derivative');
+    expect(text).not.toContain('Outside extent');
+    expect(text).not.toContain('Manual');
   });
 });

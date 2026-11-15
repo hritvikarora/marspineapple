@@ -2,7 +2,7 @@
  * CoordinateForm component. OWNER: Dhani (UI Role).
  * Provides accessible numeric coordinate inputs, extent validation, and snapped cell-center feedback.
  */
-import { useId, useMemo, useState, type FC, type FormEvent } from 'react';
+import { useId, useMemo, useState, type FC, type FormEvent, type Ref } from 'react';
 import { Button, VisuallyHidden, cellCenter, pointToCell } from '../../shared';
 import type { GridSpec, LocalPoint } from '../../shared';
 import type { MissionEndpoint } from '../../../state/store';
@@ -17,6 +17,7 @@ export interface CoordinateFormProps {
   onClear: () => void;
   isActiveTarget: boolean;
   onSelectAsTarget: () => void;
+  cellCentreRef?: Ref<HTMLSpanElement>;
 }
 
 export const CoordinateForm: FC<CoordinateFormProps> = ({
@@ -27,6 +28,7 @@ export const CoordinateForm: FC<CoordinateFormProps> = ({
   onClear,
   isActiveTarget,
   onSelectAsTarget,
+  cellCentreRef,
 }) => {
   const idPrefix = useId();
   const cardTitleId = `${idPrefix}-title`;
@@ -270,6 +272,17 @@ export const CoordinateForm: FC<CoordinateFormProps> = ({
 
       {endpoint && cellDetails ? (
         <div className={styles.cellFeedback} data-testid={`endpoint-${which}-feedback`}>
+          <div className={styles.cellCentreLine}>
+            <span className={styles.cellCentreLabel}>Accepted cell center</span>
+            <span
+              ref={cellCentreRef}
+              tabIndex={-1}
+              className={`measurement ${styles.cellCentreValue}`}
+              data-testid={`endpoint-${which}-cell-center`}
+            >
+              East {cellDetails.center.east_m.toFixed(2)} m, North {cellDetails.center.north_m.toFixed(2)} m
+            </span>
+          </div>
           <dl className={styles.feedbackList}>
             <div className={styles.feedbackRow}>
               <dt className={styles.feedbackKey}>Requested</dt>
@@ -278,16 +291,6 @@ export const CoordinateForm: FC<CoordinateFormProps> = ({
                 data-testid={`endpoint-${which}-requested-pos`}
               >
                 East {endpoint.point.east_m.toFixed(2)} m, North {endpoint.point.north_m.toFixed(2)} m
-              </dd>
-            </div>
-
-            <div className={styles.feedbackRow}>
-              <dt className={styles.feedbackKey}>Accepted cell center</dt>
-              <dd
-                className={`measurement ${styles.feedbackVal}`}
-                data-testid={`endpoint-${which}-cell-center`}
-              >
-                East {cellDetails.center.east_m.toFixed(2)} m, North {cellDetails.center.north_m.toFixed(2)} m
               </dd>
             </div>
 

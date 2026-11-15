@@ -3,7 +3,7 @@
  * Implements TASK-004 / UI-012: Endpoint forms, map pick selection modes, cell-resolution feedback,
  * and extent validation.
  */
-import type { FC } from 'react';
+import { useRef, type FC } from 'react';
 import { Button } from '../../shared';
 import type { EndpointsSlotProps } from '../../shared/types';
 import { CoordinateForm } from './CoordinateForm';
@@ -18,6 +18,9 @@ export const EndpointsFeature: FC<EndpointsSlotProps> = ({
   grid,
   setEndpoint,
 }) => {
+  const startCentreRef = useRef<HTMLSpanElement | null>(null);
+  const destinationCentreRef = useRef<HTMLSpanElement | null>(null);
+
   const handleSwap = () => {
     const prevStart = start;
     const prevDest = destination;
@@ -26,6 +29,13 @@ export const EndpointsFeature: FC<EndpointsSlotProps> = ({
   };
 
   const canSwap = Boolean(start || destination);
+
+  const handleInspect = () => {
+    const preferred = pickMode === 'start' ? startCentreRef.current : destinationCentreRef.current;
+    const alternate = pickMode === 'start' ? destinationCentreRef.current : startCentreRef.current;
+    const node = preferred ?? alternate;
+    node?.focus();
+  };
 
   return (
     <section className={styles.container} aria-label="Mission endpoints">
@@ -60,7 +70,12 @@ export const EndpointsFeature: FC<EndpointsSlotProps> = ({
         </Button>
       </div>
 
-      <PickModeToggle pickMode={pickMode} setPickMode={setPickMode} />
+      <PickModeToggle
+        pickMode={pickMode}
+        setPickMode={setPickMode}
+        canInspect={canSwap}
+        onInspect={handleInspect}
+      />
 
       <CoordinateForm
         which="start"
@@ -70,6 +85,7 @@ export const EndpointsFeature: FC<EndpointsSlotProps> = ({
         onClear={() => setEndpoint('start', null, null)}
         isActiveTarget={pickMode === 'start'}
         onSelectAsTarget={() => setPickMode('start')}
+        cellCentreRef={startCentreRef}
       />
 
       <CoordinateForm
@@ -80,6 +96,7 @@ export const EndpointsFeature: FC<EndpointsSlotProps> = ({
         onClear={() => setEndpoint('destination', null, null)}
         isActiveTarget={pickMode === 'destination'}
         onSelectAsTarget={() => setPickMode('destination')}
+        cellCentreRef={destinationCentreRef}
       />
 
       <div className={`measurement ${styles.gridInfoCard}`} data-testid="grid-info-card">

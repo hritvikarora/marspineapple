@@ -27,9 +27,13 @@ export interface MarswalkSession {
 export function startMarswalkSession(options: MarswalkSessionOptions): MarswalkSession {
   const { bundle, container, verticalExaggeration } = options;
   const canvas = document.createElement('canvas');
+  canvas.style.position = 'absolute';
+  canvas.style.inset = '0';
   canvas.style.width = '100%';
   canvas.style.height = '100%';
   canvas.style.display = 'block';
+  canvas.style.maxWidth = '100%';
+  canvas.style.maxHeight = '100%';
   container.appendChild(canvas);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -82,8 +86,9 @@ export function startMarswalkSession(options: MarswalkSessionOptions): MarswalkS
   let frame = 0;
   let stopped = false;
   const resize = () => {
-    const w = Math.max(1, container.clientWidth);
-    const h = Math.max(1, container.clientHeight || 360);
+    const box = container.getBoundingClientRect();
+    const w = Math.max(1, Math.min(1440, Math.floor(box.width)));
+    const h = Math.max(1, Math.min(900, Math.floor(box.height)));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);

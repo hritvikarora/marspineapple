@@ -1,7 +1,8 @@
 /**
  * Map Markers Component. OWNER: Dhani (UI-017).
- * Renders high-contrast paper-and-ink spatial markers for start ('S'), destination ('D'),
- * fictional outposts, science stops, and context points onto the 2D Canvas.
+ * Start is an ink ring around a paper centre and the letter S.
+ * Destination is an ink plate, a paper square, and the letter D.
+ * Shape and letter carry the role. Ink and paper keep both readable on pale and dark terrain.
  */
 import { type FC, useEffect } from 'react';
 import type { CanvasDrawHelpers, MapMarkersSlotProps } from '../../shared/types';
@@ -22,6 +23,9 @@ const FONT_MONO_BOLD =
 const ENDPOINT_HALO_RADIUS = 11;
 const ENDPOINT_PIN_RADIUS = 8.5;
 const ENDPOINT_STROKE_WIDTH = 2;
+/** Square frame sits inside the ink plate. Corners stay within the plate radius. */
+const DEST_FRAME_OUTER = 7;
+const DEST_FRAME_INNER = 5.5;
 
 const OUTPOST_RADIUS = 6;
 const SCIENCE_HALO_RADIUS = 6.5;
@@ -65,32 +69,59 @@ function drawPoiLabel(
   ctx.fillText(name, pillX + 4, py);
 }
 
-function drawEndpointPin(
-  ctx: CanvasRenderingContext2D,
-  px: number,
-  py: number,
-  letter: 'S' | 'D',
-  inverse: boolean,
-) {
-  const fill = inverse ? INK : PAPER;
-  const stroke = inverse ? PAPER : INK;
-  const outerHalo = inverse ? INK : PAPER;
+function traceSquare(ctx: CanvasRenderingContext2D, px: number, py: number, half: number) {
+  ctx.beginPath();
+  ctx.moveTo(px - half, py - half);
+  ctx.lineTo(px + half, py - half);
+  ctx.lineTo(px + half, py + half);
+  ctx.lineTo(px - half, py + half);
+  ctx.closePath();
+}
 
-  // Outer contrast halo ensures boundary contrast even when terrain matches the stroke color.
-  ctx.fillStyle = outerHalo;
+function drawEndpointPin(ctx: CanvasRenderingContext2D, px: number, py: number, letter: 'S' | 'D') {
+  const isDestination = letter === 'D';
+
+  // Shared ink plate. On pale ground it is the dark badge. On dark ground the
+  // paper centre (start) or paper square (destination) is what remains.
+  ctx.fillStyle = INK;
   ctx.beginPath();
   ctx.arc(px, py, ENDPOINT_HALO_RADIUS, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = fill;
-  ctx.strokeStyle = stroke;
   ctx.lineWidth = ENDPOINT_STROKE_WIDTH;
-  ctx.beginPath();
-  ctx.arc(px, py, ENDPOINT_PIN_RADIUS, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
+  ctx.lineJoin = 'round';
 
-  ctx.fillStyle = stroke;
+  if (isDestination) {
+    // Keep the shared body radius so this arc stays with the endpoint marks.
+    ctx.fillStyle = INK;
+    ctx.beginPath();
+    ctx.arc(px, py, ENDPOINT_PIN_RADIUS, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = PAPER;
+    traceSquare(ctx, px, py, DEST_FRAME_OUTER);
+    ctx.fill();
+
+    ctx.fillStyle = INK;
+    traceSquare(ctx, px, py, DEST_FRAME_INNER);
+    ctx.fill();
+
+    // Paper square outline around the ink centre.
+    ctx.fillStyle = INK;
+    ctx.strokeStyle = PAPER;
+    traceSquare(ctx, px, py, DEST_FRAME_OUTER);
+    ctx.stroke();
+  } else {
+    // Paper centre and ink ring. The letter S is ink, so a pale map cannot hide the mark.
+    ctx.fillStyle = PAPER;
+    ctx.strokeStyle = INK;
+    ctx.beginPath();
+    ctx.arc(px, py, ENDPOINT_PIN_RADIUS, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = isDestination ? PAPER : INK;
   ctx.font = FONT_MONO_BOLD;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -110,6 +141,9 @@ export const MapMarkers: FC<MapMarkersSlotProps> = ({
 
       ctx.save();
       try {
+        if (typeof ctx.setLineDash === 'function') ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+
         // 1. Render smaller POI marks when the POI layer is visible
         if (poiLayerVisible) {
           for (const poi of pois) {
@@ -162,19 +196,19 @@ export const MapMarkers: FC<MapMarkersSlotProps> = ({
           }
         }
 
-        // 2. Render Mission Start Marker (Paper fill, ink stroke, letter 'S')
+        // 2. Start: paper centre, ink ring, letter S. Cell centre from toPx, no pixel nudge.
         if (start) {
           const [sx, sy] = toPx(start);
           if (Number.isFinite(sx) && Number.isFinite(sy)) {
-            drawEndpointPin(ctx, sx, sy, 'S', false);
+            drawEndpointPin(ctx, sx, sy, 'S');
           }
         }
 
-        // 3. Render Mission Destination Marker (Ink fill, paper stroke, letter 'D')
+        // 3. Destination: ink plate, paper square, letter D.
         if (destination) {
           const [dx, dy] = toPx(destination);
           if (Number.isFinite(dx) && Number.isFinite(dy)) {
-            drawEndpointPin(ctx, dx, dy, 'D', true);
+            drawEndpointPin(ctx, dx, dy, 'D');
           }
         }
       } finally {
