@@ -1,93 +1,205 @@
 /**
- * Scoped styles for Science Destinations Feature (TASK-003)
+ * Scoped styles for Science Destinations Feature (UI-011 / TASK-003)
+ * Paper-and-ink visual system: #FFFFFF/#FAFAFA paper, #000000 ink, #686666 secondary, #E5E5E5 hairline, #9E2A2B status.
  */
 .destinations-panel {
-  margin-bottom: var(--space-4, 16px);
+  margin-bottom: var(--space-3, 12px);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .destinations-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-3, 12px);
-}
-
-.destinations-description {
-  font-size: var(--font-size-sm, 13px);
-  color: var(--color-text-muted, #94a3b8);
-  margin: 0;
-  line-height: 1.4;
+  min-width: 0;
+  max-width: 100%;
+  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 }
 
 .destinations-empty {
-  font-size: var(--font-size-sm, 13px);
-  color: var(--color-text-muted, #94a3b8);
-  font-style: italic;
-  padding: var(--space-2, 8px) 0;
+  font-size: 13px;
+  color: var(--color-ink-secondary, #686666);
+  line-height: 1.4;
+  padding: var(--space-1, 4px) 0;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .destinations-selector-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-1, 4px);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .destinations-label {
-  font-size: var(--font-size-sm, 13px);
-  font-weight: 600;
-  color: var(--color-text-main, #f8fafc);
+  display: block;
+  font-size: 14px;
+  font-weight: 560;
+  line-height: 1.35;
+  color: var(--color-ink, #000000);
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
-.destinations-select {
+.destinations-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-ink-secondary, #686666);
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.destinations-panel .destinations-select {
+  box-sizing: border-box;
+  display: block;
   width: 100%;
-  min-height: 44px; /* Accessible 44px touch target */
-  padding: var(--space-2, 8px) var(--space-3, 12px);
-  background: var(--color-surface-sunken, #090d16);
-  color: var(--color-text-main, #f8fafc);
-  border: 1px solid var(--color-border-subtle, #334155);
-  border-radius: var(--radius-sm, 4px);
-  font-size: var(--font-size-sm, 13px);
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--min-touch-target, 44px);
+  padding: 10px 36px 10px 12px;
+  background-color: var(--color-paper, #FFFFFF);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23000000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+  color: var(--color-ink, #000000);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
   font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  appearance: none;
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  transition:
+    border-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    background-color var(--duration-fast, 160ms) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
-.destinations-select:focus-visible {
-  outline: 2px solid var(--color-focus, #73d0c1);
-  outline-offset: 2px;
-  border-color: var(--color-focus, #73d0c1);
+.destinations-panel .destinations-select:hover {
+  background-color: var(--color-paper-subtle, #FAFAFA);
+  border-color: var(--color-ink, #000000);
+}
+
+.destinations-panel .destinations-select:focus-visible {
+  outline: 2px solid var(--color-ink, #000000) !important;
+  outline-offset: 2px !important;
+  border-color: var(--color-ink, #000000);
+}
+
+@supports (appearance: base-select) {
+  .destinations-panel .destinations-select,
+  .destinations-panel .destinations-select::picker(select) {
+    appearance: base-select;
+  }
+
+  .destinations-panel .destinations-select {
+    padding-inline-end: 12px;
+    background-image: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .destinations-panel .destinations-select::picker(select) {
+    box-sizing: border-box;
+    min-inline-size: anchor-size(inline);
+    max-inline-size: min(300px, calc(100vw - 32px));
+    margin-block: 4px;
+    padding: 4px;
+    background-color: var(--color-paper, #FFFFFF);
+    color: var(--color-ink, #000000);
+    border: 1px solid var(--color-hairline, #E5E5E5);
+    border-radius: var(--radius, 12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .destinations-panel .destinations-select::picker-icon {
+    color: var(--color-ink-secondary, #686666);
+  }
+
+  .destinations-panel .destinations-select option {
+    box-sizing: border-box;
+    min-height: var(--min-touch-target, 44px);
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--color-ink, #000000);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+  }
+
+  .destinations-panel .destinations-select option:hover,
+  .destinations-panel .destinations-select option:focus-visible {
+    background-color: var(--color-paper-subtle, #FAFAFA);
+  }
+
+  .destinations-panel .destinations-select option:checked {
+    font-weight: 600;
+  }
+
+  .destinations-panel .destinations-select option::checkmark {
+    color: var(--color-ink, #000000);
+  }
 }
 
 .destinations-quick-picks {
   display: flex;
   flex-direction: column;
   gap: var(--space-2, 8px);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .destinations-quick-picks-heading {
-  font-size: var(--font-size-xs, 11px);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted, #94a3b8);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-ink-secondary, #686666);
 }
 
 .destinations-chips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2, 8px);
+  min-width: 0;
+  max-width: 100%;
 }
 
-.destinations-chip {
-  min-height: 36px;
-  border-radius: var(--radius-full, 9999px);
-  font-size: var(--font-size-xs, 12px);
+.destinations-panel button.destinations-chip {
+  min-width: var(--min-touch-target, 44px);
+  min-height: var(--min-touch-target, 44px);
+  max-width: 100%;
+  height: auto;
+  padding: 8px 12px;
+  border-radius: var(--radius, 12px);
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.destinations-panel button.destinations-chip.is-selected {
+  font-weight: 600;
 }
 
 .destination-details {
-  background: var(--color-surface-sunken, #090d16);
-  border: 1px solid var(--color-border-subtle, #334155);
-  border-radius: var(--radius-md, 6px);
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  background: var(--color-paper-subtle, #FAFAFA);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  border-radius: var(--radius, 12px);
   padding: var(--space-3, 12px);
   display: flex;
   flex-direction: column;
@@ -96,51 +208,72 @@
 
 .destination-details-header {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-2, 8px);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .destination-details-name {
   margin: 0;
-  font-size: var(--font-size-sm, 14px);
+  min-width: 0;
+  max-width: 100%;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--color-text-main, #f8fafc);
+  line-height: 1.35;
+  color: var(--color-ink, #000000);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.destination-details-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 4px);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .destination-tag {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm, 4px);
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  padding: 2px 8px;
+  border-radius: var(--radius, 12px);
+  background: var(--color-paper, #FFFFFF);
+  border: 1px solid var(--color-hairline, #E5E5E5);
+  color: var(--color-ink-secondary, #686666);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .destination-tag.official {
-  background: rgba(115, 208, 193, 0.15);
-  color: #73d0c1;
-  border: 1px solid rgba(115, 208, 193, 0.3);
+  color: var(--color-ink, #000000);
+  border-color: var(--color-ink, #000000);
+  font-weight: 600;
 }
 
 .destination-tag.informal {
-  background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: var(--color-ink-secondary, #686666);
+  border-color: var(--color-hairline, #E5E5E5);
 }
 
 .destination-tag.synthetic {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--color-status, #9E2A2B);
+  border-color: var(--color-status, #9E2A2B);
 }
 
 .destination-purpose {
   margin: 0;
-  font-size: var(--font-size-xs, 12px);
-  color: var(--color-text-main, #f8fafc);
-  line-height: 1.4;
-  overflow-wrap: break-word;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 13px;
+  color: var(--color-ink, #000000);
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .destination-coords-list {
@@ -149,23 +282,59 @@
   gap: var(--space-3, 12px);
   margin: 0;
   padding-top: var(--space-2, 8px);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--color-hairline, #E5E5E5);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .destination-coord-item {
   display: flex;
+  align-items: baseline;
   gap: var(--space-1, 4px);
-  font-size: var(--font-size-xs, 11px);
+  font-size: 12px;
+  min-width: 0;
 }
 
 .destination-coord-item dt {
-  color: var(--color-text-muted, #94a3b8);
+  color: var(--color-ink-secondary, #686666);
   font-weight: 500;
 }
 
-.destination-coord-item dd {
+.destination-coord-value {
   margin: 0;
-  color: var(--color-accent, #60a5fa);
-  font-family: var(--font-mono, monospace);
+  color: var(--color-ink, #000000);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
   font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .destinations-panel .destinations-select {
+    transition-duration: 0ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .destinations-panel .destinations-select {
+    appearance: auto;
+    padding-inline-end: 12px;
+    background-image: none;
+    background-color: Field;
+    color: FieldText;
+    border-color: ButtonText;
+  }
+
+  .destinations-panel .destinations-select:focus-visible {
+    outline-color: Highlight !important;
+  }
+}
+
+@media print {
+  .destinations-panel .destinations-select,
+  .destination-details {
+    background: #FFFFFF;
+    color: #000000;
+    border-color: #E5E5E5;
+    overflow: visible;
+  }
 }
