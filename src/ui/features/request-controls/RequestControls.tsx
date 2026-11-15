@@ -2,7 +2,7 @@
  * Route Request, Cancel, and Progress Controls Component. OWNER: Dhani (TASK-006).
  * Manages route execution lifecycle, providing clear feedback on solving state and cancellation.
  */
-import { type FC } from 'react';
+import { useId, type FC } from 'react';
 import type { RequestControlsSlotProps } from '../../shared/types';
 import { Button } from '../../shared/primitives/Button';
 import './request-controls.css';
@@ -15,6 +15,24 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
   isRunning,
   candidateCount,
 }) => {
+  const reasonId = useId();
+  const isCalculateDisabled = !canRequest || isRunning;
+  const hasReason = typeof canReason === 'string' && canReason.trim().length > 0;
+  const showReason = !canRequest && !isRunning && hasReason;
+
+  const calculateLabel = isRunning
+    ? 'Calculating...'
+    : candidateCount > 0
+      ? 'Recalculate'
+      : 'Calculate';
+
+  const handleCalculateClick = () => {
+    if (isCalculateDisabled) {
+      return;
+    }
+    requestRoute();
+  };
+
   return (
     <div className="request-controls-container" data-testid="request-controls-feature">
       <div className="request-controls-buttons">
@@ -23,12 +41,13 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
           size="md"
           className="request-controls-calculate-btn"
           data-testid="calculate"
-          disabled={!canRequest || isRunning}
-          onClick={requestRoute}
-          title={!canRequest ? canReason : 'Calculate traversable paths for selected policies'}
+          disabled={isCalculateDisabled}
+          onClick={handleCalculateClick}
+          title={showReason ? canReason : undefined}
           aria-busy={isRunning}
+          aria-describedby={showReason ? reasonId : undefined}
         >
-          {isRunning ? 'Calculating...' : candidateCount > 0 ? 'Recalculate Traverse' : 'Calculate Traverse'}
+          {calculateLabel}
         </Button>
 
         {isRunning && (
@@ -38,7 +57,6 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
             className="request-controls-cancel-btn"
             data-testid="cancel-request"
             onClick={cancelRoute}
-            aria-label="Cancel traverse calculation"
           >
             Cancel
           </Button>
@@ -46,14 +64,19 @@ export const RequestControls: FC<RequestControlsSlotProps> = ({
       </div>
 
       {isRunning && (
-        <div className="request-controls-progress" role="status" aria-live="polite" data-testid="solving-progress">
+        <div
+          className="request-controls-progress"
+          role="status"
+          aria-live="polite"
+          data-testid="solving-progress"
+        >
           <span className="request-controls-spinner" aria-hidden="true" />
-          <span className="request-controls-progress-text">Solving optimal Martian traverse routes...</span>
+          <span className="request-controls-progress-text">Calculating</span>
         </div>
       )}
 
-      {!canRequest && !isRunning && canReason && (
-        <p className="request-controls-reason" data-testid="cannot-request-reason">
+      {showReason && (
+        <p id={reasonId} className="request-controls-reason" data-testid="cannot-request-reason">
           {canReason}
         </p>
       )}
