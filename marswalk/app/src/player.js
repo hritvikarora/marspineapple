@@ -26,6 +26,7 @@ export class Player {
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x7fe0ff, transparent: true, opacity: 0.95, depthTest: false, side: THREE.DoubleSide }));
     this.marker.visible = false; this.marker.renderOrder = 51; scene.add(this.marker);
     // desktop input
+    document.addEventListener('pointerlockchange', () => document.body.classList.toggle('locked', document.pointerLockElement === dom));
     dom.addEventListener('click', () => { if (this.onClick?.()) return; if (!renderer.xr.isPresenting && document.pointerLockElement !== dom) dom.requestPointerLock?.(); });
     document.addEventListener('mousemove', e => { if (document.pointerLockElement === dom) { this.yaw -= e.movementX * 0.0022; this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch - e.movementY * 0.0022)); } });
     addEventListener('keydown', e => { this.keys[e.code] = true; }); addEventListener('keyup', e => { this.keys[e.code] = false; });
