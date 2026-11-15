@@ -26,6 +26,7 @@ import { readPlannerRoute, applyPlannerRoute, plannerNavTexture } from './planne
 import { RoutePlanner } from './route-planner.js';
 import { Directions } from './directions.js';
 import { RouteGuide } from './route-guide.js';
+import { GEO_POIS } from './geo-pois-data.js';
 
 const Q = new URLSearchParams(location.search);
 const SITE = Q.get('site') || 'jezero-delta';
@@ -97,6 +98,9 @@ app.toggleTrack = () => { shared.uTrackOn.value = shared.uTrackOn.value ? 0 : 1;
 
 async function boot() {
   const site = app.site = await (await fetch(base + 'site.json')).json();
+  // geological points of interest: 'merge_into' enriches an existing stop (no second beacon), 'add' becomes an orange beacon with tag and card
+  for (const g of GEO_POIS) { if (g.action === 'merge_into') { const p = site.pois.find(q => q.id === g.merge_into); if (p) { p.text = g.text; p.text_en = g.text_en; p.meda ??= g.meda; } } }
+  app.geoPois = GEO_POIS.filter(g => g.action === 'add').map(g => ({ id: g.id, name: g.name, kind: 'geo', x: g.x, y: g.y, title: g.title, title_en: g.title_en, text: g.text, text_en: g.text_en, meda: g.meda, photo: null, photos: [] }));
   app.siteStops = site.pois.slice(); const plan = readPlannerRoute(Q); if (plan) applyPlannerRoute(site, plan);   // route chosen in MARS PATHFINDER
   total = site.rings.reduce((a, r) => a + 2 + r.orthoTiles * r.orthoTiles, 0) + 1;
   const [nav, ...loaded] = await Promise.all([colorTex(base + 'inner_nav.png'), ...site.rings.map(async ring => {

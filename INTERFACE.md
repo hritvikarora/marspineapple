@@ -56,7 +56,7 @@ See `public/bundles/synthetic-v0/manifest.json` for a complete example and `INSP
 {
   "requestId": "req-1-abc123",
   "bundleVersion": "synthetic-v0.1.0",
-  "modelVersion": "placeholder-astar-0.2.0",
+  "modelVersion": "eva-astar-1.0.0",
   "start": { "east_m": 25, "north_m": 65 },
   "destination": { "east_m": 175, "north_m": 65 },
   "policies": ["shortest-feasible", "uncertainty-aware"],
@@ -104,7 +104,7 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
   "status": "success",
   "requestId": "req-1-abc123",
   "bundleVersion": "synthetic-v0.1.0",
-  "modelVersion": "placeholder-astar-0.2.0",
+  "modelVersion": "eva-astar-1.0.0",
   "computeMs": 0,
   "start": { "requested": { "east_m": 25, "north_m": 65 }, "cell": { "row": 5, "col": 2, "index": 102 }, "accepted": { "east_m": 25, "north_m": 65 } },
   "destination": { "requested": { "east_m": 175, "north_m": 65 }, "cell": { "row": 5, "col": 17, "index": 117 }, "accepted": { "east_m": 175, "north_m": 65 } },
@@ -114,9 +114,9 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
       "policies": ["shortest-feasible"],
       "missionStatus": "one-way",
       "returnLeg": null,
-      "explanation": ["Placeholder solver: limits and weights are unvalidated demo values."],
+      "explanation": ["EVA A* (eva-astar-1.0.0): 175 m horizontal, max slope 8.0 deg."],
       "outbound": {
-        "cells": [102, 103, 104, 105, 86, 67, 48, 49, 50, 51, 52, 73, 94, 95, 96, 117],
+        "cells": [102, 103, 104, 105, 86, 67, 48, 49, 50, 51, 52, 73, 94, 95, 116, 117],
         "path": [{ "east_m": 25, "north_m": 65, "elevation_m": -2600.5 }, "… one vertex per cell …"],
         "metrics": {
           "horizontalDistance_m": 174.85, "surfaceDistance_m": 175.57, "ascent_m": 15, "descent_m": 0,
@@ -141,7 +141,7 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
   "status": "no-path",
   "requestId": "req-2-def456",
   "bundleVersion": "synthetic-v0.1.0",
-  "modelVersion": "placeholder-astar-0.2.0",
+  "modelVersion": "eva-astar-1.0.0",
   "reason": "disconnected-under-limits",
   "message": "Destination is not connected to the start under the current terrain limits.",
   "policies": ["shortest-feasible", "uncertainty-aware"],
@@ -153,17 +153,17 @@ Edge quality = the worse of its two cells (conservative). `weightedCost.value` i
 ### errors
 
 ```json
-{ "status": "invalid-input", "requestId": "req-3-ghi789", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0",
+{ "status": "invalid-input", "requestId": "req-3-ghi789", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "eva-astar-1.0.0",
   "reason": "endpoint-quality-excluded", "field": "destination",
   "message": "destination cell is outside the acceptable quality set in strict mode." }
 
-{ "status": "timeout", "requestId": "req-4", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0",
+{ "status": "timeout", "requestId": "req-4", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "eva-astar-1.0.0",
   "limitMs": 20000, "message": "Route calculation exceeded the time limit. This is not proof that no path exists." }
 
-{ "status": "data-error", "requestId": "req-5", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0",
+{ "status": "data-error", "requestId": "req-5", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "eva-astar-1.0.0",
   "stage": "worker-crash", "message": "Routing worker crashed." }
 
-{ "status": "cancelled", "requestId": "req-6", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "placeholder-astar-0.2.0" }
+{ "status": "cancelled", "requestId": "req-6", "bundleVersion": "synthetic-v0.1.0", "modelVersion": "eva-astar-1.0.0" }
 ```
 
 `invalid-input.reason` ∈ `version-mismatch | model-mismatch | bundle-not-loaded | endpoint-outside-region |
