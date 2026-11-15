@@ -23,10 +23,14 @@ import { SampleGame } from './game.js';
 import { Quarters } from './quarters.js';
 import { T, lang, setLang } from './i18n.js';
 import { readPlannerRoute, applyPlannerRoute, plannerNavTexture } from './planner-route.js';
+import { RoutePlanner } from './route-planner.js';
+import { Directions } from './directions.js';
 
 const Q = new URLSearchParams(location.search);
 const SITE = Q.get('site') || 'jezero-delta';
-const base = `${import.meta.env.BASE_URL}sites/${SITE}/`;
+// VITE_SITES_ROOT: inside the team site the walk shares the planner's dist/sites (no duplicate 26 MB copy)
+const SITES_ROOT = import.meta.env.VITE_SITES_ROOT || `${import.meta.env.BASE_URL}sites/`;
+const base = `${SITES_ROOT}${SITE}/`;
 const $ = id => document.getElementById(id);
 const bar = $('bar').firstElementChild, msg = $('msg');
 document.documentElement.lang = lang.cur; $('tag').textContent = T("Prova generale di un'uscita a piedi su Marte: terreno e immagini reali delle missioni NASA, cratere Jezero."); msg.textContent = T('Caricamento dei dati orbitali…');
@@ -92,7 +96,7 @@ app.toggleTrack = () => { shared.uTrackOn.value = shared.uTrackOn.value ? 0 : 1;
 
 async function boot() {
   const site = app.site = await (await fetch(base + 'site.json')).json();
-  const plan = readPlannerRoute(Q); if (plan) applyPlannerRoute(site, plan);   // route chosen in MARS PATHFINDER
+  app.siteStops = site.pois.slice(); const plan = readPlannerRoute(Q); if (plan) applyPlannerRoute(site, plan);   // route chosen in MARS PATHFINDER
   total = site.rings.reduce((a, r) => a + 2 + r.orthoTiles * r.orthoTiles, 0) + 1;
   const [nav, ...loaded] = await Promise.all([colorTex(base + 'inner_nav.png'), ...site.rings.map(async ring => {
     const T = ring.orthoTiles, urls = []; for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) urls.push(`${base}${ring.name}_ortho_${x}_${y}.jpg`);
@@ -130,6 +134,7 @@ async function boot() {
   const [rx, rz] = hab.world(4.5, -9.5), rover = app.rover = new Rover(app, `${import.meta.env.BASE_URL}perseverance.glb`, rx, rz, hab.yaw + 2.4);
   const menu = app.menu = new Menu(app, hab.group), [gx, gz] = hab.world(hab.side * 1.55, -0.9), globe = app.globe = new Globe(app, `${import.meta.env.BASE_URL}mars_globe.jpg`, gx, hab.floorY + 1.2, gz);
   hud.panel.mesh.visible = false;
+  app.scene = scene; const planner = app.planner = new RoutePlanner(app, hab), dirs = app.directions = new Directions(app);
   const helpText = () => { $('help').innerHTML = T('<b>PC</b>: clic sul menu per scegliere, poi clic per catturare il mouse · <b>WASD</b> cammina · <b>Shift</b> veloce · <b>L</b> livello dati · <b>I</b> display sul braccio · <b>M</b> vista dall\'alto · <b>T</b> traccia del rover · <b>C</b> fonti dei dati · <b>G</b> prendi il globo, <b>+</b>/<b>−</b> scala · <b>R</b> ricomincia<br><b>Quest</b>: stick sinistro cammina (grilletto laterale = veloce) · stick destro avanti = teletrasporto, lati = gira · <b>grilletto</b> sceglie nel menu · <b>grilletto destro</b> vista dall\'alto · <b>grilletto laterale destro</b> display sul braccio · <b>grilletti laterali</b> sul globo: prendi, con due mani ridimensiona · <b>A</b> livello dati · <b>B</b> traccia del rover · <b>X</b> fonti dei dati · <b>Y</b> ricomincia'); };
   // language switch: every panel is redrawn from the same data
   app.setLang = l => { setLang(l); app.buildLayers(); app.setLayer(app.layer); pois.redraw(); room.redraw(); museum.redraw(); heli.draw(); heli.drawTag(); groom.redraw(); deco.redraw(); quarters.redraw(); credits.draw(); debrief.shown = false; arm.drawTile(); hab.redraw(); menu.draw(); globe.label(); globe.drawNames(true); helpText(); hud.acc = 1; };
@@ -140,18 +145,18 @@ async function boot() {
   app.startGame = () => { app.start(); game.begin(); };
   app.reset = () => { game.end(); if (player.lift) player.toggleOverview(); mission.reset(); player.placeAt(sx, sz, startYaw); app.started = false; app.dataMode = false; menu.show(true); globe.reset(); hab.redraw(); };
   // controls: A/B on the right controller, X/Y on the left; same actions on the keyboard
-  player.onButton = (hand, i) => { if (i === 0 && menu.open) { menu.click(); return; } if (i === 0 && game.press()) return; if (i === 0 && room.click()) return; if (i === 0 && heli.near()) { heli.play(); return; } if (i === 1 && globe.busy(hand)) return; if (hand === 'right' && i === 0) player.toggleOverview(); else if (hand === 'right' && i === 1) arm.toggle(); else if (i === 0 || i === 1) return; else if (hand === 'right' && i === 4) app.setLayer(app.layer + 1); else if (hand === 'right' && i === 5) app.toggleTrack(); else if (hand === 'left' && i === 5) app.reset(); else if (hand === 'left' && i === 4) credits.toggle(); };
+  player.onButton = (hand, i) => { if (i === 0 && planner.click()) return; if (i === 0 && menu.open) { menu.click(); return; } if (i === 0 && game.press()) return; if (i === 0 && room.click()) return; if (i === 0 && heli.near()) { heli.play(); return; } if (i === 1 && globe.busy(hand)) return; if (hand === 'right' && i === 0) player.toggleOverview(); else if (hand === 'right' && i === 1) arm.toggle(); else if (i === 0 || i === 1) return; else if (hand === 'right' && i === 4) app.setLayer(app.layer + 1); else if (hand === 'right' && i === 5) app.toggleTrack(); else if (hand === 'left' && i === 5) app.reset(); else if (hand === 'left' && i === 4) credits.toggle(); };
   addEventListener('keydown', e => { const m = /^Digit([1-9])$/.exec(e.code); if (m && +m[1] <= app.LAYERS.length) app.setLayer(+m[1] - 1);
     if (e.code === 'KeyP' && heli.near(6)) heli.play(); if (e.code === 'KeyL') app.setLayer(app.layer + 1); if (e.code === 'KeyT') app.toggleTrack(); if (e.code === 'KeyR') app.reset(); if (e.code === 'KeyH') hud.panel.mesh.visible = !hud.panel.mesh.visible; if (e.code === 'KeyC') credits.toggle(); if (e.code === 'KeyM') player.toggleOverview(); if (e.code === 'KeyI') arm.toggle(); if (e.code === 'KeyV') helmet.off = !helmet.off; if (e.code === 'Enter' && menu.open) app.start(); });
   renderer.domElement.addEventListener('mousemove', e => menu.mouse.set(e.clientX / innerWidth * 2 - 1, 1 - e.clientY / innerHeight * 2));
-  player.onClick = () => !renderer.xr.isPresenting && (menu.open ? menu.click() : game.press() || room.click() || (heli.near() && (heli.play(), true)));   // a click on a menu button is not a request to capture the mouse
+  player.onClick = () => !renderer.xr.isPresenting && (planner.click() || (menu.open ? menu.click() : false) || game.press() || room.click() || (heli.near() && (heli.play(), true)));   // a click on a menu button is not a request to capture the mouse
   const vr = VRButton.createButton(renderer, { optionalFeatures: ['local-floor', 'bounded-floor'] }); document.body.appendChild(vr);
-  helpText(); if (Q.get('data')) app.explore(); else if (Q.get('start') || Q.get('x')) app.start();
+  helpText(); if (Q.get('data')) app.explore(); else if (Q.get('start') || Q.get('x') || (plan && Q.get('go'))) app.start();
   $('boot').style.opacity = 0; setTimeout(() => $('boot').remove(), 700);
   const clock = new THREE.Clock(), dir = new THREE.Vector3(), cam = new THREE.Vector3(); let fpsT = 0, fpsN = 0;
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.1); shared.uTime.value += dt;
-    menu.update(); player.update(dt); if (app.started) mission.idle(dt);
+    menu.update(); planner.update(); dirs.update(dt); player.update(dt); if (app.started) mission.idle(dt);
     camera.updateMatrixWorld(); camera.getWorldPosition(cam); shared.uCam.value.copy(cam); sky.position.copy(cam); camera.getWorldDirection(dir);
     if (!player.lift && app.started && !game.active) mission.check(cam); pois.update(cam); hud.update(dt); debrief.update(); helmet.update(); arm.update(dt); hab.update(dt, cam); rover.update(dt, cam); globe.update(dt, cam); room.update(dt, cam); museum.update(dt, cam); heli.update(dt, cam); groom.update(dt); deco.update(dt); game.update(dt); quarters.update(dt); amb.update(dt, !hab.indoors(cam.x, cam.z));
     const tris = terrain.update(cam, dir, renderer.xr.isPresenting ? 0.2 : 0.35, app.baseRes || 1);

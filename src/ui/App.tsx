@@ -23,6 +23,7 @@ import { ElevationProfile } from './ElevationProfile';
 import { MapCanvas, type RejectedPathOverlay } from './MapCanvas';
 import { StartMenuModal } from './StartMenuModal';
 import { MarswalkLaunch } from './MarswalkLaunch';
+import { Landing } from './Landing';
 import type { SearchTraceFrame } from '../contracts';
 import { Slot } from './shared/Slot';
 import type { CustomCanvasLayer, FeatureRegistryMap } from './shared/types';
@@ -54,6 +55,15 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   const [pickMode, setPickMode] = useState<'start' | 'destination'>('destination');
   const [menuMode, setMenuMode] = useState<'docked' | 'expanded'>('docked');
   const [soundEnabled, setSoundEnabled] = useState(true);
+  // Landing choice on the published site only (not in tests, not for automated browsers such as the e2e suite).
+  const [showLanding, setShowLanding] = useState(
+    () =>
+      (deps.production ?? IS_PRODUCTION_BUILD) &&
+      typeof navigator !== 'undefined' &&
+      !navigator.webdriver &&
+      typeof location !== 'undefined' &&
+      !/[?&]plan(=|&|$)/.test(location.search),
+  );
   const [traceFrame, setTraceFrame] = useState<SearchTraceFrame | null>(null);
   const [rejectedPaths, setRejectedPaths] = useState<readonly RejectedPathOverlay[]>([]);
   const selection = selectSelection(state);
@@ -261,6 +271,7 @@ export function App({ deps = {} }: { deps?: AppDeps } = {}) {
   return (
     <div className="app">
       {!deps.skipRegionLoader && <RegionLoaderBridge opts={deps.bundleSelection} />}
+      {showLanding && <Landing onPlan={() => setShowLanding(false)} />}
       <header>
         <h1>MARS PATHFINDER</h1>
         {bundle?.manifest.synthetic && (

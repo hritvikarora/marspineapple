@@ -3,8 +3,7 @@
     {
       "candidateId": "c0",
       "explanation": [
-        "Same cell path produced by: shortest-feasible, terrain-aware.",
-        "Placeholder solver: limits and weights are unvalidated demo values."
+        "Identical path produced by: shortest-feasible, terrain-aware."
       ],
       "missionStatus": "one-way",
       "outbound": {
@@ -304,8 +303,7 @@
     {
       "candidateId": "c1",
       "explanation": [
-        "344 m longer than c0 but crosses 210 m less unknown-quality terrain.",
-        "Placeholder solver: limits and weights are unvalidated demo values."
+        "+344 m longer than c0 while reducing unknown-quality exposure by 210 m."
       ],
       "missionStatus": "one-way",
       "outbound": {
@@ -764,7 +762,7 @@
   "release": {
     "appVersion": "0.0.0-sim",
     "bundleVersion": "sim-quality-patchwork-s1",
-    "modelVersion": "placeholder-astar-0.2.0"
+    "modelVersion": "eva-astar-1.0.0"
   },
   "request": {
     "destinationPoiId": null,

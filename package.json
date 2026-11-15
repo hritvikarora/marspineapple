@@ -10,7 +10,7 @@
     "start": "vite",
     "dev": "vite",
     "build": "tsc -b && vite build && npm run build:marswalk",
-    "build:marswalk": "npm --prefix marswalk/app ci --no-audit --no-fund && npm --prefix marswalk/app run build -- --outDir ../../dist/marswalk-vr --emptyOutDir",
+    "build:marswalk": "node scripts/build-marswalk.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",

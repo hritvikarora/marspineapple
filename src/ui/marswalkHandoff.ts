@@ -24,6 +24,8 @@ const MW_INNER_HALF_M = 800;
 
 export interface MarswalkFrame {
   toMarswalk(p: LocalPoint): [number, number];
+  /** Inverse of toMarswalk (orthographic -> equirectangular local metres). */
+  fromMarswalk(x: number, y: number): LocalPoint;
 }
 
 /** Returns null when the bundle is not on the Mars 2020 TRN grid (e.g. the synthetic fixture). */
@@ -41,6 +43,13 @@ export function marswalkFrameFor(bundle: GridBundle): MarswalkFrame | null {
       const x = R * Math.cos(phi) * Math.sin(d);
       const y = R * (Math.cos(MW_LAT0) * Math.sin(phi) - Math.sin(MW_LAT0) * Math.cos(phi) * Math.cos(d));
       return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+    },
+    fromMarswalk(x, y) {
+      const rho = Math.hypot(x, y);
+      const c = Math.asin(rho / R);
+      const phi = rho === 0 ? MW_LAT0 : Math.asin(Math.cos(c) * Math.sin(MW_LAT0) + (y * Math.sin(c) * Math.cos(MW_LAT0)) / rho);
+      const lam = MW_LON0 + Math.atan2(x * Math.sin(c), rho * Math.cos(MW_LAT0) * Math.cos(c) - y * Math.sin(MW_LAT0) * Math.sin(c));
+      return { east_m: (lam * R - o.x) * cosC, north_m: phi * R - o.y };
     },
   };
 }

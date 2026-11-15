@@ -108,11 +108,11 @@ export class ResearchRoom {
     for (const it of items) { const w = it.slots || 1, phi = Math.PI + 0.25 + span * (k + w / 2) / slots, rr = R2 - (w > 1 ? 0.32 : 0.12); k += w;
       const pnl = it.pnl || mk(); pnl.mesh.position.set(Math.sin(phi) * rr, 1.55, Math.cos(phi) * rr); pnl.mesh.rotation.y = phi + Math.PI; rg.add(pnl.mesh);
       const b = { ...it, pnl, imgs: [] }; this.boards.push(b); if (it.kind !== 'cal') this.targets.push({ mesh: pnl.mesh, click: () => this.openZoom(b) });
-      const files = it.kind === 'map' ? [`${root}research/${it.img}`] : it.kind === 'photo' ? it.p.photos.slice(0, 4).map(ph => `${root}sites/${app.siteId}/${ph.file}`) : [];
+      const files = it.kind === 'map' ? [`${root}research/${it.img}`] : it.kind === 'photo' ? it.p.photos.slice(0, 4).map(ph => `${import.meta.env.VITE_SITES_ROOT || root + 'sites/'}${app.siteId}/${ph.file}`) : [];
       files.forEach((f, j) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => { b.imgs[j] = im; this.drawBoard(b); }; im.src = f; }); }
     this.targets.push({ mesh: this.cal.pnl.mesh, click: (h) => this.cal.click(h), move: (h) => this.cal.hover(h) });
     // the queryable terrain model in the middle of the room
-    const [cx, cz] = hab.world(s * XC, 0); this.plastico = new Plastico(this, `${root}research/`, `${root}sites/${app.siteId}/`, cx, hab.floorY, cz, hab.yaw + (s > 0 ? Math.PI / 2 : -Math.PI / 2));
+    const [cx, cz] = hab.world(s * XC, 0); this.plastico = new Plastico(this, `${root}research/`, `${import.meta.env.VITE_SITES_ROOT || root + 'sites/'}${app.siteId}/`, cx, hab.floorY, cz, hab.yaw + (s > 0 ? Math.PI / 2 : -Math.PI / 2));
     // zoomed view of a board, in front of the eyes
     this.zoom = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ transparent: true, depthTest: false, depthWrite: false, toneMapped: false })); this.zoom.renderOrder = 400; this.zoom.visible = false; this.zoom.position.z = -1.05; app.camera.add(this.zoom);
     this.dot = new THREE.Mesh(new THREE.SphereGeometry(0.012, 10, 8), new THREE.MeshBasicMaterial({ color: 0x7fe0ff, depthTest: false })); this.dot.renderOrder = 401; this.dot.visible = false; app.scene.add(this.dot);
