@@ -209,4 +209,37 @@ describe('TASK-003: Science Destination Selector', () => {
     expect(screen.getByText('Synthetic Target')).toBeTruthy();
     expect(screen.getByText('Mission Target')).toBeTruthy();
   });
+
+  it('renders a long science-stop place name while keeping the option value equal to the manifest id', () => {
+    const longStop: PointOfInterest = {
+      id: 'poi-long-ridge',
+      name: 'Delta front – Skinner Ridge / Wildcat Ridge (Hawksbill Gap upper sedimentary outcrop traverse stop)',
+      kind: 'science-stop',
+      position: { east_m: 610.687, north_m: 656.7 },
+      purpose: 'Inspect western delta front lower sedimentary layers.',
+      officialName: false,
+      positionalUncertainty_m: null,
+      sourceIds: ['s1'],
+      synthetic: false,
+    };
+    const setEndpoint = vi.fn();
+
+    render(
+      <Destinations
+        pois={[...mockPois, longStop]}
+        mission={initialMission}
+        setEndpoint={setEndpoint}
+      />,
+    );
+
+    const select = screen.getByTestId('destinations-dropdown') as HTMLSelectElement;
+    const longOption = within(select).getByText(longStop.name) as HTMLOptionElement;
+    expect(longOption).toBeTruthy();
+    expect(longOption.value).toBe('poi-long-ridge');
+    expect(screen.queryByTestId('selected-destination-details')).toBeNull();
+    expect(screen.queryByText(longStop.purpose)).toBeNull();
+
+    fireEvent.change(select, { target: { value: 'poi-long-ridge' } });
+    expect(setEndpoint).toHaveBeenCalledWith('destination', { east_m: 610.687, north_m: 656.7 }, 'poi-long-ridge');
+  });
 });

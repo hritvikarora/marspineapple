@@ -13,7 +13,9 @@ export const Destinations: FC<DestinationsSlotProps> = ({
   mission,
   setEndpoint,
 }) => {
-  const selectId = useId();
+  const startSelectId = useId();
+  const destSelectId = useId();
+  const destHintId = useId();
 
   // Filter POIs to destination stops (science stops and test targets), preserving all available goals
   const scienceStops = useMemo(
@@ -37,6 +39,18 @@ export const Destinations: FC<DestinationsSlotProps> = ({
     return undefined;
   }, [scienceStops, mission.destination]);
 
+  const handleStartChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const startId = e.target.value;
+    if (!startId) {
+      setEndpoint('start', null, null);
+      return;
+    }
+    const targetPoi = pois.find((p) => p.id === startId);
+    if (targetPoi) {
+      setEndpoint('start', targetPoi.position, targetPoi.id);
+    }
+  };
+
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
     if (!selectedId) {
@@ -58,33 +72,19 @@ export const Destinations: FC<DestinationsSlotProps> = ({
   return (
     <Panel className="destinations-panel" title="Science Destinations">
       <div className="destinations-container" data-testid="destinations-feature">
-        <p className="destinations-description">
-          Select a verified scientific stop to explore Martian geological and astrobiological targets.
-        </p>
-
         <div className="destinations-selector-group">
-          <label htmlFor={`${selectId}-start`} className="destinations-label">
-            Start Preset:
+          <label htmlFor={startSelectId} className="destinations-label">
+            Start preset
           </label>
           <select
-            id={`${selectId}-start`}
+            id={startSelectId}
             className="destinations-select"
             data-testid="start-preset-dropdown"
             aria-label="start preset"
             value={mission.start?.poiId ?? ''}
-            onChange={(e) => {
-              const startId = e.target.value;
-              if (!startId) {
-                setEndpoint('start', null, null);
-                return;
-              }
-              const p = pois.find((x) => x.id === startId);
-              if (p) {
-                setEndpoint('start', p.position, p.id);
-              }
-            }}
+            onChange={handleStartChange}
           >
-            <option value="">{mission.start && !mission.start.poiId ? 'custom point' : '— choose start preset —'}</option>
+            <option value="">{mission.start && !mission.start.poiId ? 'Custom point' : 'Choose start'}</option>
             {pois.map((poi) => (
               <option key={poi.id} value={poi.id}>
                 {poi.name}
@@ -95,33 +95,39 @@ export const Destinations: FC<DestinationsSlotProps> = ({
 
         {scienceStops.length === 0 ? (
           <p className="destinations-empty" data-testid="no-science-stops">
-            No science destination presets available in this region. You can set a custom destination on the map.
+            No science stops are in this bundle.
           </p>
         ) : (
           <>
             <div className="destinations-selector-group">
-              <label htmlFor={selectId} className="destinations-label">
-                Preset Destination:
+              <label htmlFor={destSelectId} className="destinations-label">
+                Destination preset
               </label>
+              <p id={destHintId} className="destinations-hint">
+                Science stop
+              </p>
               <select
-                id={selectId}
+                id={destSelectId}
                 className="destinations-select"
                 data-testid="destinations-dropdown"
                 value={selectedPoi?.id ?? ''}
                 onChange={handleSelectChange}
                 aria-label="destination preset"
+                aria-describedby={destHintId}
               >
-                <option value="">— Choose a science destination preset —</option>
+                <option value="">
+                  {mission.destination && !selectedPoi ? 'Custom point' : 'Choose a science stop'}
+                </option>
                 {scienceStops.map((poi) => (
                   <option key={poi.id} value={poi.id}>
-                    {poi.name} ({poi.position.east_m.toFixed(0)}m E, {poi.position.north_m.toFixed(0)}m N)
+                    {poi.name}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="destinations-quick-picks" role="group" aria-label="Quick pick science destinations">
-              <span className="destinations-quick-picks-heading">Quick Select:</span>
+              <span className="destinations-quick-picks-heading">Quick select</span>
               <div className="destinations-chips">
                 {scienceStops.map((poi) => {
                   const isSelected = selectedPoi?.id === poi.id;
@@ -146,37 +152,45 @@ export const Destinations: FC<DestinationsSlotProps> = ({
               <div className="destination-details" data-testid="selected-destination-details">
                 <div className="destination-details-header">
                   <h4 className="destination-details-name">{selectedPoi.name}</h4>
-                  {selectedPoi.officialName ? (
-                    <span className="destination-tag official" title="IAU/official planetary nomenclature">
-                      Official Feature
-                    </span>
-                  ) : (
-                    <span className="destination-tag informal" title="Informal mission science waypoint">
-                      Mission Target
-                    </span>
-                  )}
-                  {selectedPoi.synthetic && (
-                    <span className="destination-tag synthetic" title="Simulated destination for educational exercise">
-                      Synthetic Target
-                    </span>
-                  )}
+                  <div className="destination-details-tags">
+                    {selectedPoi.officialName ? (
+                      <span className="destination-tag official" title="IAU/official planetary nomenclature">
+                        Official Feature
+                      </span>
+                    ) : (
+                      <span className="destination-tag informal" title="Informal mission science waypoint">
+                        Mission Target
+                      </span>
+                    )}
+                    {selectedPoi.synthetic && (
+                      <span className="destination-tag synthetic" title="Simulated destination for educational exercise">
+                        Synthetic Target
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <p className="destination-purpose">{selectedPoi.purpose}</p>
 
                 <dl className="destination-coords-list">
                   <div className="destination-coord-item">
-                    <dt>Easting:</dt>
-                    <dd>{selectedPoi.position.east_m.toLocaleString()} m</dd>
+                    <dt>Easting</dt>
+                    <dd className="destination-coord-value tabular-nums">
+                      {selectedPoi.position.east_m.toLocaleString()} m
+                    </dd>
                   </div>
                   <div className="destination-coord-item">
-                    <dt>Northing:</dt>
-                    <dd>{selectedPoi.position.north_m.toLocaleString()} m</dd>
+                    <dt>Northing</dt>
+                    <dd className="destination-coord-value tabular-nums">
+                      {selectedPoi.position.north_m.toLocaleString()} m
+                    </dd>
                   </div>
                   {selectedPoi.positionalUncertainty_m !== null && selectedPoi.positionalUncertainty_m !== undefined && (
                     <div className="destination-coord-item">
-                      <dt>Uncertainty:</dt>
-                      <dd>±{selectedPoi.positionalUncertainty_m} m</dd>
+                      <dt>Uncertainty</dt>
+                      <dd className="destination-coord-value tabular-nums">
+                        ±{selectedPoi.positionalUncertainty_m} m
+                      </dd>
                     </div>
                   )}
                 </dl>
